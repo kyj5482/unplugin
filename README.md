@@ -33,6 +33,7 @@ unplugin/
 ├── workflows/             # 부문 간 업무 흐름 정의 (고객 요청, 대표 지시, 콘텐츠 파이프라인)
 ├── flows/                 # 실행된 모든 업무 Flow의 기록 — 대표가 한눈에 보는 Unified View
 ├── ops/                   # KPI 설계, 큐 기반 요금제, 온보딩 문진
+├── tests/                 # E2E 고객 시나리오 테스트케이스 (TDD — 개발은 TC를 PASS 시키는 방향으로)
 └── docs/                  # 회사 홈페이지 (GitHub Pages)
 ```
 
