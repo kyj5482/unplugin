@@ -6,34 +6,27 @@
 <title>Unplugin — 디지털 시간을 삶의 시간으로</title>
 <meta name="description" content="AI 에이전트가 당신의 디지털 일을 대신하고, 되찾은 시간을 오프라인의 진짜 경험으로 바꿔주는 컨시어지 서비스.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
   :root {
     --bg0: #FBF8F3;
     --bg1: #F3EDE1;
     --dark0: #0C1711;
     --dark1: #13241A;
-    --ink: #17211A;
-    --ink2: #525D54;
-    --ink3: #8B958D;
-    --w-ink: #F2EFE7;
-    --w-ink2: #ADB8AF;
-    --w-ink3: #7B867D;
+    --ink: #141D16;
+    --ink2: #46514A;
+    --ink3: #79847C;
+    --w-ink: #F6F4EC;
+    --w-ink2: #C3CDC4;
+    --w-ink3: #93A096;
     --green: #2F6B4A;
     --green-deep: #1E4733;
     --green-soft: #7FC79B;
     --amber: #D89A5B;
     --amber-deep: #C97840;
-    --chart-green: #1C7544;
-    --chart-clay: #C97840;
     --hair: rgba(23,33,26,.1);
     --hair-d: rgba(242,239,231,.12);
     --shadow: 0 1px 2px rgba(23,33,26,.05), 0 12px 32px rgba(23,33,26,.09);
     --ease: cubic-bezier(.22,.61,.36,1);
-    --serif: "Noto Serif KR", serif;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   html, body { height:100%; }
@@ -105,7 +98,7 @@
 
   h1 { font-size:clamp(2.5rem, 5.6vw, 4.1rem); font-weight:800; letter-spacing:-.045em; line-height:1.22; }
   h2 { font-size:clamp(1.8rem, 3.6vw, 2.6rem); font-weight:800; letter-spacing:-.035em; line-height:1.3; }
-  .serif { font-family: var(--serif); font-weight:700; letter-spacing:-.02em; }
+  .serif { font-weight:800; letter-spacing:-.045em; }
   h1 .serif, h2 .serif { color: var(--amber-deep); }
   [data-theme="dark"] h1 .serif, [data-theme="dark"] h2 .serif { color: var(--amber); }
   .lead { margin-top:20px; font-size:clamp(1rem, 1.5vw, 1.12rem); color:var(--ink2); max-width:560px; }
@@ -195,15 +188,45 @@
   /* ───────── 2단 레이아웃 ───────── */
   .cols { display:grid; grid-template-columns: 1fr 1fr; gap:clamp(32px,5vw,72px); align-items:center; }
   .stat { margin-top:30px; display:flex; align-items:baseline; gap:12px; }
-  .stat .num { font-family:var(--serif); font-size:clamp(3rem,6vw,4.4rem); font-weight:700;
+  .stat .num { font-size:clamp(3rem,6vw,4.4rem); font-weight:800;
     color:var(--green-deep); letter-spacing:-.03em; line-height:1; }
   .stat .unit { font-size:1rem; font-weight:600; color:var(--ink2); }
 
-  .panel { background:#fff; border:1px solid var(--hair); border-radius:22px; padding:26px 24px 18px;
-    box-shadow: var(--shadow); }
-  .panel .pt { font-size:.92rem; font-weight:700; }
-  .panel .ps { font-size:.78rem; color:var(--ink3); margin:2px 0 12px; }
-  .chart-wrap { position:relative; height:min(320px,36svh); }
+  .panel { background:#fff; border:1px solid var(--hair); border-radius:22px; padding:28px 26px 24px;
+    box-shadow: var(--shadow); text-align:left; }
+  .panel .pt { font-size:.95rem; font-weight:800; letter-spacing:-.01em; }
+  .panel .ps { font-size:.78rem; color:var(--ink3); margin:3px 0 4px; }
+
+  /* 커스텀 바 그래프 — 단일 시리즈 */
+  .bars { margin-top:16px; }
+  .brow { display:grid; grid-template-columns: 108px 1fr 44px; gap:12px; align-items:center; padding:9px 0; }
+  .brow + .brow { border-top:1px dashed rgba(23,33,26,.07); }
+  .brow .bl { font-size:.85rem; font-weight:600; color:var(--ink); }
+  .btrack { height:12px; border-radius:999px; background:rgba(23,33,26,.06); overflow:hidden; }
+  .bfill { display:block; height:100%; width:0; border-radius:999px;
+    background:linear-gradient(90deg, #2F6B4A, #1C7544);
+    transition: width 1.1s var(--ease); }
+  .in .bfill { width:var(--w); }
+  .in .brow:nth-child(2) .bfill { transition-delay:.12s; }
+  .in .brow:nth-child(3) .bfill { transition-delay:.24s; }
+  .in .brow:nth-child(4) .bfill { transition-delay:.36s; }
+  .brow .bv { font-size:.85rem; font-weight:800; text-align:right; color:var(--ink); font-variant-numeric:tabular-nums; }
+
+  /* 커스텀 바 그래프 — 비교(2시리즈) */
+  .legend { display:flex; gap:16px; margin:14px 0 6px; }
+  .legend span { display:inline-flex; align-items:center; gap:7px; font-size:.78rem; font-weight:600; color:var(--ink2); }
+  .legend i { width:9px; height:9px; border-radius:50%; }
+  .li-g { background:#1C7544; } .li-a { background:#C97840; }
+  .cgroup { padding:13px 0 11px; }
+  .cgroup + .cgroup { border-top:1px dashed rgba(23,33,26,.07); }
+  .cgroup .cl { font-size:.86rem; font-weight:700; margin-bottom:8px; }
+  .crow { display:grid; grid-template-columns: 1fr 44px; gap:12px; align-items:center; margin:5px 0; }
+  .ctrack { height:9px; border-radius:999px; background:rgba(23,33,26,.06); overflow:hidden; }
+  .cfill { display:block; height:100%; width:0; border-radius:999px; transition: width 1.1s var(--ease) .1s; }
+  .cfill.g { background:linear-gradient(90deg,#2F6B4A,#1C7544); }
+  .cfill.a { background:linear-gradient(90deg,#D08A4E,#C97840); }
+  .in .cfill { width:var(--w); }
+  .crow .cv { font-size:.8rem; font-weight:800; text-align:right; color:var(--ink); font-variant-numeric:tabular-nums; }
 
   /* ───────── S3 스텝 ───────── */
   .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:46px; }
@@ -211,8 +234,8 @@
     padding:30px 26px 26px; text-align:left; box-shadow:var(--shadow);
     transition: transform .35s var(--ease), box-shadow .35s; overflow:hidden; }
   .stepc:hover { transform:translateY(-6px); box-shadow:0 2px 3px rgba(23,33,26,.05), 0 22px 44px rgba(23,33,26,.13); }
-  .stepc .gnum { position:absolute; top:10px; right:18px; font-family:var(--serif); font-size:4.4rem; line-height:1;
-    color:transparent; -webkit-text-stroke:1px rgba(23,33,26,.13); }
+  .stepc .gnum { position:absolute; top:14px; right:20px; font-size:4rem; font-weight:800; line-height:1; letter-spacing:-.04em;
+    color:transparent; -webkit-text-stroke:1.2px rgba(23,33,26,.14); }
   .stepc h3 { font-size:1.12rem; font-weight:800; letter-spacing:-.02em; margin:14px 0 8px; }
   .stepc p { font-size:.9rem; color:var(--ink2); }
   .stepc .k { font-size:.74rem; font-weight:700; letter-spacing:.14em; color:var(--amber-deep); }
@@ -229,7 +252,7 @@
     box-shadow:0 30px 60px rgba(0,0,0,.4); text-align:left;
   }
   .tcard .code { font-size:.74rem; font-weight:800; letter-spacing:.3em; color:var(--amber); }
-  .tcard h3 { font-family:var(--serif); font-size:1.7rem; color:var(--w-ink); margin:6px 0 4px; }
+  .tcard h3 { font-size:1.6rem; font-weight:800; letter-spacing:-.03em; color:var(--w-ink); margin:6px 0 4px; }
   .tcard .td { font-size:.88rem; color:var(--w-ink2); }
   .mbar { margin-top:18px; }
   .mbar .row { display:flex; justify-content:space-between; font-size:.78rem; color:var(--w-ink2); margin:12px 0 6px; }
@@ -274,8 +297,8 @@
     transition: transform .35s var(--ease), box-shadow .35s; }
   .tier:hover { transform:translateY(-6px); }
   .tier .tn { font-weight:800; font-size:.95rem; letter-spacing:-.01em; }
-  .tier .tp { font-family:var(--serif); font-size:1.9rem; font-weight:700; margin:12px 0 2px; letter-spacing:-.02em; }
-  .tier .tp small { font-family:"Pretendard Variable",sans-serif; font-size:.78rem; font-weight:500; color:var(--ink3); }
+  .tier .tp { font-size:1.85rem; font-weight:800; margin:12px 0 2px; letter-spacing:-.03em; }
+  .tier .tp small { font-size:.78rem; font-weight:500; color:var(--ink3); }
   .tier .td { font-size:.8rem; color:var(--ink2); margin-bottom:14px; }
   .tier ul { list-style:none; margin-top:auto; }
   .tier li { font-size:.86rem; color:var(--ink2); padding:5px 0 5px 26px; position:relative; }
@@ -312,7 +335,7 @@
   }
 </style>
 </head>
-<body data-palette="#1c7544,#c97840">
+<body>
 
 <div class="progressbar" id="pbar"></div>
 
@@ -377,7 +400,12 @@
       <div class="panel rv d2">
         <div class="pt">매주 화면에 새는 "잡무 시간"</div>
         <div class="ps">주당 시간</div>
-        <div class="chart-wrap"><canvas id="chartChores" role="img" aria-label="주당 잡무 시간: 비교·검색 3.2시간, 장보기·주문 2.5시간, 메일·서류 정리 2.1시간, 예약·신청 1.4시간"></canvas></div>
+        <div class="bars" role="img" aria-label="주당 잡무 시간: 비교·검색 3.2시간, 장보기·주문 2.5시간, 메일·서류 정리 2.1시간, 예약·신청 1.4시간">
+          <div class="brow"><span class="bl">비교 · 검색</span><span class="btrack"><span class="bfill" style="--w:80%"></span></span><span class="bv">3.2h</span></div>
+          <div class="brow"><span class="bl">장보기 · 주문</span><span class="btrack"><span class="bfill" style="--w:62%"></span></span><span class="bv">2.5h</span></div>
+          <div class="brow"><span class="bl">메일 · 서류 정리</span><span class="btrack"><span class="bfill" style="--w:52%"></span></span><span class="bv">2.1h</span></div>
+          <div class="brow"><span class="bl">예약 · 신청</span><span class="btrack"><span class="bfill" style="--w:35%"></span></span><span class="bv">1.4h</span></div>
+        </div>
       </div>
     </div>
   </section>
@@ -442,8 +470,26 @@
     <div class="wrap cols">
       <div class="panel rv d2" style="order:0;">
         <div class="pt">타입별 주간 전환</div>
-        <div class="ps">위임한 시간 vs 화면 밖에서 쓴 시간 · 베타 수집 전 예상 시나리오</div>
-        <div class="chart-wrap"><canvas id="chartTypes" role="img" aria-label="타입별 위임 시간과 화면 밖 전환 시간 비교 차트"></canvas></div>
+        <div class="ps">베타 수집 전 예상 시나리오</div>
+        <div class="legend"><span><i class="li-g"></i>위임한 시간</span><span><i class="li-a"></i>화면 밖에서 쓴 시간</span></div>
+        <div role="img" aria-label="타입별 위임 시간과 화면 밖 전환 시간: 숲길 산책자 4.0 대 3.1, 쿠킹 스터디장 3.4 대 2.9, 온천 독서가 2.8 대 2.4, 플리마켓 사장님 4.6 대 3.5시간">
+          <div class="cgroup"><div class="cl">숲길 산책자</div>
+            <div class="crow"><span class="ctrack"><span class="cfill g" style="--w:87%"></span></span><span class="cv">4.0h</span></div>
+            <div class="crow"><span class="ctrack"><span class="cfill a" style="--w:67%"></span></span><span class="cv">3.1h</span></div>
+          </div>
+          <div class="cgroup"><div class="cl">쿠킹 스터디장</div>
+            <div class="crow"><span class="ctrack"><span class="cfill g" style="--w:74%"></span></span><span class="cv">3.4h</span></div>
+            <div class="crow"><span class="ctrack"><span class="cfill a" style="--w:63%"></span></span><span class="cv">2.9h</span></div>
+          </div>
+          <div class="cgroup"><div class="cl">온천 독서가</div>
+            <div class="crow"><span class="ctrack"><span class="cfill g" style="--w:61%"></span></span><span class="cv">2.8h</span></div>
+            <div class="crow"><span class="ctrack"><span class="cfill a" style="--w:52%"></span></span><span class="cv">2.4h</span></div>
+          </div>
+          <div class="cgroup"><div class="cl">플리마켓 사장님</div>
+            <div class="crow"><span class="ctrack"><span class="cfill g" style="--w:100%"></span></span><span class="cv">4.6h</span></div>
+            <div class="crow"><span class="ctrack"><span class="cfill a" style="--w:76%"></span></span><span class="cv">3.5h</span></div>
+          </div>
+        </div>
       </div>
       <div>
         <div class="eyebrow rv">Reclaimed Hours</div>
@@ -550,9 +596,8 @@ const rail = document.getElementById('rail');
 const pbar = document.getElementById('pbar');
 const sections = [...document.querySelectorAll('section')];
 const dots = [...rail.querySelectorAll('a')];
-const drawn = {};
 
-// 섹션 진입: 리빌 + 헤더/레일 테마 + 활성 도트 + 차트 lazy render
+// 섹션 진입: 리빌(+바 그래프 채움) + 헤더/레일 테마 + 활성 도트
 const io = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (!e.isIntersecting) return;
@@ -562,9 +607,6 @@ const io = new IntersectionObserver(entries => {
     rail.classList.toggle('on-dark', dark);
     const i = sections.indexOf(e.target);
     dots.forEach((d, j) => d.classList.toggle('on', j === i));
-    e.target.querySelectorAll('canvas').forEach(c => {
-      if (!drawn[c.id]) { drawn[c.id] = true; renderChart(c.id); }
-    });
   });
 }, { root: main, threshold: 0.45 });
 sections.forEach(s => io.observe(s));
@@ -575,87 +617,6 @@ main.addEventListener('scroll', () => {
   pbar.style.width = (p * 100).toFixed(2) + '%';
 }, { passive: true });
 
-// ── Chart.js ──
-const C = { green:'#1c7544', clay:'#c97840', ink:'#17211A', soft:'#8B958D', grid:'rgba(23,33,26,.08)' };
-Chart.defaults.font.family = '"Pretendard Variable",Pretendard,"Apple SD Gothic Neo",sans-serif';
-Chart.defaults.font.size = 12;
-Chart.defaults.color = C.soft;
-
-const endLabels = {
-  id: 'endLabels',
-  afterDatasetsDraw(chart) {
-    const { ctx } = chart;
-    ctx.save();
-    ctx.font = '700 12px "Pretendard Variable",Pretendard,sans-serif';
-    ctx.fillStyle = C.ink;
-    chart.data.datasets.forEach((ds, di) => {
-      if (!chart.isDatasetVisible(di)) return;
-      chart.getDatasetMeta(di).data.forEach((bar, i) => {
-        const v = ds.data[i];
-        if (chart.options.indexAxis === 'y') {
-          ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-          ctx.fillText(v + 'h', bar.x + 7, bar.y);
-        } else {
-          ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-          ctx.fillText(v + 'h', bar.x, bar.y - 6);
-        }
-      });
-    });
-    ctx.restore();
-  }
-};
-
-function renderChart(id) {
-  if (id === 'chartChores') {
-    new Chart(document.getElementById(id), {
-      type: 'bar', plugins: [endLabels],
-      data: {
-        labels: ['비교 · 검색', '장보기 · 주문', '메일 · 서류 정리', '예약 · 신청'],
-        datasets: [{ data: [3.2, 2.5, 2.1, 1.4], backgroundColor: C.green,
-          borderRadius: { topRight: 5, bottomRight: 5 }, borderSkipped: 'start', barThickness: 24 }]
-      },
-      options: {
-        indexAxis: 'y', maintainAspectRatio: false, layout: { padding: { right: 44 } },
-        animation: { duration: 900, easing: 'easeOutQuart' },
-        plugins: { legend: { display: false },
-          tooltip: { backgroundColor: '#17211A', padding: 10, cornerRadius: 10, displayColors: false,
-            callbacks: { label: ctx => `주당 ${ctx.parsed.x}시간` } } },
-        scales: {
-          x: { grid: { color: C.grid }, border: { display: false }, max: 4,
-            ticks: { callback: v => v + 'h' } },
-          y: { grid: { display: false }, border: { display: false },
-            ticks: { color: C.ink, font: { weight: 600, size: 12.5 } } }
-        }
-      }
-    });
-  }
-  if (id === 'chartTypes') {
-    new Chart(document.getElementById(id), {
-      type: 'bar', plugins: [endLabels],
-      data: {
-        labels: ['숲길 산책자', '쿠킹 스터디장', '온천 독서가', '플리마켓 사장님'],
-        datasets: [
-          { label: '위임한 시간', data: [4.0, 3.4, 2.8, 4.6], backgroundColor: C.green,
-            borderRadius: { topLeft: 5, topRight: 5 }, borderSkipped: 'bottom', maxBarThickness: 26 },
-          { label: '화면 밖에서 쓴 시간', data: [3.1, 2.9, 2.4, 3.5], backgroundColor: C.clay,
-            borderRadius: { topLeft: 5, topRight: 5 }, borderSkipped: 'bottom', maxBarThickness: 26 }
-        ]
-      },
-      options: {
-        maintainAspectRatio: false, layout: { padding: { top: 20 } },
-        animation: { duration: 900, easing: 'easeOutQuart' },
-        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 7, padding: 18 } },
-          tooltip: { backgroundColor: '#17211A', padding: 10, cornerRadius: 10,
-            callbacks: { label: ctx => ` ${ctx.dataset.label}: 주당 ${ctx.parsed.y}시간` } } },
-        scales: {
-          y: { grid: { color: C.grid }, border: { display: false }, ticks: { callback: v => v + 'h' } },
-          x: { grid: { display: false }, border: { display: false },
-            ticks: { color: C.ink, font: { weight: 600, size: 12 } } }
-        }
-      }
-    });
-  }
-}
 </script>
 </body>
 </html>

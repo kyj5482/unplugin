@@ -6,20 +6,14 @@
 <title>언플러그 타입 테스트 — Unplugin</title>
 <meta name="description" content="8문항 1분, 나의 디지털 습관과 오프라인 취향으로 알아보는 16가지 언플러그 타입.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
   :root {
     --dark0:#0C1711; --dark1:#13241A;
-    --w-ink:#F2EFE7; --w-ink2:#ADB8AF; --w-ink3:#7B867D;
+    --w-ink:#F6F4EC; --w-ink2:#C3CDC4; --w-ink3:#93A096;
     --amber:#D89A5B; --amber-deep:#C97840;
     --green:#2F6B4A; --green-soft:#5CA87C;
     --hair-d:rgba(242,239,231,.12);
-    --ink:#17211A; --ink2:#525D54; --ink3:#8B958D;
     --ease:cubic-bezier(.22,.61,.36,1);
-    --serif:"Noto Serif KR",serif;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
@@ -59,7 +53,7 @@
   .qnum { font-size:.76rem; font-weight:700; letter-spacing:.2em; color:var(--amber); }
   h1 { font-size:clamp(1.55rem,4.4vw,2.2rem); font-weight:800; letter-spacing:-.03em;
     line-height:1.42; margin:14px 0 34px; }
-  h1 .serif { font-family:var(--serif); color:var(--amber); font-weight:700; }
+  h1 .serif { color:var(--amber); font-weight:800; }
   .lead { color:var(--w-ink2); margin-bottom:32px; font-size:1.02rem; }
 
   .opts { display:flex; flex-direction:column; gap:14px; }
@@ -96,8 +90,8 @@
   .type-code { display:inline-block; font-size:.78rem; font-weight:800; letter-spacing:.34em;
     color:var(--amber); border:1px solid rgba(216,154,91,.4); background:rgba(216,154,91,.08);
     border-radius:999px; padding:6px 20px 6px 24px; }
-  .rname { font-family:var(--serif); font-size:clamp(2rem,5.4vw,2.8rem); font-weight:700;
-    letter-spacing:-.02em; margin:16px 0 4px; }
+  .rname { font-size:clamp(2rem,5.4vw,2.7rem); font-weight:800;
+    letter-spacing:-.04em; margin:16px 0 4px; }
   .axes { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px; }
   .ax { font-size:.76rem; color:var(--w-ink3); border:1px solid var(--hair-d);
     background:rgba(255,255,255,.04); border-radius:999px; padding:4px 13px; }
@@ -116,8 +110,15 @@
   .peer b { color:var(--w-ink); }
   .peer .hl { color:var(--amber); font-weight:800; }
   .rcard h2 { font-size:.95rem; font-weight:800; margin-top:24px; letter-spacing:-.01em; }
-  .chart-panel { margin-top:12px; background:#FBF8F3; border-radius:16px; padding:18px 16px 10px; }
-  .chart-wrap { position:relative; height:186px; }
+  .dbars { margin-top:6px; }
+  .drow { display:flex; justify-content:space-between; align-items:baseline; font-size:.84rem;
+    color:var(--w-ink2); margin:14px 0 7px; }
+  .drow b { color:var(--w-ink); font-weight:800; font-variant-numeric:tabular-nums; }
+  .dtrack { height:9px; border-radius:999px; background:rgba(255,255,255,.09); overflow:hidden; }
+  .dfill { display:block; height:100%; width:0; border-radius:999px;
+    background:linear-gradient(90deg,var(--green-soft),var(--amber));
+    animation: fillup 1.1s var(--ease) .35s both; }
+  @keyframes fillup { from { width:0; } to { width:var(--w); } }
   .fineprint { font-size:.75rem; color:var(--w-ink3); margin-top:12px; }
   .cta-row { margin-top:32px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
 
@@ -248,49 +249,18 @@ function result() {
       <div class="peer">🌱 <b>${t.name}</b> 타입은 아래의 디지털 시간을 맡기고, 주당 약
         <span class="hl">${reclaimed}시간</span>을 <b>${t.off}</b> 같은 시간으로 바꿨습니다.</div>
       <h2>이 타입이 가장 많이 맡기는 일 (주당)</h2>
-      <div class="chart-panel"><div class="chart-wrap"><canvas id="typeChart"></canvas></div></div>
+      <div class="dbars" role="img" aria-label="${t.deleg.map(d => `${d[0]} ${d[1]}시간`).join(', ')}">
+        ${t.deleg.map((d, i) => `
+          <div class="drow"><span>${d[0]}</span><b>${d[1]}h</b></div>
+          <div class="dtrack"><span class="dfill" style="--w:${Math.round(d[1] / t.deleg[0][1] * 100)}%; animation-delay:${.35 + i * .15}s;"></span></div>
+        `).join('')}
+      </div>
       <div class="fineprint">베타 수집 전 예상 시나리오 · 실측 데이터로 교체됩니다</div>
     </div>
     <div class="cta-row">
       <a class="btn btn-accent" href="index.html#s7">이 일부터 맡겨보기 →</a>
       <button class="btn btn-glass" onclick="location.reload()">다시 테스트</button>
     </div>`;
-
-  Chart.defaults.font.family = '"Pretendard Variable",Pretendard,"Apple SD Gothic Neo",sans-serif';
-  Chart.defaults.color = '#8B958D';
-  new Chart(document.getElementById('typeChart'), {
-    type: 'bar',
-    plugins: [{
-      id: 'endLabels',
-      afterDatasetsDraw(chart) {
-        const { ctx } = chart;
-        ctx.save();
-        ctx.font = '700 12px "Pretendard Variable",Pretendard,sans-serif';
-        ctx.fillStyle = '#17211A'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-        chart.getDatasetMeta(0).data.forEach((bar, i) =>
-          ctx.fillText(chart.data.datasets[0].data[i] + 'h', bar.x + 7, bar.y));
-        ctx.restore();
-      }
-    }],
-    data: {
-      labels: t.deleg.map(d => d[0]),
-      datasets: [{ data: t.deleg.map(d => d[1]), backgroundColor: '#1c7544',
-        borderRadius: { topRight: 5, bottomRight: 5 }, borderSkipped: 'start', barThickness: 20 }]
-    },
-    options: {
-      indexAxis: 'y', maintainAspectRatio: false,
-      layout: { padding: { right: 40 } },
-      animation: { duration: 900, easing: 'easeOutQuart' },
-      plugins: { legend: { display: false },
-        tooltip: { backgroundColor: '#17211A', padding: 10, cornerRadius: 10, displayColors: false,
-          callbacks: { label: c => `주당 ${c.parsed.x}시간` } } },
-      scales: {
-        x: { grid: { color: 'rgba(23,33,26,.08)' }, border: { display: false }, ticks: { callback: v => v + 'h' } },
-        y: { grid: { display: false }, border: { display: false },
-          ticks: { color: '#17211A', font: { weight: 600, size: 12 } } }
-      }
-    }
-  });
 }
 
 intro();

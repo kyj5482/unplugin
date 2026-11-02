@@ -20,7 +20,8 @@
 4. Flow 기록을 보기 쉽게 모아주는 로컬 뷰어 (정적 HTML 생성 스크립트)
 5. 요청 큐 프로토타입 (파일 기반 큐로 시작)
 6. AI 브라우저 세션 연동 PoC (egolite 또는 대안, 1개 위임 업무 자동화)
-7. 이메일 v1 — 실제 메일박스 + 서브어드레싱 (`user+id@`), IMAP 폴링
+7. 이메일 v0.5 — 단일 메일박스 + 서브어드레싱(`+고객id@`) IMAP 폴링 → v1 — 전용 도메인
+   + Cloudflare Email Routing 캐치올 + Worker 수신, Resend/SES 발신 (상세: ops/email-channel.md)
 
 ## 산출물 위치
 - 도구·스크립트: `tools/`
