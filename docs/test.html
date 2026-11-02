@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>언플러그 타입 테스트 — Unplugin</title>
+<meta name="description" content="8문항 1분, 나의 디지털 습관과 오프라인 취향으로 알아보는 16가지 언플러그 타입.">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --paper:#faf6ef; --ink:#2b2a26; --ink-soft:#6b675e;
+    --moss:#3f5a44; --moss-deep:#2e4332; --clay:#c47a4e;
+    --chart-green:#1c7544; --line:#e4dccd; --card:#ffffff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:"Apple SD Gothic Neo","Noto Sans KR",Pretendard,-apple-system,sans-serif;
+    background:var(--paper); color:var(--ink); line-height:1.7; min-height:100svh;
+    display:flex; flex-direction:column; -webkit-font-smoothing:antialiased;
+  }
+  header { padding:18px 24px; display:flex; justify-content:space-between; align-items:center; }
+  .logo { font-weight:800; font-size:1.2rem; color:var(--moss-deep); text-decoration:none; }
+  .logo span { color:var(--clay); }
+  header a.back { font-size:.88rem; color:var(--ink-soft); text-decoration:none; }
+
+  .stage { flex:1; display:flex; align-items:center; justify-content:center; padding:20px 24px 48px; }
+  .panel { max-width:620px; width:100%; text-align:center; }
+
+  .progress { height:6px; background:var(--line); border-radius:999px; margin-bottom:34px; overflow:hidden; }
+  .progress i { display:block; height:100%; background:var(--moss); border-radius:999px; transition:width .35s ease; }
+
+  .qnum { font-size:.82rem; font-weight:700; color:var(--clay); letter-spacing:.1em; }
+  h1 { font-size:clamp(1.5rem,4.5vw,2.1rem); font-weight:800; letter-spacing:-.02em; color:var(--moss-deep); line-height:1.45; margin:10px 0 30px; }
+  h1 em { font-style:normal; color:var(--clay); }
+  .lead { color:var(--ink-soft); margin-bottom:28px; }
+
+  .opts { display:flex; flex-direction:column; gap:14px; }
+  .opt {
+    background:var(--card); border:1.5px solid var(--line); border-radius:14px;
+    padding:20px 22px; font-size:1rem; font-weight:600; color:var(--ink);
+    cursor:pointer; text-align:left; transition:transform .1s, border-color .1s, box-shadow .1s;
+    font-family:inherit; line-height:1.55;
+  }
+  .opt:hover { border-color:var(--moss); transform:translateY(-2px); box-shadow:0 6px 16px rgba(63,90,68,.12); }
+  .opt .ic { margin-right:10px; }
+
+  .btn { display:inline-block; padding:14px 30px; border-radius:12px; font-weight:700; font-size:1rem;
+    text-decoration:none; border:none; cursor:pointer; font-family:inherit; }
+  .btn-primary { background:var(--moss); color:#fff; box-shadow:0 8px 22px rgba(63,90,68,.28); }
+  .btn-ghost { border:1.5px solid var(--line); color:var(--ink); background:var(--card); }
+
+  /* 결과 */
+  .type-code { display:inline-block; font-weight:800; letter-spacing:.2em; font-size:.95rem;
+    color:var(--clay); border:1.5px solid var(--clay); border-radius:999px; padding:4px 16px; margin-bottom:14px; }
+  .result-card { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:30px 26px; margin-top:24px; text-align:left; }
+  .result-card h2 { font-size:1.05rem; color:var(--moss-deep); margin-bottom:8px; }
+  .result-card p { font-size:.94rem; color:var(--ink-soft); }
+  .peer { background:#f2eee3; border-radius:12px; padding:16px 18px; margin-top:16px; font-size:.92rem; }
+  .peer b { color:var(--moss-deep); }
+  .chart-wrap { position:relative; height:190px; margin-top:14px; }
+  .sub { font-size:.78rem; color:var(--ink-soft); margin-top:10px; }
+  .hero-num { font-size:2.2rem; font-weight:800; color:var(--moss-deep); letter-spacing:-.02em; }
+  .hero-num small { font-size:.5em; color:var(--ink-soft); font-weight:600; }
+  .cta-row { margin-top:28px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .axes { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px; }
+  .ax { font-size:.8rem; background:var(--card); border:1px solid var(--line); border-radius:999px; padding:4px 12px; color:var(--ink-soft); }
+  .ax b { color:var(--moss-deep); }
+  footer { text-align:center; font-size:.82rem; color:var(--ink-soft); padding:0 24px 28px; }
+  footer a { color:var(--moss-deep); }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">un<span>plugin</span></a>
+  <a class="back" href="index.html">← 소개로 돌아가기</a>
+</header>
+
+<div class="stage"><div class="panel" id="panel"></div></div>
+<footer>결과의 "비슷한 타입" 데이터는 베타 수집 전 예상 시나리오입니다 · <a href="index.html">Unplugin</a></footer>
+
+<script>
+// ───── 4축: S/T(시간이 새는 곳) F/C(맡기는 방식) M/R(오프라인 취향) P/A(함께/혼자) ─────
+const QUESTIONS = [
+  { axis:0, q:'자기 전 30분, 내 손가락은 주로…', a:['🌀 피드와 영상 사이를 하염없이 떠돌고 있다','📋 내일의 주문·예약·할 일을 정리하고 있다'], k:['S','T'] },
+  { axis:2, q:'완벽한 토요일 오후를 고른다면?', a:['🛠️ 뭔가를 만들거나 배우며 손을 움직이는 오후','🍃 아무것도 안 하고 바람이나 쐬는 느긋한 오후'], k:['M','R'] },
+  { axis:1, q:'맛집을 정할 때 나는…', a:['🙌 "알아서 예약해줘"가 제일 편하다','🔍 후기 몇 개는 내 눈으로 확인해야 한다'], k:['F','C'] },
+  { axis:3, q:'좋은 공간을 발견하면…', a:['👥 같이 갈 사람 얼굴부터 떠오른다','🤫 혼자 조용히 다시 올 계획을 세운다'], k:['P','A'] },
+  { axis:0, q:'장바구니에 담아둔 물건, 나의 패턴은…', a:['🛒 "더 싼 데 없나" 비교하다 잠드는 편','🔁 늘 사는 건데도 매번 내가 직접 주문하는 편'], k:['S','T'] },
+  { axis:2, q:'여행에서 오래 기억에 남는 건…', a:['🏺 현지에서 해본 클래스·체험','🌅 바람, 냄새, 풍경 같은 감각'], k:['M','R'] },
+  { axis:1, q:'누가 내 일을 대신해줄 때 나는…', a:['✅ 끝나고 결과만 깔끔하게 알려주면 된다','👀 중간중간 진행 상황을 공유받아야 안심된다'], k:['F','C'] },
+  { axis:3, q:'공방 원데이 클래스 쿠폰이 생겼다!', a:['📅 바로 친구와 약속을 잡는다','🧘 평일 낮, 혼자 조용히 다녀온다'], k:['P','A'] },
+];
+
+// ───── 16타입: 이름 / 설명 / 비슷한 타입의 위임 Top3(주당 h) / 이렇게 바꿈 ─────
+const TYPES = {
+  SFMA:{ name:'심야 공방러', desc:'밤마다 피드를 떠돌지만, 사실 손을 움직일 때 가장 살아있는 사람. 탐색은 통째로 맡기고 혼자 몰입하는 시간이 필요합니다.',
+    deleg:[['콘텐츠·피드 탐색',2.8],['최저가 비교',1.6],['생필품 주문',1.2]], off:'야간 목공방, 혼자 하는 도예 클래스' },
+  SFMP:{ name:'클래스 메이트', desc:'재미있는 걸 발견하면 공유부터 하는 탐색가. 고르는 일은 맡기고, 친구와 함께 배우는 자리로 직행합니다.',
+    deleg:[['모임 장소·클래스 검색',2.4],['콘텐츠 탐색',2.0],['예약 잡기',1.1]], off:'친구와 베이킹 클래스, 공방 데이트' },
+  SFRA:{ name:'숲길 산책자', desc:'스크롤로 쉬는 척했지만 한 번도 쉰 적이 없는 사람. 피드를 통째로 맡기면, 당신에게 필요한 건 그냥 바람입니다.',
+    deleg:[['콘텐츠·피드 탐색',3.1],['쇼핑 비교',1.5],['뉴스 정리',1.0]], off:'해질녘 숲길 산책, 혼자 걷는 둘레길' },
+  SFRP:{ name:'노을 피크닉러', desc:'좋은 곳을 찾느라 쓰는 시간이 노는 시간보다 길었던 타입. 찾기는 맡기고, 사람들과 해 지는 풍경 속으로.',
+    deleg:[['핫플·장소 검색',2.6],['콘텐츠 탐색',1.8],['모임 예약',1.2]], off:'한강 피크닉, 친구들과 야외 콘서트' },
+  SCMA:{ name:'꼼꼼한 장인', desc:'비교하고 확인해야 직성이 풀리지만, 그 에너지는 만드는 데 쓰는 게 맞습니다. 요약 보고만 받고 공방으로.',
+    deleg:[['스펙·가격 비교',2.2],['리뷰 검증',1.4],['재료 주문',1.0]], off:'가죽공예, 홈브루잉 — 혼자 깊게 파는 취미' },
+  SCMP:{ name:'주말 베이킹 반장', desc:'검색도 모임 준비도 직접 챙기던 사람. 챙김은 중간 보고로 대신하고, 주말 오븐 앞 리더 자리는 그대로.',
+    deleg:[['레시피·재료 검색',2.0],['공동구매 비교',1.5],['모임 공지 정리',0.9]], off:'친구들과 베이킹, 쿠킹 모임 주최' },
+  SCRA:{ name:'온천 독서가', desc:'확인은 하되 깊이 쉬고 싶은 타입. 검증된 요약만 받고, 따뜻한 물과 책 한 권의 시간을 되찾습니다.',
+    deleg:[['쇼핑 비교·검증',2.3],['피드 탐색',1.7],['구독 관리',0.8]], off:'온천·사우나, 서점과 찻집에서 보내는 반나절' },
+  SCRP:{ name:'동네 미식 탐험대', desc:'후기 30개를 읽고서야 식당을 고르던 사람. 검증은 맡기고, 좋아하는 사람들과 골목 맛집 투어를 떠납니다.',
+    deleg:[['맛집 검색·후기 검증',2.5],['예약 잡기',1.3],['콘텐츠 탐색',1.4]], off:'친구와 시장 투어, 동네 미식 모임' },
+  TFMA:{ name:'새벽 목공러', desc:'할 일을 해치우는 데는 선수지만, 그 시간이 전부 화면 속이었죠. 관리는 통째로 맡기고 새벽 작업대 앞으로.',
+    deleg:[['정기 주문·관리',2.4],['예약·신청 처리',1.6],['메일 정리',1.3]], off:'이른 아침 목공, 혼자 하는 자전거 정비' },
+  TFMP:{ name:'플리마켓 사장님', desc:'처리력도 추진력도 최상급. 운영 잡무는 에이전트에게 넘기고, 만든 것을 들고 사람들 앞에 서는 타입.',
+    deleg:[['주문·배송 관리',2.8],['스케줄 조율',1.7],['문의 메일 처리',1.5]], off:'플리마켓 출점, 함께 만드는 워크숍 운영' },
+  TFRA:{ name:'맨발 러너', desc:'미루지 않는 사람일수록 잡무가 몰립니다. 전부 맡기고 결과만 확인 — 당신은 운동화 끈만 묶으면 됩니다.',
+    deleg:[['공과금·금융 관리',2.1],['정기 주문',1.8],['예약 처리',1.2]], off:'새벽 러닝, 혼자 떠나는 당일 등산' },
+  TFRP:{ name:'캠프파이어 호스트', desc:'모두의 예약 담당이었던 당신. 이제 준비는 에이전트가, 당신은 불가에서 사람들을 웃기는 역할만.',
+    deleg:[['모임 예약·조율',2.6],['장비·장소 검색',1.9],['공지 정리',1.0]], off:'주말 캠핑 호스트, 바베큐 모임' },
+  TCMA:{ name:'텃밭 과학자', desc:'기록하고 확인하는 성향 그대로, 화면 밖 실험으로. 잡무는 보고 받고, 흙과 데이터는 직접 만집니다.',
+    deleg:[['정기 구매 관리',1.9],['가격 추적',1.5],['서류·신청 처리',1.3]], off:'주말농장, 발효·배양 같은 손 실험' },
+  TCMP:{ name:'쿠킹 스터디장', desc:'계획과 확인에 강한 모임의 중심. 운영 잡무를 덜어내면 레시피 연구와 사람에게만 집중할 수 있습니다.',
+    deleg:[['식재료 주문 관리',2.2],['모임 일정 조율',1.6],['회비·정산 정리',1.0]], off:'쿠킹 스터디 운영, 김장·장담그기 모임' },
+  TCRA:{ name:'필름 산책가', desc:'꼼꼼하지만 조용한 당신. 처리와 확인의 피로를 내려놓으면, 카메라 하나 들고 걷는 오후가 돌아옵니다.',
+    deleg:[['메일·서류 정리',2.0],['예약·신청 처리',1.4],['구독 관리',0.9]], off:'필름 카메라 산책, 혼자 보는 전시' },
+  TCRP:{ name:'시장 투어 가이드', desc:'챙길 건 챙기면서도 사람들과 어울리는 게 좋은 타입. 확인은 요약 보고로, 발걸음은 왁자지껄한 시장으로.',
+    deleg:[['장보기 관리',2.3],['모임 예약',1.5],['가계 정리',1.1]], off:'전통시장 투어, 동네 축제 나들이' },
+};
+
+const AXIS_DESC = {
+  S:'시간이 새는 곳: 탐색', T:'시간이 새는 곳: 처리',
+  F:'맡기는 방식: 통째로', C:'맡기는 방식: 챙기며',
+  M:'오프라인 취향: 만들기·배움', R:'오프라인 취향: 쉼·감각',
+  P:'함께일 때 충전', A:'혼자일 때 충전',
+};
+
+const panel = document.getElementById('panel');
+let step = -1;
+const answers = [];
+
+function intro() {
+  panel.innerHTML = `
+    <span class="qnum">UNPLUG TYPE TEST</span>
+    <h1>나는 어떤 <em>언플러그 타입</em>일까?</h1>
+    <p class="lead">8문항 · 1분. 디지털 습관과 오프라인 취향으로<br>16가지 타입 중 나를 찾아보세요.</p>
+    <button class="btn btn-primary" onclick="next()">시작하기</button>`;
+}
+
+function next() {
+  step++;
+  if (step >= QUESTIONS.length) return result();
+  const q = QUESTIONS[step];
+  panel.innerHTML = `
+    <div class="progress"><i style="width:${(step) / QUESTIONS.length * 100}%"></i></div>
+    <span class="qnum">Q${step + 1} / ${QUESTIONS.length}</span>
+    <h1>${q.q}</h1>
+    <div class="opts">
+      <button class="opt" onclick="pick(0)">${q.a[0]}</button>
+      <button class="opt" onclick="pick(1)">${q.a[1]}</button>
+    </div>`;
+  requestAnimationFrame(() => panel.querySelector('.progress i').style.width = (step / QUESTIONS.length * 100) + '%');
+}
+
+function pick(i) { answers.push(QUESTIONS[step].k[i]); next(); }
+
+function result() {
+  const tally = {};
+  answers.forEach(k => tally[k] = (tally[k] || 0) + 1);
+  const code =
+    ((tally.S||0) >= (tally.T||0) ? 'S':'T') +
+    ((tally.F||0) >= (tally.C||0) ? 'F':'C') +
+    ((tally.M||0) >= (tally.R||0) ? 'M':'R') +
+    ((tally.P||0) >= (tally.A||0) ? 'P':'A');
+  const t = TYPES[code];
+  const total = t.deleg.reduce((s, d) => s + d[1], 0);
+  const reclaimed = Math.round(total * 0.8 * 10) / 10;
+
+  panel.innerHTML = `
+    <div class="progress"><i style="width:100%"></i></div>
+    <span class="type-code">${code}</span>
+    <h1>당신은 <em>${t.name}</em></h1>
+    <div class="axes">${code.split('').map(c => `<span class="ax"><b>${c}</b> ${AXIS_DESC[c]}</span>`).join('')}</div>
+    <div class="result-card">
+      <p>${t.desc}</p>
+      <div class="peer">🌱 <b>${t.name}</b> 타입은 아래의 디지털 시간을 맡기고, 주당 약
+        <b>${reclaimed}시간</b>을 <b>${t.off}</b> 같은 시간으로 바꿨습니다.</div>
+      <h2 style="margin-top:20px;">이 타입이 가장 많이 맡기는 일 (주당)</h2>
+      <div class="chart-wrap"><canvas id="typeChart"></canvas></div>
+      <div class="sub">베타 수집 전 예상 시나리오 · 실측 데이터로 교체됩니다</div>
+    </div>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="index.html#s7">이 일부터 맡겨보기</a>
+      <button class="btn btn-ghost" onclick="location.reload()">다시 테스트</button>
+    </div>`;
+
+  Chart.defaults.font.family = '"Apple SD Gothic Neo","Noto Sans KR",Pretendard,sans-serif';
+  Chart.defaults.color = '#6b675e';
+  new Chart(document.getElementById('typeChart'), {
+    type: 'bar',
+    plugins: [{
+      id: 'endLabels',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        ctx.save();
+        ctx.font = '700 12px "Apple SD Gothic Neo","Noto Sans KR",sans-serif';
+        ctx.fillStyle = '#2b2a26'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        chart.getDatasetMeta(0).data.forEach((bar, i) =>
+          ctx.fillText(chart.data.datasets[0].data[i] + 'h', bar.x + 6, bar.y));
+        ctx.restore();
+      }
+    }],
+    data: {
+      labels: t.deleg.map(d => d[0]),
+      datasets: [{ data: t.deleg.map(d => d[1]), backgroundColor: '#1c7544',
+        borderRadius: { topRight: 4, bottomRight: 4 }, borderSkipped: 'start', barThickness: 22 }]
+    },
+    options: {
+      indexAxis: 'y', maintainAspectRatio: false,
+      layout: { padding: { right: 38 } },
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: c => ` 주당 ${c.parsed.x}시간` } } },
+      scales: {
+        x: { grid: { color: '#eee7d8' }, border: { display: false }, title: { display: true, text: '주당 시간' } },
+        y: { grid: { display: false }, border: { display: false }, ticks: { color: '#2b2a26', font: { weight: 600 } } }
+      }
+    }
+  });
+}
+
+intro();
+</script>
+</body>
+</html>
