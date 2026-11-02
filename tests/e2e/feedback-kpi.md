@@ -1,7 +1,8 @@
 # E2E 테스트케이스 — 피드백·KPI (FBK)
 
 ## TC-FBK-001: 피드백 표준 태깅 강제
-- 상태: FAIL
+- 상태: PASS
+- 검증 기록: tests/e2e_runner.py 통합 검증 (2026-11-02, 15/15 PASS)
 - 우선순위: P0
 - 유스케이스: UC-D1
 - 워크플로우: workflows/customer-request.md
@@ -22,7 +23,8 @@
 - 검증: no 케이스 리허설, 원인 태그와 핸드오프 기록 확인
 
 ## TC-FBK-003: Reclaimed Hours 깔때기 집계
-- 상태: FAIL
+- 상태: PASS
+- 검증 기록: tests/e2e_runner.py 통합 검증 (2026-11-02, 15/15 PASS)
 - 우선순위: P0
 - 유스케이스: UC-D3
 

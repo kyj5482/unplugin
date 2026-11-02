@@ -2,3 +2,12 @@
 node_modules/
 *.log
 .env
+__pycache__/
+# 런타임 데이터 (고객 데이터 — 커밋 금지. 샘플은 data/customers/demo/만 허용)
+data/inbox/*
+data/outbox/*
+data/quarantine/*
+data/queue/
+data/customers/*
+!data/customers/demo/
+data/dashboard.html

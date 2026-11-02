@@ -1,0 +1,13 @@
+{
+  "id": "demo",
+  "name": "지수",
+  "address": "jisoo.k7x2@unplugin.me",
+  "aliases": ["jisoo.school@unplugin.me"],
+  "contact": "jisoo@example.com",
+  "type": "SFRA",
+  "tier": "one",
+  "approval_limit": 30000,
+  "deny_list": ["뉴스레터 읽기"],
+  "trusted_senders": ["noreply@school.example", "billing@telecom.example"],
+  "onboarded": true
+}

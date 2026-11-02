@@ -1,0 +1,15 @@
+{
+  "rules": [
+    {
+      "when": { "from": "noreply@school.example", "subject_contains": "가정통신문" },
+      "then": "요약해서 매주 금요일 한 번에 보내줘",
+      "batch": "weekly"
+    },
+    {
+      "when": { "from": "billing@telecom.example", "subject_contains": "요금" },
+      "then": "지난달보다 10% 이상 오르면 알려주고, 아니면 보관만 해줘",
+      "batch": "none",
+      "condition": { "field": "amount_increase_pct", "op": ">=", "value": 10 }
+    }
+  ]
+}

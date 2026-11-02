@@ -12,7 +12,8 @@
 - 검증: 지시 리허설 후 반환 형식 4요소 확인
 
 ## TC-OPS-002: Unified Flow View 완전성
-- 상태: FAIL
+- 상태: PASS
+- 검증 기록: tests/e2e_runner.py 통합 검증 (2026-11-02, 15/15 PASS)
 - 우선순위: P0
 - 유스케이스: UC-F2
 
@@ -22,7 +23,8 @@
 - 검증: 완료된 Flow를 제3자 관점으로 읽고 재구성 가능한지 점검
 
 ## TC-OPS-003: 슬롯 초과 시 큐 대기·안내
-- 상태: FAIL
+- 상태: PASS
+- 검증 기록: core/selftest_queue.py (23/23 PASS)
 - 우선순위: P1
 - 유스케이스: UC-F3
 - 워크플로우: ops/pricing.md
@@ -33,7 +35,8 @@
 - 검증: 파일 기반 큐(IT 로드맵 4단계)에서 2건 투입 리허설
 
 ## TC-OPS-004: 큐 순서·티어별 슬롯 보장
-- 상태: FAIL
+- 상태: PASS
+- 검증 기록: core/selftest_queue.py
 - 우선순위: P1
 - 유스케이스: UC-F4
 
@@ -54,7 +57,8 @@
 - 벤치마크: 심부름 앱 분쟁의 핵심 예방책 = 시점별 환불 비율 사전 고지 (ops/benchmarking.md)
 
 ## TC-OPS-006: 사용량 한도 사전 통지
-- 상태: FAIL
+- 상태: PASS
+- 검증 기록: core/selftest_queue.py (80% 사전 통지) + ops/pricing.md 차감 기준 명문화
 - 우선순위: P2
 - 유스케이스: UC-F6
 
@@ -64,7 +68,8 @@
 - 검증: 사용량 샘플 데이터로 리허설
 
 ## TC-OPS-007: 장기 대기 타임아웃
-- 상태: FAIL
+- 상태: PASS
+- 검증 기록: core/selftest_queue.py
 - 우선순위: P1
 - 유스케이스: UC-F7
 - 벤치마크: 해주세요 — 입찰 미성립 장기 대기가 이탈 원인 (ops/benchmarking.md)

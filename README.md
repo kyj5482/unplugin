@@ -37,6 +37,21 @@ unplugin/
 └── docs/                  # 회사 홈페이지 (GitHub Pages)
 ```
 
+## 운영 코어 v0 (`core/`)
+
+실제로 돌아가는 서비스 코어 — stdlib-only Python, 맥북에서 바로 실행:
+
+```bash
+python3 -m core onboard tests/fixtures/onboard-demo.json  # 온보딩 + 전용 주소 발급 + 환영 메일
+python3 -m core mail-poll    # data/inbox/ 수신 처리 (포워딩 위임·규칙·격리)
+python3 -m core queue-run    # 티어 슬롯 큐 + 결제 승인 게이트
+python3 -m core dashboard    # 대표용 Unified View (data/dashboard.html)
+python3 tests/e2e_runner.py  # 전 구간 통합 검증
+```
+
+**고객은 메일함으로 전체 흐름을 본다**: 모든 Flow 전환(접수→진행→확인→완료)마다 같은
+스레드로 상태 메일 + 타임라인이 발송된다(`data/outbox/`에서 확인).
+
 ## 시작하기 (대표용)
 
 맥북에서 Claude Code로 이 저장소를 열고:

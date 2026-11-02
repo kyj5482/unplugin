@@ -1,0 +1,12 @@
+{
+  "name": "지수",
+  "roman": "jisoo",
+  "contact": "jisoo@example.com",
+  "type": "SFRA",
+  "tier": "one",
+  "approval_limit": 30000,
+  "deny_list": ["뉴스레터 읽기"],
+  "first_delegation": "장보기 주문",
+  "time_value": 20000,
+  "trusted_senders": ["noreply@school.example"]
+}
