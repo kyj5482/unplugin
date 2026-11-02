@@ -5,358 +5,588 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unplugin — 디지털 시간을 삶의 시간으로</title>
 <meta name="description" content="AI 에이전트가 당신의 디지털 일을 대신하고, 되찾은 시간을 오프라인의 진짜 경험으로 바꿔주는 컨시어지 서비스.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
   :root {
-    --paper: #faf6ef;
-    --ink: #2b2a26;
-    --ink-soft: #6b675e;
-    --moss: #3f5a44;
-    --moss-deep: #2e4332;
-    --clay: #c47a4e;
-    --chart-green: #1c7544;  /* 접근성 검증 통과 차트 색 */
-    --chart-clay: #c97840;
-    --line: #e4dccd;
-    --card: #ffffff;
+    --bg0: #FBF8F3;
+    --bg1: #F3EDE1;
+    --dark0: #0C1711;
+    --dark1: #13241A;
+    --ink: #17211A;
+    --ink2: #525D54;
+    --ink3: #8B958D;
+    --w-ink: #F2EFE7;
+    --w-ink2: #ADB8AF;
+    --w-ink3: #7B867D;
+    --green: #2F6B4A;
+    --green-deep: #1E4733;
+    --green-soft: #7FC79B;
+    --amber: #D89A5B;
+    --amber-deep: #C97840;
+    --chart-green: #1C7544;
+    --chart-clay: #C97840;
+    --hair: rgba(23,33,26,.1);
+    --hair-d: rgba(242,239,231,.12);
+    --shadow: 0 1px 2px rgba(23,33,26,.05), 0 12px 32px rgba(23,33,26,.09);
+    --ease: cubic-bezier(.22,.61,.36,1);
+    --serif: "Noto Serif KR", serif;
   }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
   body {
-    font-family: "Apple SD Gothic Neo", "Noto Sans KR", Pretendard, -apple-system, sans-serif;
-    background: var(--paper); color: var(--ink); line-height: 1.7;
-    -webkit-font-smoothing: antialiased;
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", sans-serif;
+    background: var(--bg0); color: var(--ink);
+    line-height: 1.68; -webkit-font-smoothing: antialiased;
+    font-feature-settings: "ss05";
   }
+  ::selection { background: rgba(216,154,91,.35); }
 
-  /* ───── 슬라이드 스크롤 ───── */
-  main {
-    height: 100svh; overflow-y: scroll;
-    scroll-snap-type: y mandatory; scroll-behavior: smooth;
+  /* ───────── 스크롤 컨테이너 ───────── */
+  main { height:100svh; overflow-y:auto; scroll-snap-type:y mandatory; scroll-behavior:smooth; }
+  section {
+    min-height:100svh; scroll-snap-align:start; scroll-snap-stop:always;
+    position:relative; overflow:hidden;
+    display:flex; align-items:center;
+    padding: 96px 6vw 72px;
   }
-  .slide {
-    min-height: 100svh; scroll-snap-align: start; scroll-snap-stop: always;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    padding: 72px 24px 48px; position: relative; overflow: hidden;
+  .wrap { width:100%; max-width:1080px; margin:0 auto; position:relative; z-index:2; }
+  section[data-theme="dark"] { background: linear-gradient(180deg, var(--dark0), var(--dark1)); color: var(--w-ink); }
+  section[data-theme="cream"] { background: var(--bg1); }
+
+  /* 입자감 (grain) */
+  .grain { position:absolute; inset:0; z-index:1; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  /* ───────── 헤더 ───────── */
+  header {
+    position:fixed; top:0; left:0; right:0; z-index:40;
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 0 clamp(20px, 4vw, 44px); height:68px;
+    transition: background .4s var(--ease), box-shadow .4s;
   }
-  .slide-inner { max-width: 880px; width: 100%; text-align: center; }
-
-  /* 상단 로고 */
-  .top {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 20;
-    padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
-    background: linear-gradient(rgba(250,246,239,.9), rgba(250,246,239,0));
-    pointer-events: none;
+  header .logo { font-weight:800; font-size:1.18rem; letter-spacing:-.02em; text-decoration:none; color:var(--ink); transition: color .4s; }
+  header .logo i { font-style:normal; color: var(--amber-deep); }
+  header .nav-cta {
+    font-size:.86rem; font-weight:700; text-decoration:none;
+    padding:9px 20px; border-radius:999px; transition: all .3s var(--ease);
+    color:var(--ink); border:1px solid var(--hair); background:rgba(255,255,255,.6);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   }
-  .logo { font-weight: 800; font-size: 1.2rem; color: var(--moss-deep); text-decoration: none; pointer-events: auto; }
-  .logo span { color: var(--clay); }
-  .top a.start { pointer-events: auto; font-size: .88rem; font-weight: 700; color: var(--moss-deep); text-decoration: none; border: 1.5px solid var(--moss); border-radius: 999px; padding: 6px 16px; background: var(--card); }
+  header .nav-cta:hover { transform:translateY(-1px); box-shadow:var(--shadow); }
+  header.on-dark .logo { color: var(--w-ink); }
+  header.on-dark .nav-cta { color: var(--w-ink); border-color: var(--hair-d); background: rgba(255,255,255,.07); }
 
-  /* 우측 도트 내비 */
-  .dots { position: fixed; right: 16px; top: 50%; transform: translateY(-50%); z-index: 20; display: flex; flex-direction: column; gap: 10px; }
-  .dots a { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: block; transition: background .2s, transform .2s; }
-  .dots a.on { background: var(--moss); transform: scale(1.35); }
+  /* 상단 진행 바 */
+  .progressbar { position:fixed; top:0; left:0; height:2px; width:0%;
+    background: linear-gradient(90deg, var(--green), var(--amber-deep)); z-index:50; }
 
-  /* 스크롤 유도 */
-  .scroll-cue { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); color: var(--ink-soft); font-size: .8rem; animation: bob 2s ease-in-out infinite; }
-  @keyframes bob { 0%,100% { transform: translate(-50%,0); } 50% { transform: translate(-50%,7px); } }
+  /* 우측 내비 */
+  .rail { position:fixed; right:clamp(14px,2.4vw,30px); top:50%; transform:translateY(-50%); z-index:40;
+    display:flex; flex-direction:column; gap:10px; }
+  .rail a { width:4px; height:16px; border-radius:999px; background:rgba(23,33,26,.18);
+    transition: all .35s var(--ease); }
+  .rail a.on { height:30px; background: var(--amber-deep); }
+  .rail.on-dark a { background: rgba(242,239,231,.22); }
+  .rail.on-dark a.on { background: var(--amber); }
 
-  /* 공통 타이포 */
-  .eyebrow { display: inline-block; font-size: .82rem; font-weight: 700; color: var(--clay); letter-spacing: .1em; margin-bottom: 14px; }
-  h1 { font-size: clamp(1.9rem, 5.2vw, 3rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.32; color: var(--moss-deep); }
-  h1 em, h2 em { font-style: normal; color: var(--clay); }
-  h2 { font-size: clamp(1.45rem, 3.6vw, 2.1rem); font-weight: 800; letter-spacing: -.02em; color: var(--moss-deep); line-height: 1.4; }
-  .lead { margin: 18px auto 0; max-width: 600px; font-size: 1.04rem; color: var(--ink-soft); }
-  .src { margin-top: 10px; font-size: .78rem; color: var(--ink-soft); }
+  /* ───────── 타이포 ───────── */
+  .eyebrow {
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:.78rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+    color: var(--amber-deep); margin-bottom:20px;
+  }
+  .eyebrow::before { content:""; width:22px; height:1px; background: var(--amber-deep); }
+  [data-theme="dark"] .eyebrow { color: var(--amber); }
+  [data-theme="dark"] .eyebrow::before { background: var(--amber); }
 
-  .btn { display: inline-block; padding: 14px 30px; border-radius: 12px; font-weight: 700; font-size: 1rem; text-decoration: none; transition: transform .12s; }
-  .btn:hover { transform: translateY(-2px); }
-  .btn-primary { background: var(--moss); color: #fff; box-shadow: 0 8px 22px rgba(63,90,68,.28); }
-  .btn-ghost { border: 1.5px solid var(--line); color: var(--ink); background: var(--card); }
+  h1 { font-size:clamp(2.5rem, 5.6vw, 4.1rem); font-weight:800; letter-spacing:-.045em; line-height:1.22; }
+  h2 { font-size:clamp(1.8rem, 3.6vw, 2.6rem); font-weight:800; letter-spacing:-.035em; line-height:1.3; }
+  .serif { font-family: var(--serif); font-weight:700; letter-spacing:-.02em; }
+  h1 .serif, h2 .serif { color: var(--amber-deep); }
+  [data-theme="dark"] h1 .serif, [data-theme="dark"] h2 .serif { color: var(--amber); }
+  .lead { margin-top:20px; font-size:clamp(1rem, 1.5vw, 1.12rem); color:var(--ink2); max-width:560px; }
+  [data-theme="dark"] .lead { color: var(--w-ink2); }
+  .fineprint { font-size:.78rem; color:var(--ink3); margin-top:14px; }
+  [data-theme="dark"] .fineprint { color: var(--w-ink3); }
 
-  /* 스크롤 진입 리빌 */
-  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s ease; }
-  .reveal.in { opacity: 1; transform: none; }
-  .reveal.d1 { transition-delay: .12s; } .reveal.d2 { transition-delay: .24s; } .reveal.d3 { transition-delay: .36s; }
+  /* ───────── 버튼 ───────── */
+  .btn { display:inline-flex; align-items:center; gap:10px; padding:15px 30px; border-radius:14px;
+    font-weight:700; font-size:.98rem; text-decoration:none; border:none; cursor:pointer;
+    transition: transform .25s var(--ease), box-shadow .25s, background .25s; font-family:inherit; }
+  .btn:hover { transform:translateY(-2px); }
+  .btn:active { transform:translateY(0); }
+  .btn .arr { transition: transform .25s var(--ease); }
+  .btn:hover .arr { transform: translateX(3px); }
+  .btn-accent { background:linear-gradient(135deg,#E5AC6C,#C97840); color:#231306;
+    box-shadow: 0 10px 28px rgba(201,120,64,.32), inset 0 1px 0 rgba(255,255,255,.35); }
+  .btn-accent:hover { box-shadow: 0 14px 34px rgba(201,120,64,.42), inset 0 1px 0 rgba(255,255,255,.35); }
+  .btn-dark { background: var(--green-deep); color: var(--w-ink); box-shadow: 0 10px 26px rgba(30,71,51,.28); }
+  .btn-dark:hover { background: var(--green); }
+  .btn-glass { background:rgba(255,255,255,.07); color:var(--w-ink); border:1px solid var(--hair-d);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
 
-  /* ───── 모션그래픽 (히어로) ───── */
-  .motion { width: min(540px, 86vw); height: 220px; margin: 0 auto 26px; position: relative; }
-  .motion svg { width: 100%; height: 100%; overflow: visible; }
+  /* ───────── 리빌 ───────── */
+  .rv { opacity:0; transform:translateY(28px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+  .in .rv { opacity:1; transform:none; }
+  .in .rv.d1 { transition-delay:.1s; } .in .rv.d2 { transition-delay:.2s; }
+  .in .rv.d3 { transition-delay:.3s; } .in .rv.d4 { transition-delay:.4s; }
+
+  /* ───────── S1 히어로 ───────── */
+  #s1 { text-align:center; }
+  .aurora { position:absolute; border-radius:50%; filter:blur(90px); pointer-events:none; z-index:0; }
+  .au1 { width:620px; height:620px; left:-180px; top:-220px;
+    background:radial-gradient(circle, rgba(47,107,74,.5), transparent 65%);
+    animation: drift1 16s ease-in-out infinite alternate; }
+  .au2 { width:560px; height:560px; right:-160px; bottom:-200px;
+    background:radial-gradient(circle, rgba(201,120,64,.34), transparent 65%);
+    animation: drift2 19s ease-in-out infinite alternate; }
+  .horizon { position:absolute; left:0; right:0; bottom:-26svh; height:52svh; z-index:0; pointer-events:none;
+    background:radial-gradient(ellipse 85% 100% at 50% 100%, rgba(216,154,91,.16), transparent 62%); }
+  @keyframes drift1 { from { transform:translate(0,0) scale(1); } to { transform:translate(70px,50px) scale(1.12); } }
+  @keyframes drift2 { from { transform:translate(0,0) scale(1.08); } to { transform:translate(-60px,-40px) scale(1); } }
+
+  .hero-pill { display:inline-flex; align-items:center; gap:8px; font-size:.82rem; font-weight:600;
+    color:var(--w-ink2); border:1px solid var(--hair-d); background:rgba(255,255,255,.05);
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+    border-radius:999px; padding:7px 18px; margin-bottom:28px; }
+  .hero-pill b { color: var(--amber); font-weight:700; }
+  #s1 h1 { color: var(--w-ink); }
+  #s1 .lead { margin-left:auto; margin-right:auto; }
+  .hero-cta { margin-top:38px; display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+
+  /* 제품 UI 목업 카드 (플로팅) */
+  .proof { margin:54px auto 0; display:flex; justify-content:center; gap:18px; flex-wrap:wrap; perspective:900px; }
+  .pcard {
+    width:258px; text-align:left; border-radius:18px; padding:18px 18px 16px;
+    background: linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.045));
+    border:1px solid var(--hair-d);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 24px 48px rgba(0,0,0,.35);
+    animation: floaty 7s var(--ease) infinite alternate;
+  }
+  .pcard:nth-child(1) { transform:rotate(-2deg); }
+  .pcard:nth-child(2) { animation-delay:1.1s; transform:translateY(-8px); }
+  .pcard:nth-child(3) { animation-delay:2.2s; transform:rotate(2deg); }
+  @keyframes floaty { from { translate:0 0; } to { translate:0 -10px; } }
+  .pcard .ph { display:flex; align-items:center; gap:9px; margin-bottom:10px; }
+  .pcard .dot { width:26px; height:26px; border-radius:50%; flex:none;
+    background:radial-gradient(circle at 32% 30%, #5CA87C, #1E4733);
+    box-shadow:0 0 14px rgba(92,168,124,.45); }
+  .pcard .who { font-size:.72rem; font-weight:700; color:var(--w-ink2); letter-spacing:.04em; }
+  .pcard .msg { font-size:.9rem; font-weight:600; color:var(--w-ink); line-height:1.5; }
+  .pcard .meta { margin-top:10px; font-size:.75rem; color:var(--w-ink3); }
+  .pcard .tag { display:inline-block; margin-top:12px; font-size:.72rem; font-weight:700;
+    padding:4px 11px; border-radius:999px; }
+  .tag.run { color:#F3CFA6; background:rgba(216,154,91,.16); border:1px solid rgba(216,154,91,.3); }
+  .tag.done { color:#A9DDBE; background:rgba(92,168,124,.14); border:1px solid rgba(92,168,124,.3); }
+  .tag.time { color:#F2EFE7; background:rgba(255,255,255,.08); border:1px solid var(--hair-d); }
+
+  .scroll-hint { position:absolute; bottom:22px; left:50%; transform:translateX(-50%); z-index:2;
+    font-size:.74rem; letter-spacing:.14em; color:var(--w-ink3); display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .scroll-hint::after { content:""; width:1px; height:30px;
+    background:linear-gradient(var(--w-ink3), transparent); animation: sink 2s var(--ease) infinite; }
+  @keyframes sink { 0% { transform:scaleY(.2); transform-origin:top; opacity:0; }
+    40% { transform:scaleY(1); opacity:1; } 100% { transform:scaleY(1); transform-origin:top; opacity:0; } }
+
+  /* ───────── 2단 레이아웃 ───────── */
+  .cols { display:grid; grid-template-columns: 1fr 1fr; gap:clamp(32px,5vw,72px); align-items:center; }
+  .stat { margin-top:30px; display:flex; align-items:baseline; gap:12px; }
+  .stat .num { font-family:var(--serif); font-size:clamp(3rem,6vw,4.4rem); font-weight:700;
+    color:var(--green-deep); letter-spacing:-.03em; line-height:1; }
+  .stat .unit { font-size:1rem; font-weight:600; color:var(--ink2); }
+
+  .panel { background:#fff; border:1px solid var(--hair); border-radius:22px; padding:26px 24px 18px;
+    box-shadow: var(--shadow); }
+  .panel .pt { font-size:.92rem; font-weight:700; }
+  .panel .ps { font-size:.78rem; color:var(--ink3); margin:2px 0 12px; }
+  .chart-wrap { position:relative; height:min(320px,36svh); }
+
+  /* ───────── S3 스텝 ───────── */
+  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:46px; }
+  .stepc { position:relative; background:#fff; border:1px solid var(--hair); border-radius:22px;
+    padding:30px 26px 26px; text-align:left; box-shadow:var(--shadow);
+    transition: transform .35s var(--ease), box-shadow .35s; overflow:hidden; }
+  .stepc:hover { transform:translateY(-6px); box-shadow:0 2px 3px rgba(23,33,26,.05), 0 22px 44px rgba(23,33,26,.13); }
+  .stepc .gnum { position:absolute; top:10px; right:18px; font-family:var(--serif); font-size:4.4rem; line-height:1;
+    color:transparent; -webkit-text-stroke:1px rgba(23,33,26,.13); }
+  .stepc h3 { font-size:1.12rem; font-weight:800; letter-spacing:-.02em; margin:14px 0 8px; }
+  .stepc p { font-size:.9rem; color:var(--ink2); }
+  .stepc .k { font-size:.74rem; font-weight:700; letter-spacing:.14em; color:var(--amber-deep); }
+
+  /* ───────── S4 타입 (다크) ───────── */
+  .typegrid { display:flex; flex-wrap:wrap; gap:9px; margin-top:30px; max-width:560px; }
+  .tpill { font-size:.82rem; font-weight:600; color:var(--w-ink2);
+    border:1px solid var(--hair-d); background:rgba(255,255,255,.05); border-radius:999px; padding:7px 15px; }
+  .tpill b { color:var(--amber); font-weight:800; letter-spacing:.08em; margin-right:7px; font-size:.74rem; }
+  .tcard {
+    border-radius:24px; padding:28px 26px;
+    background:linear-gradient(165deg, rgba(255,255,255,.1), rgba(255,255,255,.04));
+    border:1px solid var(--hair-d); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    box-shadow:0 30px 60px rgba(0,0,0,.4); text-align:left;
+  }
+  .tcard .code { font-size:.74rem; font-weight:800; letter-spacing:.3em; color:var(--amber); }
+  .tcard h3 { font-family:var(--serif); font-size:1.7rem; color:var(--w-ink); margin:6px 0 4px; }
+  .tcard .td { font-size:.88rem; color:var(--w-ink2); }
+  .mbar { margin-top:18px; }
+  .mbar .row { display:flex; justify-content:space-between; font-size:.78rem; color:var(--w-ink2); margin:12px 0 6px; }
+  .mbar .row b { color:var(--w-ink); font-weight:700; }
+  .mbar .track { height:7px; border-radius:999px; background:rgba(255,255,255,.09); overflow:hidden; }
+  .mbar .fill { height:100%; border-radius:999px; width:0;
+    background:linear-gradient(90deg,#5CA87C,#D89A5B); transition: width 1.2s var(--ease) .35s; }
+  .in .mbar .fill { width:var(--w); }
+  .tfoot { margin-top:18px; padding-top:16px; border-top:1px solid var(--hair-d); font-size:.82rem; color:var(--w-ink2); }
+  .tfoot b { color:var(--amber); }
+
+  /* ───────── S6 이메일 ───────── */
+  .mailcard { background:#fff; border:1px solid var(--hair); border-radius:22px; box-shadow:var(--shadow);
+    text-align:left; overflow:hidden; }
+  .mailcard .mhead { padding:16px 22px; border-bottom:1px solid var(--hair); display:flex; gap:7px; }
+  .mailcard .mhead i { width:10px; height:10px; border-radius:50%; background:var(--bg1); border:1px solid var(--hair); }
+  .mrow { padding:18px 22px; display:flex; gap:13px; }
+  .mrow + .mrow { border-top:1px solid var(--hair); }
+  .mrow .av { width:34px; height:34px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center;
+    font-size:.75rem; font-weight:800; color:#fff; }
+  .av.me { background:#8B958D; } .av.ag { background:radial-gradient(circle at 32% 30%, #5CA87C, #1E4733); }
+  .mrow .mb .from { font-size:.78rem; font-weight:700; }
+  .mrow .mb .from span { color:var(--ink3); font-weight:500; }
+  .mrow .mb .txt { font-size:.88rem; color:var(--ink2); margin-top:3px; }
+  .mrow .mb .txt b { color:var(--ink); }
+  .chip { display:inline-flex; align-items:center; gap:6px; margin-top:9px; margin-right:6px;
+    font-size:.74rem; font-weight:700; padding:5px 12px; border-radius:999px;
+    background:rgba(47,107,74,.09); color:var(--green-deep); border:1px solid rgba(47,107,74,.22); }
+  .feat { margin-top:28px; display:flex; flex-direction:column; gap:16px; text-align:left; }
+  .feat .f { display:flex; gap:14px; align-items:flex-start; }
+  .feat .fi { width:38px; height:38px; flex:none; border-radius:12px; background:#fff; border:1px solid var(--hair);
+    box-shadow:var(--shadow); display:flex; align-items:center; justify-content:center; color:var(--green-deep); }
+  .feat h4 { font-size:.95rem; font-weight:800; letter-spacing:-.01em; }
+  .feat p { font-size:.85rem; color:var(--ink2); }
+  .addr { font-family:ui-monospace,SFMono-Regular,monospace; background:rgba(47,107,74,.08); color:var(--green-deep);
+    border-radius:7px; padding:1px 7px; font-size:.86em; }
+
+  /* ───────── S7 요금제 ───────── */
+  .tiers { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:44px; align-items:stretch; }
+  .tier { background:#fff; border:1px solid var(--hair); border-radius:24px; padding:30px 26px; text-align:left;
+    box-shadow:var(--shadow); display:flex; flex-direction:column;
+    transition: transform .35s var(--ease), box-shadow .35s; }
+  .tier:hover { transform:translateY(-6px); }
+  .tier .tn { font-weight:800; font-size:.95rem; letter-spacing:-.01em; }
+  .tier .tp { font-family:var(--serif); font-size:1.9rem; font-weight:700; margin:12px 0 2px; letter-spacing:-.02em; }
+  .tier .tp small { font-family:"Pretendard Variable",sans-serif; font-size:.78rem; font-weight:500; color:var(--ink3); }
+  .tier .td { font-size:.8rem; color:var(--ink2); margin-bottom:14px; }
+  .tier ul { list-style:none; margin-top:auto; }
+  .tier li { font-size:.86rem; color:var(--ink2); padding:5px 0 5px 26px; position:relative; }
+  .tier li::before { content:""; position:absolute; left:0; top:11px; width:15px; height:15px; border-radius:50%;
+    background: rgba(47,107,74,.12) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232F6B4A' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4 10-10'/%3E%3C/svg%3E") center/9px no-repeat; }
+  .tier.hot { background:linear-gradient(170deg,#1E4733,#12301F); border-color:transparent; color:var(--w-ink);
+    box-shadow:0 26px 54px rgba(30,71,51,.38); }
+  .tier.hot .td, .tier.hot li { color:var(--w-ink2); }
+  .tier.hot li::before { background-color:rgba(255,255,255,.12);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D89A5B' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4 10-10'/%3E%3C/svg%3E"); }
+  .tier .hotbadge { align-self:flex-start; font-size:.68rem; font-weight:800; letter-spacing:.1em; color:#2A1708;
+    background:linear-gradient(135deg,#E5AC6C,#D08A4E); padding:4px 12px; border-radius:999px; margin-bottom:14px; }
+
+  /* ───────── S8 CTA ───────── */
+  #s8 { text-align:center; }
+  #s8 h2 { font-size:clamp(2rem,4.6vw,3.3rem); color:var(--w-ink); }
+  #s8 footer { margin-top:72px; font-size:.8rem; color:var(--w-ink3); }
+  #s8 footer a { color:var(--w-ink2); }
+
+  /* ───────── 반응형 ───────── */
+  @media (max-width: 880px) {
+    main { scroll-snap-type: y proximity; }
+    section { padding: 92px 6vw 56px; min-height:auto; }
+    #s1, #s8 { min-height:100svh; }
+    .cols, .steps, .tiers { grid-template-columns:1fr; }
+    .rail { display:none; }
+    .proof { gap:12px; }
+    .pcard:nth-child(3) { display:none; }
+  }
   @media (prefers-reduced-motion: reduce) {
-    .motion * { animation: none !important; }
-    .scroll-cue { animation: none; }
-  }
-  /* 알림 칩: 폰에서 튀어나와 에이전트 오브로 빨려듦 */
-  .chip { animation: chipfly 6s cubic-bezier(.5,0,.6,1) infinite; opacity: 0; }
-  .chip.c2 { animation-delay: 1.2s; } .chip.c3 { animation-delay: 2.4s; }
-  .chip.c4 { animation-delay: 3.6s; } .chip.c5 { animation-delay: 4.8s; }
-  @keyframes chipfly {
-    0%   { transform: translate(0,0) scale(.6); opacity: 0; }
-    10%  { transform: translate(10px,-34px) scale(1); opacity: 1; }
-    45%  { transform: translate(120px,-44px) scale(1); opacity: 1; }
-    58%  { transform: translate(172px,-14px) scale(.25); opacity: 0; }
-    100% { transform: translate(172px,-14px) scale(.2); opacity: 0; }
-  }
-  .orb { transform-origin: 310px 96px; animation: pulse 3s ease-in-out infinite; }
-  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
-  .walker { animation: walk 12s linear infinite; }
-  @keyframes walk { 0% { transform: translateX(0); } 100% { transform: translateX(118px); } }
-  .leg { transform-origin: top center; animation: step .6s ease-in-out infinite alternate; }
-  .leg.l2 { animation-direction: alternate-reverse; }
-  @keyframes step { from { transform: rotate(-16deg); } to { transform: rotate(16deg); } }
-  .sun { transform-origin: 505px 40px; animation: glow 5s ease-in-out infinite; }
-  @keyframes glow { 0%,100% { opacity: .85; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } }
-  .leaf { transform-origin: bottom center; animation: sway 4s ease-in-out infinite; }
-  .leaf.s2 { animation-delay: 1.3s; }
-  @keyframes sway { 0%,100% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } }
-
-  /* ───── 카드·차트 ───── */
-  .chart-box { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 22px 20px 14px; margin: 26px auto 0; max-width: 720px; }
-  .chart-box .title { font-size: .95rem; font-weight: 700; color: var(--ink); text-align: left; }
-  .chart-box .sub { font-size: .8rem; color: var(--ink-soft); text-align: left; margin-bottom: 8px; }
-  .chart-wrap { position: relative; height: min(300px, 38svh); }
-
-  .hero-num { font-size: clamp(2.6rem, 7vw, 4rem); font-weight: 800; color: var(--moss-deep); letter-spacing: -.03em; line-height: 1.15; }
-  .hero-num small { font-size: .45em; color: var(--ink-soft); font-weight: 600; }
-
-  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr)); gap: 16px; margin-top: 32px; }
-  .step { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 24px 20px; text-align: left; }
-  .step .n { font-size: .78rem; font-weight: 800; color: var(--clay); letter-spacing: .1em; }
-  .step h3 { font-size: 1.05rem; margin: 6px 0; }
-  .step p { font-size: .9rem; color: var(--ink-soft); }
-
-  /* 타입 배지 */
-  .type-badges { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 26px 0 8px; }
-  .tb { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 8px 18px; font-size: .9rem; font-weight: 600; }
-  .tb b { color: var(--moss-deep); font-weight: 800; margin-right: 6px; letter-spacing: .04em; }
-
-  /* 이메일 플로우 */
-  .mailflow { display: flex; align-items: stretch; justify-content: center; gap: 0; margin: 30px auto 0; max-width: 760px; flex-wrap: wrap; }
-  .mf { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 18px; width: 215px; text-align: left; }
-  .mf .ic { font-size: 1.5rem; }
-  .mf h3 { font-size: .98rem; margin: 6px 0 4px; }
-  .mf p { font-size: .84rem; color: var(--ink-soft); }
-  .mf-arrow { align-self: center; color: var(--clay); font-size: 1.4rem; font-weight: 800; padding: 0 10px; }
-  .addr { font-family: ui-monospace, monospace; background: #f0ead9; border-radius: 8px; padding: 2px 8px; font-size: .85em; color: var(--moss-deep); }
-
-  /* 요금제 */
-  .tiers { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; margin-top: 30px; }
-  .tier-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 26px 22px; text-align: left; }
-  .tier-card.featured { border: 2px solid var(--moss); position: relative; }
-  .tier-card .badge { position: absolute; top: -12px; left: 22px; background: var(--clay); color: #fff; font-size: .72rem; font-weight: 700; padding: 3px 12px; border-radius: 999px; }
-  .tier-card .tname { font-weight: 800; color: var(--moss-deep); }
-  .tier-card .price { font-size: 1.45rem; font-weight: 800; margin: 8px 0 2px; }
-  .tier-card .price small { font-size: .82rem; font-weight: 500; color: var(--ink-soft); }
-  .tier-card ul { list-style: none; margin-top: 12px; }
-  .tier-card li { font-size: .88rem; color: var(--ink-soft); padding: 4px 0 4px 20px; position: relative; }
-  .tier-card li::before { content: "✓"; position: absolute; left: 0; color: var(--chart-green); font-weight: 700; }
-
-  footer { font-size: .84rem; color: var(--ink-soft); margin-top: 40px; }
-  footer a { color: var(--moss-deep); }
-
-  @media (max-width: 640px) {
-    .dots { display: none; }
-    .mf-arrow { width: 100%; text-align: center; transform: rotate(90deg); padding: 2px; }
-    .mf { width: 100%; }
+    .aurora, .pcard, .scroll-hint::after { animation:none !important; }
+    .rv { transition:none; opacity:1; transform:none; }
+    main { scroll-behavior:auto; }
   }
 </style>
 </head>
 <body data-palette="#1c7544,#c97840">
 
-<div class="top">
-  <a class="logo" href="#s1">un<span>plugin</span></a>
-  <a class="start" href="test.html">내 타입 알아보기</a>
-</div>
+<div class="progressbar" id="pbar"></div>
 
-<nav class="dots" aria-label="슬라이드 이동">
-  <a href="#s1" title="처음"></a><a href="#s2" title="문제"></a><a href="#s3" title="방법"></a>
-  <a href="#s4" title="타입"></a><a href="#s5" title="전환"></a><a href="#s6" title="이메일"></a>
-  <a href="#s7" title="요금제"></a><a href="#s8" title="시작"></a>
+<header id="hdr">
+  <a class="logo" href="#s1">un<i>plugin</i></a>
+  <a class="nav-cta" href="test.html">내 타입 알아보기</a>
+</header>
+
+<nav class="rail" id="rail" aria-label="섹션 이동">
+  <a href="#s1" aria-label="처음"></a><a href="#s2" aria-label="문제"></a>
+  <a href="#s3" aria-label="방법"></a><a href="#s4" aria-label="타입"></a>
+  <a href="#s5" aria-label="데이터"></a><a href="#s6" aria-label="이메일"></a>
+  <a href="#s7" aria-label="요금제"></a><a href="#s8" aria-label="시작"></a>
 </nav>
 
 <main id="main">
 
-  <!-- 1. 히어로 + 모션그래픽 -->
-  <section class="slide" id="s1">
-    <div class="slide-inner">
-      <div class="motion" aria-hidden="true">
-        <svg viewBox="0 0 560 220">
-          <!-- 땅 -->
-          <line x1="20" y1="185" x2="540" y2="185" stroke="#e4dccd" stroke-width="2"/>
-          <!-- 폰 -->
-          <rect x="60" y="80" width="56" height="100" rx="10" fill="#2b2a26"/>
-          <rect x="66" y="90" width="44" height="76" rx="4" fill="#4a4a44"/>
-          <!-- 알림 칩 (폰 → 에이전트로) -->
-          <g class="chip"><rect x="92" y="95" width="46" height="18" rx="9" fill="#c47a4e"/><circle cx="103" cy="104" r="4.5" fill="#fff"/></g>
-          <g class="chip c2"><rect x="92" y="112" width="46" height="18" rx="9" fill="#8a9b8e"/><circle cx="103" cy="121" r="4.5" fill="#fff"/></g>
-          <g class="chip c3"><rect x="92" y="129" width="46" height="18" rx="9" fill="#b3a06a"/><circle cx="103" cy="138" r="4.5" fill="#fff"/></g>
-          <g class="chip c4"><rect x="92" y="95" width="46" height="18" rx="9" fill="#7c8db0"/><circle cx="103" cy="104" r="4.5" fill="#fff"/></g>
-          <g class="chip c5"><rect x="92" y="112" width="46" height="18" rx="9" fill="#a9806e"/><circle cx="103" cy="121" r="4.5" fill="#fff"/></g>
-          <!-- 에이전트 오브 -->
-          <g class="orb">
-            <circle cx="310" cy="96" r="30" fill="#3f5a44"/>
-            <circle cx="310" cy="96" r="30" fill="none" stroke="#c47a4e" stroke-width="2" stroke-dasharray="6 7" opacity=".7"/>
-            <text x="310" y="104" text-anchor="middle" font-size="22" font-weight="800" fill="#faf6ef">U</text>
-          </g>
-          <!-- 해 -->
-          <circle class="sun" cx="505" cy="40" r="17" fill="#c47a4e" opacity=".9"/>
-          <!-- 나무 -->
-          <g class="leaf"><rect x="462" y="140" width="7" height="45" fill="#8a6b4e"/><circle cx="465" cy="128" r="24" fill="#3f5a44"/></g>
-          <g class="leaf s2"><rect x="516" y="152" width="6" height="33" fill="#8a6b4e"/><circle cx="519" cy="142" r="18" fill="#54705a"/></g>
-          <!-- 걸어가는 사람 (오브 → 나무 쪽으로) -->
-          <g class="walker">
-            <g transform="translate(360,0)">
-              <circle cx="20" cy="128" r="9" fill="#2b2a26"/>
-              <line x1="20" y1="137" x2="20" y2="162" stroke="#2b2a26" stroke-width="5" stroke-linecap="round"/>
-              <g transform="translate(20,162)"><line class="leg" x1="0" y1="0" x2="0" y2="21" stroke="#2b2a26" stroke-width="5" stroke-linecap="round"/></g>
-              <g transform="translate(20,162)"><line class="leg l2" x1="0" y1="0" x2="0" y2="21" stroke="#2b2a26" stroke-width="5" stroke-linecap="round"/></g>
-            </g>
-          </g>
-        </svg>
+  <!-- 1 ── 히어로 -->
+  <section id="s1" data-theme="dark">
+    <div class="aurora au1"></div><div class="aurora au2"></div><div class="horizon"></div><div class="grain"></div>
+    <div class="wrap">
+      <div class="hero-pill rv">당신의 AI 컨시어지 — <b>지금 베타</b></div>
+      <h1 class="rv d1">디지털에 쓰던 시간을,<br><span class="serif">삶의 시간</span>으로</h1>
+      <p class="lead rv d2">주문·예약·비교·정리 — 반복되는 화면 속 일은 에이전트에게 맡기세요.<br>당신은 화면 밖에서 만들고, 걷고, 맛보고, 느끼면 됩니다.</p>
+      <div class="hero-cta rv d3">
+        <a class="btn btn-accent" href="test.html">1분 만에 내 타입 알아보기 <span class="arr">→</span></a>
+        <a class="btn btn-glass" href="#s2">어떻게 되찾나요?</a>
       </div>
-      <h1>디지털에 쓰던 시간을,<br><em>삶의 시간</em>으로 되돌립니다</h1>
-      <p class="lead">반복되는 디지털 일은 AI 에이전트에게. 당신은 화면 밖에서 만들고, 걷고, 맛보고, 느끼세요.</p>
-      <div style="margin-top:34px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-        <a class="btn btn-primary" href="test.html">1분 만에 내 타입 알아보기</a>
+      <div class="proof rv d4" aria-hidden="true">
+        <div class="pcard">
+          <div class="ph"><span class="av me" style="width:26px;height:26px;border-radius:50%;background:#8B958D;flex:none;"></span><span class="who">나 → 에이전트</span></div>
+          <div class="msg">"이번 달 통신 요금, 왜 올랐는지 확인하고 이의신청까지 해줘"</div>
+          <span class="tag run">처리 중 · 승인 한도 내</span>
+        </div>
+        <div class="pcard">
+          <div class="ph"><span class="dot"></span><span class="who">UNPLUGIN 에이전트</span></div>
+          <div class="msg">이의신청 접수 완료 — 34,000원 환급 예정이에요.</div>
+          <div class="meta">증빙 스크린샷 2장 첨부 · 3분 전</div>
+          <span class="tag done">✓ 완료 · 검증됨</span>
+        </div>
+        <div class="pcard">
+          <div class="ph"><span class="dot"></span><span class="who">이번 주 되찾은 시간</span></div>
+          <div class="msg">+2시간 10분 — 토요일 오후가 비었어요.</div>
+          <div class="meta">추천: 해 질 무렵 한강 노을 산책 🌇</div>
+          <span class="tag time">삶의 시간으로</span>
+        </div>
       </div>
     </div>
-    <div class="scroll-cue">아래로 스크롤 ↓</div>
+    <div class="scroll-hint">SCROLL</div>
   </section>
 
-  <!-- 2. 문제: 숫자로 -->
-  <section class="slide" id="s2">
-    <div class="slide-inner">
-      <span class="eyebrow reveal">PROBLEM</span>
-      <h2 class="reveal">매주 <em>9시간</em>이 화면 속으로 사라집니다</h2>
-      <p class="lead reveal d1">보고 싶어서 보는 시간이 아닙니다. 주문하고, 비교하고, 예약하고, 정리하느라 새는 시간입니다.</p>
-      <div class="chart-box reveal d2">
-        <div class="title">매주 화면에 새는 "잡무 시간"</div>
-        <div class="sub">주당 시간 기준 · Unplugin 베타 설계 추정치</div>
-        <div class="chart-wrap"><canvas id="chartChores" role="img" aria-label="주당 잡무 시간 막대 차트: 비교·검색 3.2시간, 장보기·주문 2.5시간, 메일·서류 정리 2.1시간, 예약·신청 1.4시간"></canvas></div>
+  <!-- 2 ── 문제 -->
+  <section id="s2">
+    <div class="wrap cols">
+      <div>
+        <div class="eyebrow rv">The Problem</div>
+        <h2 class="rv d1">보고 싶어서 본 시간이<br>아니었습니다</h2>
+        <p class="lead rv d2">주문하고, 비교하고, 예약하고, 정리하느라 — 매주 당신의 시간이 화면 속으로 새어 나갑니다.</p>
+        <div class="stat rv d3"><span class="num">9.2</span><span class="unit">시간 / 매주 새는 잡무 시간</span></div>
+        <p class="fineprint rv d3">Unplugin 베타 설계 추정치 · 실측 데이터로 교체 예정</p>
+      </div>
+      <div class="panel rv d2">
+        <div class="pt">매주 화면에 새는 "잡무 시간"</div>
+        <div class="ps">주당 시간</div>
+        <div class="chart-wrap"><canvas id="chartChores" role="img" aria-label="주당 잡무 시간: 비교·검색 3.2시간, 장보기·주문 2.5시간, 메일·서류 정리 2.1시간, 예약·신청 1.4시간"></canvas></div>
       </div>
     </div>
   </section>
 
-  <!-- 3. 작동 방식 -->
-  <section class="slide" id="s3">
-    <div class="slide-inner">
-      <span class="eyebrow reveal">HOW IT WORKS</span>
-      <h2 class="reveal">설문 말고, <em>놀이처럼</em> 시작합니다</h2>
+  <!-- 3 ── 작동 방식 -->
+  <section id="s3" data-theme="cream">
+    <div class="wrap" style="text-align:center;">
+      <div class="eyebrow rv" style="justify-content:center;">How it works</div>
+      <h2 class="rv d1">설문 말고, <span class="serif">놀이처럼</span> 시작합니다</h2>
       <div class="steps">
-        <div class="step reveal d1"><span class="n">STEP 1</span><h3>언플러그 타입 테스트</h3><p>지루한 문진 대신 1분짜리 성향 테스트. 나의 디지털 습관과 오프라인 취향이 16가지 타입 중 하나로 나옵니다.</p></div>
-        <div class="step reveal d2"><span class="n">STEP 2</span><h3>한 가지만 위임</h3><p>내 타입이 가장 많이 맡기는 일부터 딱 하나. AI 에이전트가 브라우저에서 대신 처리하고 증빙과 함께 보고합니다.</p></div>
-        <div class="step reveal d3"><span class="n">STEP 3</span><h3>삶의 시간 추천</h3><p>되찾은 시간에 맞춰, 내 타입이 좋아하는 오프라인 경험 — 공방, 숲길, 시장, 클래스 — 을 골라 건넵니다.</p></div>
+        <div class="stepc rv d1"><span class="gnum">01</span><span class="k">TYPE</span>
+          <h3>언플러그 타입 테스트</h3>
+          <p>지루한 문진 대신 1분짜리 성향 테스트. 나의 디지털 습관과 오프라인 취향이 16가지 타입 중 하나로 나옵니다.</p></div>
+        <div class="stepc rv d2"><span class="gnum">02</span><span class="k">DELEGATE</span>
+          <h3>한 가지만 위임</h3>
+          <p>내 타입이 가장 많이 맡기는 일부터 딱 하나. 에이전트가 대신 처리하고, 증빙과 함께 보고합니다.</p></div>
+        <div class="stepc rv d3"><span class="gnum">03</span><span class="k">RECLAIM</span>
+          <h3>삶의 시간 추천</h3>
+          <p>되찾은 시간에 맞춰 내 타입이 좋아하는 오프라인 경험 — 공방, 숲길, 시장, 클래스 — 를 골라 건넵니다.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- 4. 타입 테스트 티저 -->
-  <section class="slide" id="s4">
-    <div class="slide-inner">
-      <span class="eyebrow reveal">UNPLUG TYPE</span>
-      <h2 class="reveal">나는 어떤 <em>언플러그 타입</em>일까?</h2>
-      <p class="lead reveal d1">시간이 새는 곳 × 맡기는 방식 × 오프라인 취향 × 혼자/함께 — 네 가지 축으로 16가지 타입.</p>
-      <div class="type-badges reveal d2">
-        <span class="tb"><b>SFRA</b>숲길 산책자</span>
-        <span class="tb"><b>TCMP</b>쿠킹 스터디장</span>
-        <span class="tb"><b>SCRA</b>온천 독서가</span>
-        <span class="tb"><b>TFMP</b>플리마켓 사장님</span>
-        <span class="tb"><b>SFMA</b>심야 공방러</span>
+  <!-- 4 ── 타입 (다크) -->
+  <section id="s4" data-theme="dark">
+    <div class="aurora au2" style="right:-240px; top:-200px; bottom:auto;"></div><div class="grain"></div>
+    <div class="wrap cols">
+      <div>
+        <div class="eyebrow rv">Unplug Type</div>
+        <h2 class="rv d1" style="color:var(--w-ink);">나는 어떤<br><span class="serif">언플러그 타입</span>일까?</h2>
+        <p class="lead rv d2">시간이 새는 곳 × 맡기는 방식 × 오프라인 취향 × 혼자/함께.<br>네 가지 축이 만드는 16가지 타입 — 테스트가 끝나면 <b style="color:var(--w-ink);">나와 비슷한 사람들이 어떤 시간을 되찾았는지</b> 보여드립니다.</p>
+        <div class="typegrid rv d3">
+          <span class="tpill"><b>SFRA</b>숲길 산책자</span>
+          <span class="tpill"><b>TCMP</b>쿠킹 스터디장</span>
+          <span class="tpill"><b>SCRA</b>온천 독서가</span>
+          <span class="tpill"><b>TFMP</b>플리마켓 사장님</span>
+          <span class="tpill" style="color:var(--w-ink3);">+ 12가지 타입</span>
+        </div>
+        <div class="rv d4" style="margin-top:34px;">
+          <a class="btn btn-accent" href="test.html">타입 테스트 시작 — 8문항 · 1분 <span class="arr">→</span></a>
+        </div>
       </div>
-      <p class="reveal d2" style="color:var(--ink-soft); font-size:.92rem;">테스트가 끝나면, <strong>나와 비슷한 타입의 사람들이 어떤 디지털 시간을 삶의 시간으로 바꿨는지</strong> 보여드립니다.</p>
-      <div class="reveal d3" style="margin-top:26px;"><a class="btn btn-primary" href="test.html">타입 테스트 시작 (8문항 · 1분)</a></div>
-    </div>
-  </section>
-
-  <!-- 5. 같은 타입의 전환 데이터 -->
-  <section class="slide" id="s5">
-    <div class="slide-inner">
-      <span class="eyebrow reveal">RECLAIMED HOURS</span>
-      <h2 class="reveal">같은 타입 사람들은 <em>이렇게 바꿨습니다</em></h2>
-      <p class="lead reveal d1">우리가 세는 건 "대신 해준 시간"이 아니라, 실제로 화면 밖에서 쓰인 시간입니다.</p>
-      <div class="chart-box reveal d2">
-        <div class="title">타입별 주간 전환 — 위임한 시간 vs 화면 밖에서 쓴 시간</div>
-        <div class="sub">주당 시간 기준 · 베타 수집 전 예상 시나리오</div>
-        <div class="chart-wrap"><canvas id="chartTypes" role="img" aria-label="타입별 위임 시간과 전환 시간 비교 막대 차트"></canvas></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 6. 이메일 채널 -->
-  <section class="slide" id="s6">
-    <div class="slide-inner">
-      <span class="eyebrow reveal">YOUR AGENT'S INBOX</span>
-      <h2 class="reveal">당신만의 <em>에이전트 이메일</em>이 생깁니다</h2>
-      <p class="lead reveal d1">가입하면 <span class="addr">나만의주소@unplugin.me</span> 같은 전용 주소가 발급됩니다. 앱을 열 필요도 없습니다 — 그냥 이메일을 보내거나 포워딩하세요.</p>
-      <div class="mailflow reveal d2">
-        <div class="mf"><div class="ic">📨</div><h3>포워딩하면 처리</h3><p>"이 청구서 처리해줘" — 받은 메일을 전용 주소로 넘기면 에이전트가 맥락을 읽고 일을 시작합니다.</p></div>
-        <div class="mf-arrow">→</div>
-        <div class="mf"><div class="ic">⚙️</div><h3>규칙으로 자동화</h3><p>쇼핑몰·학교·관리사무소의 수신자를 전용 주소로 등록하고, "A가 오면 B를 해줘" 규칙을 정하면 알아서 처리됩니다.</p></div>
-        <div class="mf-arrow">→</div>
-        <div class="mf"><div class="ic">🔒</div><h3>내 소유, 내 보안</h3><p>주소는 개인별로 소유·격리됩니다. 등록한 발신자만 자동 처리되고, 결제는 승인 없이는 절대 일어나지 않습니다.</p></div>
+      <div class="tcard rv d2" aria-hidden="true">
+        <span class="code">S · F · R · A</span>
+        <h3>숲길 산책자</h3>
+        <p class="td">스크롤로 쉬는 척했지만, 한 번도 쉰 적 없는 사람. 피드는 통째로 맡기세요 — 당신에게 필요한 건 그냥 바람입니다.</p>
+        <div class="mbar">
+          <div class="row"><span>콘텐츠·피드 탐색</span><b>3.1h</b></div>
+          <div class="track"><span class="fill" style="--w:86%;"></span></div>
+          <div class="row"><span>쇼핑 비교</span><b>1.5h</b></div>
+          <div class="track"><span class="fill" style="--w:42%;"></span></div>
+          <div class="row"><span>뉴스 정리</span><b>1.0h</b></div>
+          <div class="track"><span class="fill" style="--w:28%;"></span></div>
+        </div>
+        <div class="tfoot">이 타입은 주당 약 <b>4.5시간</b>을 해질녘 숲길 산책으로 바꿨습니다.</div>
       </div>
     </div>
   </section>
 
-  <!-- 7. 요금제 -->
-  <section class="slide" id="s7">
-    <div class="slide-inner">
-      <span class="eyebrow reveal">PRICING</span>
-      <h2 class="reveal">되찾은 1시간이, <em>요금보다 값지게</em></h2>
-      <p class="lead reveal d1">요청은 큐로 처리됩니다. 동시에 움직이는 에이전트 슬롯 수가 요금의 기준입니다.</p>
+  <!-- 5 ── 전환 데이터 -->
+  <section id="s5">
+    <div class="wrap cols">
+      <div class="panel rv d2" style="order:0;">
+        <div class="pt">타입별 주간 전환</div>
+        <div class="ps">위임한 시간 vs 화면 밖에서 쓴 시간 · 베타 수집 전 예상 시나리오</div>
+        <div class="chart-wrap"><canvas id="chartTypes" role="img" aria-label="타입별 위임 시간과 화면 밖 전환 시간 비교 차트"></canvas></div>
+      </div>
+      <div>
+        <div class="eyebrow rv">Reclaimed Hours</div>
+        <h2 class="rv d1">대신 해준 시간이 아니라,<br><span class="serif">되찾은 시간</span>을 셉니다</h2>
+        <p class="lead rv d2">위임만 하고 끝이 아닙니다. 그 시간이 실제로 화면 밖에서 쓰였는지가 우리의 유일한 성과 지표입니다. 체류시간을 줄이는 것이 우리의 성공입니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 ── 이메일 -->
+  <section id="s6" data-theme="cream">
+    <div class="wrap cols">
+      <div>
+        <div class="eyebrow rv">Your Agent's Inbox</div>
+        <h2 class="rv d1">앱도, 로그인도 없이.<br><span class="serif">이메일 한 통</span>이면 됩니다</h2>
+        <p class="lead rv d2">가입하면 <span class="addr">나만의주소@unplugin.me</span> 같은 전용 주소가 생깁니다. 당신만 소유하는 격리된 창구라 안전합니다.</p>
+        <div class="feat">
+          <div class="f rv d2">
+            <span class="fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></span>
+            <div><h4>포워딩하면 처리</h4><p>받은 메일을 넘기면 에이전트가 맥락을 읽고 일을 시작합니다.</p></div>
+          </div>
+          <div class="f rv d3">
+            <span class="fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></span>
+            <div><h4>규칙으로 자동화</h4><p>학교·쇼핑몰의 수신자를 이 주소로 바꾸고 "A가 오면 B 해줘" 규칙만 정하세요.</p></div>
+          </div>
+          <div class="f rv d4">
+            <span class="fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+            <div><h4>승인 없인 결제 없음</h4><p>미등록 발신자는 자동 실행되지 않고, 결제는 당신의 승인을 기다립니다.</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="mailcard rv d2" aria-hidden="true">
+        <div class="mhead"><i></i><i></i><i></i></div>
+        <div class="mrow">
+          <span class="av me">나</span>
+          <div class="mb">
+            <div class="from">지수 <span>→ jisoo@unplugin.me</span></div>
+            <div class="txt">Fwd: [○○보험] 11월 보험료 안내 — <b>"작년이랑 비교해서 많이 올랐으면 알아봐줘"</b></div>
+          </div>
+        </div>
+        <div class="mrow">
+          <span class="av ag">U</span>
+          <div class="mb">
+            <div class="from">Unplugin 에이전트 <span>· 방금</span></div>
+            <div class="txt">작년 대비 <b>18% 인상</b>을 확인했어요. 동일 보장 기준 더 나은 조건 2건을 정리했습니다. 전환을 원하시면 승인해 주세요.</div>
+            <span class="chip">비교표 첨부</span><span class="chip">승인 대기</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 ── 요금제 -->
+  <section id="s7">
+    <div class="wrap" style="text-align:center;">
+      <div class="eyebrow rv" style="justify-content:center;">Pricing</div>
+      <h2 class="rv d1">되찾은 1시간이, <span class="serif">요금보다 값지게</span></h2>
+      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">요청은 큐로 처리됩니다. 동시에 움직이는 에이전트 슬롯 수가 요금의 기준입니다.</p>
       <div class="tiers">
-        <div class="tier-card reveal d1"><div class="tname">Unplug One</div><div class="price">₩19,000 <small>/월</small></div>
-          <ul><li>동시 슬롯 1 (큐 대기)</li><li>월 ~10시간 위임</li><li>타입 테스트 + 주 1회 추천</li><li>전용 이메일 주소</li></ul></div>
-        <div class="tier-card featured reveal d2"><span class="badge">추천</span><div class="tname">Unplug Flow</div><div class="price">₩59,000 <small>/월</small></div>
-          <ul><li>동시 슬롯 2</li><li>월 ~40시간 위임</li><li>이메일 자동화 규칙</li><li>주말 오프라인 큐레이션</li></ul></div>
-        <div class="tier-card reveal d3"><div class="tname">Unplug Life</div><div class="price">₩149,000~ <small>/월</small></div>
-          <ul><li>동시 슬롯 4+</li><li>위임 시간 무제한급</li><li>디지털 생활 전반 위임</li><li>월 1회 맞춤 경험 설계</li></ul></div>
+        <div class="tier rv d1">
+          <span class="tn">Unplug One</span>
+          <div class="tp">₩19,000 <small>/ 월</small></div>
+          <p class="td">한 가지씩 맡겨보는 시작</p>
+          <ul><li>동시 슬롯 1 (큐 대기)</li><li>월 ~10시간 위임</li><li>타입 테스트 + 주 1회 추천</li><li>전용 이메일 주소</li></ul>
+        </div>
+        <div class="tier hot rv d2">
+          <span class="hotbadge">가장 인기</span>
+          <span class="tn">Unplug Flow</span>
+          <div class="tp">₩59,000 <small style="color:var(--w-ink3);">/ 월</small></div>
+          <p class="td">반복 업무를 상시 위임</p>
+          <ul><li>동시 슬롯 2</li><li>월 ~40시간 위임</li><li>이메일 자동화 규칙</li><li>주말 오프라인 큐레이션</li></ul>
+        </div>
+        <div class="tier rv d3">
+          <span class="tn">Unplug Life</span>
+          <div class="tp">₩149,000<small>부터 / 월</small></div>
+          <p class="td">디지털 생활 전반을 위임</p>
+          <ul><li>동시 슬롯 4+</li><li>위임 시간 무제한급</li><li>디지털 생활 전반 위임</li><li>월 1회 맞춤 경험 설계</li></ul>
+        </div>
       </div>
-      <p class="src reveal d3">※ 베타 기간 중 가격은 사용자 검증과 함께 조정됩니다.</p>
+      <p class="fineprint rv d3">베타 기간 중 가격은 사용자 검증과 함께 조정됩니다.</p>
     </div>
   </section>
 
-  <!-- 8. CTA -->
-  <section class="slide" id="s8">
-    <div class="slide-inner">
-      <h2 class="reveal">오늘 저녁, 화면 대신<br><em>무엇을 하고 싶으세요?</em></h2>
-      <p class="lead reveal d1">1분 테스트로 시작하세요. 당신의 타입이 첫 번째로 맡길 일을 알려드립니다.</p>
-      <div class="reveal d2" style="margin-top:30px;"><a class="btn btn-primary" href="test.html">언플러그 타입 테스트 시작</a></div>
-      <footer class="reveal d3">© 2026 Unplugin — 디지털 시간을 삶의 시간으로 · <a href="https://github.com/kyj5482/unplugin">GitHub</a></footer>
+  <!-- 8 ── CTA -->
+  <section id="s8" data-theme="dark">
+    <div class="aurora au1" style="left:50%; top:auto; bottom:-320px; transform:translateX(-50%);"></div><div class="grain"></div>
+    <div class="wrap">
+      <div class="eyebrow rv" style="justify-content:center;">Begin</div>
+      <h2 class="rv d1">오늘 저녁, 화면 대신<br><span class="serif">무엇을 하고 싶으세요?</span></h2>
+      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">1분 테스트로 시작하세요. 당신의 타입이 첫 번째로 맡길 일을 알려드립니다.</p>
+      <div class="rv d3" style="margin-top:36px;">
+        <a class="btn btn-accent" href="test.html">언플러그 타입 테스트 시작 <span class="arr">→</span></a>
+      </div>
+      <footer class="rv d4">© 2026 Unplugin — 디지털 시간을 삶의 시간으로 &nbsp;·&nbsp; <a href="https://github.com/kyj5482/unplugin">GitHub</a></footer>
     </div>
   </section>
 
 </main>
 
 <script>
-// ───── 스크롤 리빌 + 도트 내비 ─────
-const slides = [...document.querySelectorAll('.slide')];
-const dots = [...document.querySelectorAll('.dots a')];
-const charts = { chartChores: false, chartTypes: false };
+const main = document.getElementById('main');
+const hdr = document.getElementById('hdr');
+const rail = document.getElementById('rail');
+const pbar = document.getElementById('pbar');
+const sections = [...document.querySelectorAll('section')];
+const dots = [...rail.querySelectorAll('a')];
+const drawn = {};
 
+// 섹션 진입: 리빌 + 헤더/레일 테마 + 활성 도트 + 차트 lazy render
 const io = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (!e.isIntersecting) return;
-    e.target.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
-    const i = slides.indexOf(e.target);
+    e.target.classList.add('in');
+    const dark = e.target.dataset.theme === 'dark';
+    hdr.classList.toggle('on-dark', dark);
+    rail.classList.toggle('on-dark', dark);
+    const i = sections.indexOf(e.target);
     dots.forEach((d, j) => d.classList.toggle('on', j === i));
     e.target.querySelectorAll('canvas').forEach(c => {
-      if (!charts[c.id]) { charts[c.id] = true; renderChart(c.id); }
+      if (!drawn[c.id]) { drawn[c.id] = true; renderChart(c.id); }
     });
   });
-}, { root: document.getElementById('main'), threshold: 0.45 });
-slides.forEach(s => io.observe(s));
+}, { root: main, threshold: 0.45 });
+sections.forEach(s => io.observe(s));
 
-// ───── Chart.js 공통 ─────
-const C = { green: '#1c7544', clay: '#c97840', ink: '#2b2a26', soft: '#6b675e', grid: '#eee7d8' };
-Chart.defaults.font.family = '"Apple SD Gothic Neo","Noto Sans KR",Pretendard,sans-serif';
+// 상단 진행 바
+main.addEventListener('scroll', () => {
+  const p = main.scrollTop / (main.scrollHeight - main.clientHeight);
+  pbar.style.width = (p * 100).toFixed(2) + '%';
+}, { passive: true });
+
+// ── Chart.js ──
+const C = { green:'#1c7544', clay:'#c97840', ink:'#17211A', soft:'#8B958D', grid:'rgba(23,33,26,.08)' };
+Chart.defaults.font.family = '"Pretendard Variable",Pretendard,"Apple SD Gothic Neo",sans-serif';
+Chart.defaults.font.size = 12;
 Chart.defaults.color = C.soft;
 
-// 데이터 끝 직접 라벨 플러그인
 const endLabels = {
   id: 'endLabels',
   afterDatasetsDraw(chart) {
     const { ctx } = chart;
     ctx.save();
-    ctx.font = '700 12px "Apple SD Gothic Neo","Noto Sans KR",sans-serif';
+    ctx.font = '700 12px "Pretendard Variable",Pretendard,sans-serif';
     ctx.fillStyle = C.ink;
     chart.data.datasets.forEach((ds, di) => {
       if (!chart.isDatasetVisible(di)) return;
@@ -364,10 +594,10 @@ const endLabels = {
         const v = ds.data[i];
         if (chart.options.indexAxis === 'y') {
           ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-          ctx.fillText(v + 'h', bar.x + 6, bar.y);
+          ctx.fillText(v + 'h', bar.x + 7, bar.y);
         } else {
           ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-          ctx.fillText(v + 'h', bar.x, bar.y - 5);
+          ctx.fillText(v + 'h', bar.x, bar.y - 6);
         }
       });
     });
@@ -378,47 +608,49 @@ const endLabels = {
 function renderChart(id) {
   if (id === 'chartChores') {
     new Chart(document.getElementById(id), {
-      type: 'bar',
-      plugins: [endLabels],
+      type: 'bar', plugins: [endLabels],
       data: {
-        labels: ['비교·검색', '장보기·주문', '메일·서류 정리', '예약·신청'],
+        labels: ['비교 · 검색', '장보기 · 주문', '메일 · 서류 정리', '예약 · 신청'],
         datasets: [{ data: [3.2, 2.5, 2.1, 1.4], backgroundColor: C.green,
-          borderRadius: { topRight: 4, bottomRight: 4 }, borderSkipped: 'start',
-          barThickness: 26, maxBarThickness: 26 }]
+          borderRadius: { topRight: 5, bottomRight: 5 }, borderSkipped: 'start', barThickness: 24 }]
       },
       options: {
-        indexAxis: 'y', maintainAspectRatio: false,
-        layout: { padding: { right: 42 } },
-        plugins: { legend: { display: false }, tooltip: {
-          callbacks: { label: ctx => ` 주당 ${ctx.parsed.x}시간` } } },
+        indexAxis: 'y', maintainAspectRatio: false, layout: { padding: { right: 44 } },
+        animation: { duration: 900, easing: 'easeOutQuart' },
+        plugins: { legend: { display: false },
+          tooltip: { backgroundColor: '#17211A', padding: 10, cornerRadius: 10, displayColors: false,
+            callbacks: { label: ctx => `주당 ${ctx.parsed.x}시간` } } },
         scales: {
-          x: { grid: { color: C.grid }, border: { display: false }, title: { display: true, text: '주당 시간' }, max: 4 },
-          y: { grid: { display: false }, border: { display: false }, ticks: { color: C.ink, font: { weight: 600 } } }
+          x: { grid: { color: C.grid }, border: { display: false }, max: 4,
+            ticks: { callback: v => v + 'h' } },
+          y: { grid: { display: false }, border: { display: false },
+            ticks: { color: C.ink, font: { weight: 600, size: 12.5 } } }
         }
       }
     });
   }
   if (id === 'chartTypes') {
     new Chart(document.getElementById(id), {
-      type: 'bar',
-      plugins: [endLabels],
+      type: 'bar', plugins: [endLabels],
       data: {
         labels: ['숲길 산책자', '쿠킹 스터디장', '온천 독서가', '플리마켓 사장님'],
         datasets: [
           { label: '위임한 시간', data: [4.0, 3.4, 2.8, 4.6], backgroundColor: C.green,
-            borderRadius: { topLeft: 4, topRight: 4 }, borderSkipped: 'bottom', maxBarThickness: 30 },
+            borderRadius: { topLeft: 5, topRight: 5 }, borderSkipped: 'bottom', maxBarThickness: 26 },
           { label: '화면 밖에서 쓴 시간', data: [3.1, 2.9, 2.4, 3.5], backgroundColor: C.clay,
-            borderRadius: { topLeft: 4, topRight: 4 }, borderSkipped: 'bottom', maxBarThickness: 30 }
+            borderRadius: { topLeft: 5, topRight: 5 }, borderSkipped: 'bottom', maxBarThickness: 26 }
         ]
       },
       options: {
-        maintainAspectRatio: false,
-        layout: { padding: { top: 18 } },
-        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 8 } },
-          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: 주당 ${ctx.parsed.y}시간` } } },
+        maintainAspectRatio: false, layout: { padding: { top: 20 } },
+        animation: { duration: 900, easing: 'easeOutQuart' },
+        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 7, padding: 18 } },
+          tooltip: { backgroundColor: '#17211A', padding: 10, cornerRadius: 10,
+            callbacks: { label: ctx => ` ${ctx.dataset.label}: 주당 ${ctx.parsed.y}시간` } } },
         scales: {
-          y: { grid: { color: C.grid }, border: { display: false }, title: { display: true, text: '주당 시간' } },
-          x: { grid: { display: false }, border: { display: false }, ticks: { color: C.ink, font: { weight: 600 } } }
+          y: { grid: { color: C.grid }, border: { display: false }, ticks: { callback: v => v + 'h' } },
+          x: { grid: { display: false }, border: { display: false },
+            ticks: { color: C.ink, font: { weight: 600, size: 12 } } }
         }
       }
     });

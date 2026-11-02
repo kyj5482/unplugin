@@ -5,74 +5,135 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>언플러그 타입 테스트 — Unplugin</title>
 <meta name="description" content="8문항 1분, 나의 디지털 습관과 오프라인 취향으로 알아보는 16가지 언플러그 타입.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
   :root {
-    --paper:#faf6ef; --ink:#2b2a26; --ink-soft:#6b675e;
-    --moss:#3f5a44; --moss-deep:#2e4332; --clay:#c47a4e;
-    --chart-green:#1c7544; --line:#e4dccd; --card:#ffffff;
+    --dark0:#0C1711; --dark1:#13241A;
+    --w-ink:#F2EFE7; --w-ink2:#ADB8AF; --w-ink3:#7B867D;
+    --amber:#D89A5B; --amber-deep:#C97840;
+    --green:#2F6B4A; --green-soft:#5CA87C;
+    --hair-d:rgba(242,239,231,.12);
+    --ink:#17211A; --ink2:#525D54; --ink3:#8B958D;
+    --ease:cubic-bezier(.22,.61,.36,1);
+    --serif:"Noto Serif KR",serif;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
-    font-family:"Apple SD Gothic Neo","Noto Sans KR",Pretendard,-apple-system,sans-serif;
-    background:var(--paper); color:var(--ink); line-height:1.7; min-height:100svh;
+    font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo",sans-serif;
+    background:linear-gradient(180deg,var(--dark0),var(--dark1)) fixed;
+    color:var(--w-ink); line-height:1.68; min-height:100svh;
     display:flex; flex-direction:column; -webkit-font-smoothing:antialiased;
   }
-  header { padding:18px 24px; display:flex; justify-content:space-between; align-items:center; }
-  .logo { font-weight:800; font-size:1.2rem; color:var(--moss-deep); text-decoration:none; }
-  .logo span { color:var(--clay); }
-  header a.back { font-size:.88rem; color:var(--ink-soft); text-decoration:none; }
+  ::selection { background:rgba(216,154,91,.4); }
+  .aurora { position:fixed; border-radius:50%; filter:blur(90px); pointer-events:none; z-index:0; }
+  .au1 { width:560px; height:560px; left:-200px; top:-220px;
+    background:radial-gradient(circle, rgba(47,107,74,.45), transparent 65%);
+    animation:drift 18s ease-in-out infinite alternate; }
+  .au2 { width:500px; height:500px; right:-180px; bottom:-200px;
+    background:radial-gradient(circle, rgba(201,120,64,.28), transparent 65%);
+    animation:drift 22s ease-in-out infinite alternate-reverse; }
+  @keyframes drift { from { transform:translate(0,0); } to { transform:translate(60px,44px); } }
+  .grain { position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
-  .stage { flex:1; display:flex; align-items:center; justify-content:center; padding:20px 24px 48px; }
-  .panel { max-width:620px; width:100%; text-align:center; }
+  header { position:relative; z-index:2; padding:0 clamp(20px,4vw,44px); height:68px;
+    display:flex; justify-content:space-between; align-items:center; }
+  .logo { font-weight:800; font-size:1.18rem; letter-spacing:-.02em; color:var(--w-ink); text-decoration:none; }
+  .logo i { font-style:normal; color:var(--amber); }
+  header a.back { font-size:.85rem; color:var(--w-ink3); text-decoration:none; transition:color .3s; }
+  header a.back:hover { color:var(--w-ink2); }
 
-  .progress { height:6px; background:var(--line); border-radius:999px; margin-bottom:34px; overflow:hidden; }
-  .progress i { display:block; height:100%; background:var(--moss); border-radius:999px; transition:width .35s ease; }
+  .stage { flex:1; position:relative; z-index:2; display:flex; align-items:center; justify-content:center;
+    padding:24px 24px 56px; }
+  .panel { max-width:640px; width:100%; text-align:center; }
 
-  .qnum { font-size:.82rem; font-weight:700; color:var(--clay); letter-spacing:.1em; }
-  h1 { font-size:clamp(1.5rem,4.5vw,2.1rem); font-weight:800; letter-spacing:-.02em; color:var(--moss-deep); line-height:1.45; margin:10px 0 30px; }
-  h1 em { font-style:normal; color:var(--clay); }
-  .lead { color:var(--ink-soft); margin-bottom:28px; }
+  .progress { height:4px; background:rgba(255,255,255,.09); border-radius:999px; margin-bottom:40px; overflow:hidden; }
+  .progress i { display:block; height:100%; width:0;
+    background:linear-gradient(90deg,var(--green-soft),var(--amber)); border-radius:999px;
+    transition:width .45s var(--ease); }
+
+  .qnum { font-size:.76rem; font-weight:700; letter-spacing:.2em; color:var(--amber); }
+  h1 { font-size:clamp(1.55rem,4.4vw,2.2rem); font-weight:800; letter-spacing:-.03em;
+    line-height:1.42; margin:14px 0 34px; }
+  h1 .serif { font-family:var(--serif); color:var(--amber); font-weight:700; }
+  .lead { color:var(--w-ink2); margin-bottom:32px; font-size:1.02rem; }
 
   .opts { display:flex; flex-direction:column; gap:14px; }
   .opt {
-    background:var(--card); border:1.5px solid var(--line); border-radius:14px;
-    padding:20px 22px; font-size:1rem; font-weight:600; color:var(--ink);
-    cursor:pointer; text-align:left; transition:transform .1s, border-color .1s, box-shadow .1s;
-    font-family:inherit; line-height:1.55;
+    position:relative; text-align:left; cursor:pointer; font-family:inherit;
+    font-size:1rem; font-weight:600; color:var(--w-ink); line-height:1.55;
+    padding:21px 24px; border-radius:16px;
+    background:linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+    border:1px solid var(--hair-d);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    transition:transform .25s var(--ease), border-color .25s, background .25s;
   }
-  .opt:hover { border-color:var(--moss); transform:translateY(-2px); box-shadow:0 6px 16px rgba(63,90,68,.12); }
+  .opt:hover { transform:translateY(-3px); border-color:rgba(216,154,91,.55);
+    background:linear-gradient(160deg, rgba(216,154,91,.13), rgba(255,255,255,.04)); }
   .opt .ic { margin-right:10px; }
 
-  .btn { display:inline-block; padding:14px 30px; border-radius:12px; font-weight:700; font-size:1rem;
-    text-decoration:none; border:none; cursor:pointer; font-family:inherit; }
-  .btn-primary { background:var(--moss); color:#fff; box-shadow:0 8px 22px rgba(63,90,68,.28); }
-  .btn-ghost { border:1.5px solid var(--line); color:var(--ink); background:var(--card); }
+  .btn { display:inline-flex; align-items:center; gap:10px; padding:15px 32px; border-radius:14px;
+    font-weight:700; font-size:.98rem; text-decoration:none; border:none; cursor:pointer; font-family:inherit;
+    transition:transform .25s var(--ease), box-shadow .25s; }
+  .btn:hover { transform:translateY(-2px); }
+  .btn-accent { background:linear-gradient(135deg,#E5AC6C,#C97840); color:#231306;
+    box-shadow:0 10px 28px rgba(201,120,64,.32), inset 0 1px 0 rgba(255,255,255,.35); }
+  .btn-glass { background:rgba(255,255,255,.07); color:var(--w-ink); border:1px solid var(--hair-d); }
 
-  /* 결과 */
-  .type-code { display:inline-block; font-weight:800; letter-spacing:.2em; font-size:.95rem;
-    color:var(--clay); border:1.5px solid var(--clay); border-radius:999px; padding:4px 16px; margin-bottom:14px; }
-  .result-card { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:30px 26px; margin-top:24px; text-align:left; }
-  .result-card h2 { font-size:1.05rem; color:var(--moss-deep); margin-bottom:8px; }
-  .result-card p { font-size:.94rem; color:var(--ink-soft); }
-  .peer { background:#f2eee3; border-radius:12px; padding:16px 18px; margin-top:16px; font-size:.92rem; }
-  .peer b { color:var(--moss-deep); }
-  .chart-wrap { position:relative; height:190px; margin-top:14px; }
-  .sub { font-size:.78rem; color:var(--ink-soft); margin-top:10px; }
-  .hero-num { font-size:2.2rem; font-weight:800; color:var(--moss-deep); letter-spacing:-.02em; }
-  .hero-num small { font-size:.5em; color:var(--ink-soft); font-weight:600; }
-  .cta-row { margin-top:28px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  /* 등장 모션 */
+  .panel > * { animation:rise .7s var(--ease) both; }
+  .panel > *:nth-child(2) { animation-delay:.07s; }
+  .panel > *:nth-child(3) { animation-delay:.14s; }
+  .panel > *:nth-child(4) { animation-delay:.21s; }
+  .panel > *:nth-child(5) { animation-delay:.28s; }
+  @keyframes rise { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:none; } }
+
+  /* ── 결과 ── */
+  .type-code { display:inline-block; font-size:.78rem; font-weight:800; letter-spacing:.34em;
+    color:var(--amber); border:1px solid rgba(216,154,91,.4); background:rgba(216,154,91,.08);
+    border-radius:999px; padding:6px 20px 6px 24px; }
+  .rname { font-family:var(--serif); font-size:clamp(2rem,5.4vw,2.8rem); font-weight:700;
+    letter-spacing:-.02em; margin:16px 0 4px; }
   .axes { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px; }
-  .ax { font-size:.8rem; background:var(--card); border:1px solid var(--line); border-radius:999px; padding:4px 12px; color:var(--ink-soft); }
-  .ax b { color:var(--moss-deep); }
-  footer { text-align:center; font-size:.82rem; color:var(--ink-soft); padding:0 24px 28px; }
-  footer a { color:var(--moss-deep); }
+  .ax { font-size:.76rem; color:var(--w-ink3); border:1px solid var(--hair-d);
+    background:rgba(255,255,255,.04); border-radius:999px; padding:4px 13px; }
+  .ax b { color:var(--w-ink2); margin-right:4px; }
+
+  .rcard {
+    margin-top:28px; text-align:left; border-radius:24px; padding:30px 28px;
+    background:linear-gradient(165deg, rgba(255,255,255,.09), rgba(255,255,255,.035));
+    border:1px solid var(--hair-d);
+    backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    box-shadow:0 30px 60px rgba(0,0,0,.4);
+  }
+  .rcard .desc { font-size:.95rem; color:var(--w-ink2); }
+  .peer { margin-top:20px; padding:18px 20px; border-radius:16px; font-size:.9rem; color:var(--w-ink2);
+    background:rgba(92,168,124,.1); border:1px solid rgba(92,168,124,.25); }
+  .peer b { color:var(--w-ink); }
+  .peer .hl { color:var(--amber); font-weight:800; }
+  .rcard h2 { font-size:.95rem; font-weight:800; margin-top:24px; letter-spacing:-.01em; }
+  .chart-panel { margin-top:12px; background:#FBF8F3; border-radius:16px; padding:18px 16px 10px; }
+  .chart-wrap { position:relative; height:186px; }
+  .fineprint { font-size:.75rem; color:var(--w-ink3); margin-top:12px; }
+  .cta-row { margin-top:32px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
+  footer { position:relative; z-index:2; text-align:center; font-size:.8rem; color:var(--w-ink3); padding:0 24px 26px; }
+  footer a { color:var(--w-ink2); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aurora { animation:none; } .panel > * { animation:none; }
+  }
 </style>
 </head>
 <body>
+<div class="aurora au1"></div><div class="aurora au2"></div><div class="grain"></div>
 
 <header>
-  <a class="logo" href="index.html">un<span>plugin</span></a>
+  <a class="logo" href="index.html">un<i>plugin</i></a>
   <a class="back" href="index.html">← 소개로 돌아가기</a>
 </header>
 
@@ -92,7 +153,7 @@ const QUESTIONS = [
   { axis:3, q:'공방 원데이 클래스 쿠폰이 생겼다!', a:['📅 바로 친구와 약속을 잡는다','🧘 평일 낮, 혼자 조용히 다녀온다'], k:['P','A'] },
 ];
 
-// ───── 16타입: 이름 / 설명 / 비슷한 타입의 위임 Top3(주당 h) / 이렇게 바꿈 ─────
+// ───── 16타입 ─────
 const TYPES = {
   SFMA:{ name:'심야 공방러', desc:'밤마다 피드를 떠돌지만, 사실 손을 움직일 때 가장 살아있는 사람. 탐색은 통째로 맡기고 혼자 몰입하는 시간이 필요합니다.',
     deleg:[['콘텐츠·피드 탐색',2.8],['최저가 비교',1.6],['생필품 주문',1.2]], off:'야간 목공방, 혼자 하는 도예 클래스' },
@@ -129,10 +190,10 @@ const TYPES = {
 };
 
 const AXIS_DESC = {
-  S:'시간이 새는 곳: 탐색', T:'시간이 새는 곳: 처리',
-  F:'맡기는 방식: 통째로', C:'맡기는 방식: 챙기며',
-  M:'오프라인 취향: 만들기·배움', R:'오프라인 취향: 쉼·감각',
-  P:'함께일 때 충전', A:'혼자일 때 충전',
+  S:'새는 곳 · 탐색', T:'새는 곳 · 처리',
+  F:'맡김 · 통째로', C:'맡김 · 챙기며',
+  M:'취향 · 만들기', R:'취향 · 쉼',
+  P:'충전 · 함께', A:'충전 · 혼자',
 };
 
 const panel = document.getElementById('panel');
@@ -142,9 +203,9 @@ const answers = [];
 function intro() {
   panel.innerHTML = `
     <span class="qnum">UNPLUG TYPE TEST</span>
-    <h1>나는 어떤 <em>언플러그 타입</em>일까?</h1>
+    <h1>나는 어떤<br><span class="serif">언플러그 타입</span>일까?</h1>
     <p class="lead">8문항 · 1분. 디지털 습관과 오프라인 취향으로<br>16가지 타입 중 나를 찾아보세요.</p>
-    <button class="btn btn-primary" onclick="next()">시작하기</button>`;
+    <div><button class="btn btn-accent" onclick="next()">시작하기 →</button></div>`;
 }
 
 function next() {
@@ -152,14 +213,16 @@ function next() {
   if (step >= QUESTIONS.length) return result();
   const q = QUESTIONS[step];
   panel.innerHTML = `
-    <div class="progress"><i style="width:${(step) / QUESTIONS.length * 100}%"></i></div>
-    <span class="qnum">Q${step + 1} / ${QUESTIONS.length}</span>
+    <div class="progress"><i style="width:${step / QUESTIONS.length * 100}%"></i></div>
+    <span class="qnum">Q${step + 1} — ${QUESTIONS.length}문항 중</span>
     <h1>${q.q}</h1>
     <div class="opts">
       <button class="opt" onclick="pick(0)">${q.a[0]}</button>
       <button class="opt" onclick="pick(1)">${q.a[1]}</button>
     </div>`;
-  requestAnimationFrame(() => panel.querySelector('.progress i').style.width = (step / QUESTIONS.length * 100) + '%');
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() =>
+      panel.querySelector('.progress i').style.width = ((step + 1) / QUESTIONS.length * 100) + '%'));
 }
 
 function pick(i) { answers.push(QUESTIONS[step].k[i]); next(); }
@@ -177,25 +240,24 @@ function result() {
   const reclaimed = Math.round(total * 0.8 * 10) / 10;
 
   panel.innerHTML = `
-    <div class="progress"><i style="width:100%"></i></div>
-    <span class="type-code">${code}</span>
-    <h1>당신은 <em>${t.name}</em></h1>
-    <div class="axes">${code.split('').map(c => `<span class="ax"><b>${c}</b> ${AXIS_DESC[c]}</span>`).join('')}</div>
-    <div class="result-card">
-      <p>${t.desc}</p>
+    <span class="type-code">${code.split('').join(' · ')}</span>
+    <div class="rname">${t.name}</div>
+    <div class="axes">${code.split('').map(c => `<span class="ax"><b>${c}</b>${AXIS_DESC[c]}</span>`).join('')}</div>
+    <div class="rcard">
+      <p class="desc">${t.desc}</p>
       <div class="peer">🌱 <b>${t.name}</b> 타입은 아래의 디지털 시간을 맡기고, 주당 약
-        <b>${reclaimed}시간</b>을 <b>${t.off}</b> 같은 시간으로 바꿨습니다.</div>
-      <h2 style="margin-top:20px;">이 타입이 가장 많이 맡기는 일 (주당)</h2>
-      <div class="chart-wrap"><canvas id="typeChart"></canvas></div>
-      <div class="sub">베타 수집 전 예상 시나리오 · 실측 데이터로 교체됩니다</div>
+        <span class="hl">${reclaimed}시간</span>을 <b>${t.off}</b> 같은 시간으로 바꿨습니다.</div>
+      <h2>이 타입이 가장 많이 맡기는 일 (주당)</h2>
+      <div class="chart-panel"><div class="chart-wrap"><canvas id="typeChart"></canvas></div></div>
+      <div class="fineprint">베타 수집 전 예상 시나리오 · 실측 데이터로 교체됩니다</div>
     </div>
     <div class="cta-row">
-      <a class="btn btn-primary" href="index.html#s7">이 일부터 맡겨보기</a>
-      <button class="btn btn-ghost" onclick="location.reload()">다시 테스트</button>
+      <a class="btn btn-accent" href="index.html#s7">이 일부터 맡겨보기 →</a>
+      <button class="btn btn-glass" onclick="location.reload()">다시 테스트</button>
     </div>`;
 
-  Chart.defaults.font.family = '"Apple SD Gothic Neo","Noto Sans KR",Pretendard,sans-serif';
-  Chart.defaults.color = '#6b675e';
+  Chart.defaults.font.family = '"Pretendard Variable",Pretendard,"Apple SD Gothic Neo",sans-serif';
+  Chart.defaults.color = '#8B958D';
   new Chart(document.getElementById('typeChart'), {
     type: 'bar',
     plugins: [{
@@ -203,26 +265,29 @@ function result() {
       afterDatasetsDraw(chart) {
         const { ctx } = chart;
         ctx.save();
-        ctx.font = '700 12px "Apple SD Gothic Neo","Noto Sans KR",sans-serif';
-        ctx.fillStyle = '#2b2a26'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        ctx.font = '700 12px "Pretendard Variable",Pretendard,sans-serif';
+        ctx.fillStyle = '#17211A'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
         chart.getDatasetMeta(0).data.forEach((bar, i) =>
-          ctx.fillText(chart.data.datasets[0].data[i] + 'h', bar.x + 6, bar.y));
+          ctx.fillText(chart.data.datasets[0].data[i] + 'h', bar.x + 7, bar.y));
         ctx.restore();
       }
     }],
     data: {
       labels: t.deleg.map(d => d[0]),
       datasets: [{ data: t.deleg.map(d => d[1]), backgroundColor: '#1c7544',
-        borderRadius: { topRight: 4, bottomRight: 4 }, borderSkipped: 'start', barThickness: 22 }]
+        borderRadius: { topRight: 5, bottomRight: 5 }, borderSkipped: 'start', barThickness: 20 }]
     },
     options: {
       indexAxis: 'y', maintainAspectRatio: false,
-      layout: { padding: { right: 38 } },
+      layout: { padding: { right: 40 } },
+      animation: { duration: 900, easing: 'easeOutQuart' },
       plugins: { legend: { display: false },
-        tooltip: { callbacks: { label: c => ` 주당 ${c.parsed.x}시간` } } },
+        tooltip: { backgroundColor: '#17211A', padding: 10, cornerRadius: 10, displayColors: false,
+          callbacks: { label: c => `주당 ${c.parsed.x}시간` } } },
       scales: {
-        x: { grid: { color: '#eee7d8' }, border: { display: false }, title: { display: true, text: '주당 시간' } },
-        y: { grid: { display: false }, border: { display: false }, ticks: { color: '#2b2a26', font: { weight: 600 } } }
+        x: { grid: { color: 'rgba(23,33,26,.08)' }, border: { display: false }, ticks: { callback: v => v + 'h' } },
+        y: { grid: { display: false }, border: { display: false },
+          ticks: { color: '#17211A', font: { weight: 600, size: 12 } } }
       }
     }
   });
