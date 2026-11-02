@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unplugin — 디지털 시간을 삶의 시간으로</title>
+<meta name="description" content="AI 에이전트가 당신의 디지털 일을 대신하고, 되찾은 시간을 오프라인의 진짜 경험으로 바꿔주는 컨시어지 서비스.">
+<style>
+  :root {
+    --paper: #faf6ef;
+    --ink: #2b2a26;
+    --ink-soft: #6b675e;
+    --moss: #3f5a44;
+    --moss-deep: #2e4332;
+    --clay: #c47a4e;
+    --line: #e4dccd;
+    --card: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Apple SD Gothic Neo", "Noto Sans KR", Pretendard, -apple-system, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 24px; }
+
+  header {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0;
+    background: rgba(250, 246, 239, 0.92);
+    backdrop-filter: blur(8px);
+    z-index: 10;
+  }
+  header .wrap { display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; color: var(--moss-deep); text-decoration: none; }
+  .logo span { color: var(--clay); }
+  nav a { color: var(--ink-soft); text-decoration: none; margin-left: 20px; font-size: 0.92rem; }
+  nav a:hover { color: var(--moss-deep); }
+
+  .hero { padding: 96px 0 72px; text-align: center; }
+  .hero .eyebrow {
+    display: inline-block; font-size: 0.85rem; font-weight: 600;
+    color: var(--clay); border: 1px solid var(--clay);
+    border-radius: 999px; padding: 4px 14px; margin-bottom: 28px;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5.5vw, 3.2rem);
+    font-weight: 800; letter-spacing: -0.03em; line-height: 1.3;
+    color: var(--moss-deep);
+  }
+  .hero h1 em { font-style: normal; color: var(--clay); }
+  .hero p.lead {
+    margin: 24px auto 0; max-width: 620px;
+    font-size: 1.08rem; color: var(--ink-soft);
+  }
+  .cta-row { margin-top: 40px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: 13px 28px; border-radius: 10px;
+    font-weight: 700; font-size: 0.98rem; text-decoration: none;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary { background: var(--moss); color: #fff; box-shadow: 0 6px 18px rgba(63,90,68,.25); }
+  .btn-ghost { border: 1.5px solid var(--line); color: var(--ink); background: var(--card); }
+
+  section { padding: 72px 0; }
+  section + section { border-top: 1px solid var(--line); }
+  .section-label { font-size: 0.82rem; font-weight: 700; letter-spacing: .12em; color: var(--clay); text-transform: uppercase; }
+  h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); font-weight: 800; letter-spacing: -0.02em; margin: 10px 0 18px; color: var(--moss-deep); }
+  .section-intro { max-width: 640px; color: var(--ink-soft); }
+
+  .grid { display: grid; gap: 18px; margin-top: 36px; }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 26px;
+  }
+  .card .num { font-size: 0.8rem; font-weight: 800; color: var(--clay); letter-spacing: .1em; }
+  .card h3 { font-size: 1.08rem; margin: 8px 0 8px; letter-spacing: -0.01em; }
+  .card p { font-size: 0.93rem; color: var(--ink-soft); }
+
+  .kpi-band {
+    background: var(--moss-deep); color: #f2efe6;
+    border-radius: 18px; padding: 44px 36px; margin-top: 36px; text-align: center;
+  }
+  .kpi-band .metric { font-size: clamp(1.3rem, 3vw, 1.8rem); font-weight: 800; letter-spacing: -0.02em; }
+  .kpi-band .metric em { font-style: normal; color: #e8b48b; }
+  .kpi-band p { margin-top: 12px; color: #c9d2c4; font-size: 0.95rem; max-width: 560px; margin-left: auto; margin-right: auto; }
+
+  .pricing .card { display: flex; flex-direction: column; }
+  .pricing .tier { font-weight: 800; color: var(--moss-deep); font-size: 1.05rem; }
+  .pricing .price { font-size: 1.5rem; font-weight: 800; margin: 10px 0 2px; }
+  .pricing .price small { font-size: 0.85rem; font-weight: 500; color: var(--ink-soft); }
+  .pricing ul { list-style: none; margin-top: 14px; }
+  .pricing li { font-size: 0.9rem; color: var(--ink-soft); padding: 5px 0 5px 22px; position: relative; }
+  .pricing li::before { content: "✓"; position: absolute; left: 0; color: var(--moss); font-weight: 700; }
+  .pricing .featured { border: 2px solid var(--moss); position: relative; }
+  .pricing .badge {
+    position: absolute; top: -12px; left: 24px;
+    background: var(--clay); color: #fff; font-size: 0.72rem; font-weight: 700;
+    padding: 3px 12px; border-radius: 999px;
+  }
+  .pricing .note { margin-top: 20px; font-size: 0.85rem; color: var(--ink-soft); }
+
+  footer { border-top: 1px solid var(--line); padding: 40px 0 56px; color: var(--ink-soft); font-size: 0.88rem; }
+  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  footer a { color: var(--moss-deep); text-decoration: none; }
+
+  @media (max-width: 560px) {
+    nav a { margin-left: 12px; font-size: 0.85rem; }
+    .hero { padding: 64px 0 48px; }
+    section { padding: 52px 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="#">un<span>plugin</span></a>
+    <nav>
+      <a href="#how">서비스</a>
+      <a href="#why">철학</a>
+      <a href="#pricing">요금제</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <span class="eyebrow">AI 컨시어지 · 오프라인 리클레임 서비스</span>
+    <h1>디지털에 쓰던 시간을,<br><em>삶의 시간</em>으로 되돌립니다</h1>
+    <p class="lead">
+      장보기, 예약, 비교 검색, 끝없는 스크롤 — 반복되는 디지털 일을 AI 에이전트가 대신합니다.
+      그리고 되찾은 시간에 어울리는 오프라인 경험을 찾아 당신에게 건넵니다.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#how">5분 문진으로 시작하기</a>
+      <a class="btn btn-ghost" href="#why">왜 Unplugin인가</a>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <span class="section-label">How it works</span>
+      <h2>병원 문진처럼 가볍게, 한 가지씩</h2>
+      <p class="section-intro">
+        한꺼번에 삶을 바꾸라고 하지 않습니다. 지금 디지털에 어떤 시간을 쓰고 있는지 함께 들여다보고,
+        딱 하나부터 위임을 시작합니다.
+      </p>
+      <div class="grid grid-3">
+        <div class="card">
+          <span class="num">STEP 1</span>
+          <h3>디지털 시간 문진</h3>
+          <p>5분 문진으로 매주 반복되는 디지털 일과, 뺏기고 싶지 않은 즐거움을 구분합니다. 요즘 가장 메말라 있는 감각도 함께 묻습니다.</p>
+        </div>
+        <div class="card">
+          <span class="num">STEP 2</span>
+          <h3>한 가지 위임</h3>
+          <p>"내가 직접 안 해도 되는데" 싶은 일 하나를 AI 에이전트에게 맡깁니다. 에이전트가 브라우저 세션에서 당신 대신 처리합니다.</p>
+        </div>
+        <div class="card">
+          <span class="num">STEP 3</span>
+          <h3>오프라인 경험 추천</h3>
+          <p>확보된 시간과 당신의 감각 취향에 맞춰 — 공방, 시장, 산책, 클래스 — 손끝으로 느끼고 배우는 경험을 개인화 추천합니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="why">
+    <div class="wrap">
+      <span class="section-label">Why</span>
+      <h2>비서가 아니라, 컨시어지입니다</h2>
+      <p class="section-intro">
+        일을 대신해주는 AI 비서는 이미 많습니다. 우리가 묻는 것은 그 다음입니다 —
+        <strong>"그래서 그 시간에 당신은 무엇을 느꼈나요?"</strong>
+        오프라인으로 돌아가고 싶은 마음은 세대를 가리지 않고 커지고 있습니다.
+        Unplugin은 그 회귀를 설계하는 회사입니다.
+      </p>
+      <div class="kpi-band">
+        <div class="metric">우리의 단 하나의 지표 — <em>Reclaimed Hours</em></div>
+        <p>
+          위임한 시간이 아니라, 실제로 화면 밖에서 쓰인 시간만 셉니다.
+          체류시간을 늘리는 게 아니라 줄이는 것이 우리의 성공입니다.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" class="pricing">
+    <div class="wrap">
+      <span class="section-label">Pricing</span>
+      <h2>당신의 1시간만큼의 값</h2>
+      <p class="section-intro">
+        컨시어지 요청은 큐로 처리되며, 동시에 처리하는 슬롯이 늘수록 요금이 올라갑니다.
+        기준은 단순합니다 — 되찾은 1시간이 요금보다 값지도록.
+      </p>
+      <div class="grid grid-3">
+        <div class="card">
+          <div class="tier">Unplug One</div>
+          <div class="price">₩19,000 <small>/월</small></div>
+          <ul>
+            <li>동시 슬롯 1 (큐 대기)</li>
+            <li>월 ~10시간 위임</li>
+            <li>디지털 시간 문진</li>
+            <li>주 1회 오프라인 추천</li>
+          </ul>
+        </div>
+        <div class="card featured">
+          <span class="badge">추천</span>
+          <div class="tier">Unplug Flow</div>
+          <div class="price">₩59,000 <small>/월</small></div>
+          <ul>
+            <li>동시 슬롯 2</li>
+            <li>월 ~40시간 위임</li>
+            <li>반복 업무 상시 위임</li>
+            <li>주말 오프라인 큐레이션</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="tier">Unplug Life</div>
+          <div class="price">₩149,000~ <small>/월</small></div>
+          <ul>
+            <li>동시 슬롯 4+</li>
+            <li>위임 시간 무제한급</li>
+            <li>디지털 생활 전반 위임</li>
+            <li>월 1회 맞춤 경험 설계</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">※ 베타 기간 중 가격은 사용자 검증과 함께 조정됩니다.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 Unplugin — 디지털 시간을 삶의 시간으로</div>
+    <div><a href="https://github.com/kyj5482/unplugin">GitHub</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
