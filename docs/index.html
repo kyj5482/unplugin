@@ -339,11 +339,30 @@
     .cols > .panel, .cols > .tcard, .cols > .mailcard { order:2 !important; }
     .rail { display:none; }
     .scroll-hint { display:none; }
+
+    /* 타이틀 정렬 통일 — PC의 중앙 정렬 섹션(히어로·How it works·요금제·CTA)도
+       모바일 단일 컬럼에서는 전부 왼쪽 정렬 (인라인 스타일까지 오버라이드) */
+    section, #s1, #s8 { text-align:left; }
+    section .wrap { text-align:left !important; }
+    .eyebrow { justify-content:flex-start !important; }
+    section .lead { margin-left:0 !important; margin-right:0 !important; }
+    .hero-cta, .proof { justify-content:flex-start; }
+    .journey { margin-left:0; }
+
+    /* 다크(그린)↔라이트 섹션 전환 지연 수정 — blur 오로라와 backdrop-filter는
+       모바일 GPU 합성 비용이 커서 다크 섹션 진입·이탈 시 프레임이 끊긴다.
+       다크 그라디언트 배경은 유지하고 장식 블러만 제거한다 */
+    .aurora, .horizon { display:none; }
+    .pcard, .tcard, .hero-pill, .btn-glass, header .nav-cta {
+      backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+    }
+    .pcard, .tcard { background:rgba(255,255,255,.08); }
+    .hero-pill, .btn-glass { background:rgba(255,255,255,.1); }
+
     .proof { gap:12px; }
     .pcard { width:min(340px,100%); animation:none; }
     .pcard:nth-child(1), .pcard:nth-child(2), .pcard:nth-child(3) { transform:none; }
     .pcard:nth-child(3) { display:none; }
-    .aurora { filter:blur(60px); }  /* 모바일 GPU 부담 완화 */
     .tier:hover { transform:none; }
     /* 스냅 이동은 순간적 — 리빌이 길면 빈 화면이 로딩처럼 보인다.
        모바일은 이동량·시간·지연을 절반 이하로 줄인다 */
