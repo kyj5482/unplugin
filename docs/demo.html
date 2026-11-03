@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>프로덕트 데모 — Unplugin</title>
-<meta name="description" content="Unplugin 운영 코어가 실제로 일하는 70초 — 모션그래픽 제품 데모.">
+<meta name="description" content="Unplugin이 실제로 일하는 70초 — 모션그래픽 제품 데모.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   :root {
@@ -46,6 +46,15 @@
   .scene { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
     padding:12px clamp(16px,4vw,48px); opacity:0; visibility:hidden; transition:opacity .55s var(--ease), visibility .55s; }
   .scene.on { opacity:1; visibility:visible; }
+
+  /* 수동 이동(클릭·드래그·키) 직후엔 전환·등장 연출을 압축 — 클릭 반응이 늦게 느껴지지 않게.
+     자동 재생으로 다음 장면에 넘어가면 .quick이 해제되어 원래 템포로 돌아간다. */
+  .stage.quick .scene { transition-duration:.3s; }
+  .stage.quick .scene.on .a { animation-duration:.45s; animation-delay:calc(var(--d,0s)/4); }
+  .stage.quick .scene.on .kt .line span { animation-duration:.45s; animation-delay:calc(var(--d,0s)/4); }
+  .stage.quick .scene.on .nd .c, .stage.quick .scene.on .nd .t { animation-delay:calc(var(--d,0s)/4); }
+  .stage.quick .stepper .rail i { transition-duration:1.2s; }
+  .stage.quick .limit .fill { transition-duration:.7s; transition-delay:.15s; }
 
   /* 등장 애니메이션 프리미티브 — .scene.on 일 때만 재생, --d 로 지연 */
   .a { opacity:0; }
@@ -191,16 +200,22 @@
     display:flex; align-items:center; gap:16px; padding:0 clamp(16px,3vw,40px);
     background:linear-gradient(transparent, rgba(10,19,14,.92) 40%); }
   .pp { width:46px; height:46px; border-radius:50%; flex:none; border:1px solid var(--hair-d); cursor:pointer;
-    background:rgba(255,255,255,.08); color:var(--w-ink); font-size:1rem; backdrop-filter:blur(10px); }
+    background:rgba(255,255,255,.08); color:var(--w-ink); backdrop-filter:blur(10px);
+    display:flex; align-items:center; justify-content:center; padding:0; }
   .pp:hover { background:rgba(255,255,255,.14); }
+  .pp svg { width:17px; height:17px; display:block; }
   .prog { flex:1; }
   .prog .names { display:flex; justify-content:space-between; margin-bottom:8px; }
   .prog .names button { background:none; border:none; cursor:pointer; font-family:inherit;
     font-size:.68rem; font-weight:700; color:var(--w-ink3); padding:2px 4px; transition:color .3s; letter-spacing:.02em; }
   .prog .names button.cur { color:var(--amber); }
   .prog .names button:hover { color:var(--w-ink2); }
-  .prog .bar { height:4px; border-radius:99px; background:rgba(255,255,255,.1); overflow:hidden; }
+  .prog .bar { height:4px; border-radius:99px; background:rgba(255,255,255,.1); overflow:hidden;
+    transition:height .25s var(--ease); }
   .prog .bar i { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--green-soft),var(--amber)); }
+  /* 드래그 시킹 — 바 주변 8px까지 히트 영역 확장, 잡으면 바가 도톰해진다 */
+  .seek { padding:8px 0; margin:-8px 0; cursor:pointer; touch-action:none; }
+  .seek:hover .bar, .seek.drag .bar { height:7px; }
   .tlabel { font-size:.74rem; color:var(--w-ink3); font-variant-numeric:tabular-nums; width:52px; text-align:right; }
 
   @media (max-width:680px) {
@@ -254,7 +269,7 @@ addEventListener("DOMContentLoaded", () => {
       <span class="line"><span style="--d:.1s">당신의 디지털 잡무가</span></span>
       <span class="line"><span style="--d:.3s"><em>삶의 시간</em>이 되기까지, 70초</span></span>
     </div>
-    <p class="scsub a" style="--d:.8s">아래 모든 장면은 목업이 아니라, 저장소의 운영 코어(core/)와<br>통합 테스트 16/16 PASS가 검증한 실제 처리 흐름입니다.</p>
+    <p class="scsub a" style="--d:.8s">지금 보시는 장면은 연출이 아니라,<br>실제 서비스가 일을 처리하는 과정을 그대로 옮긴 것입니다.</p>
   </section>
 
   <!-- 1 온보딩 -->
@@ -401,10 +416,10 @@ addEventListener("DOMContentLoaded", () => {
 </div>
 
 <div class="controls">
-  <button class="pp" id="ppBtn" aria-label="재생/일시정지">⏸</button>
+  <button class="pp" id="ppBtn" aria-label="일시정지"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.2" y="4.6" width="4" height="14.8" rx="1.6"/><rect x="13.8" y="4.6" width="4" height="14.8" rx="1.6"/></svg></button>
   <div class="prog">
     <div class="names" id="names"></div>
-    <div class="bar"><i id="pbar"></i></div>
+    <div class="seek" id="seek" aria-label="재생 위치 이동"><div class="bar"><i id="pbar"></i></div></div>
   </div>
   <div class="tlabel" id="tlabel">0:00</div>
 </div>
@@ -474,15 +489,27 @@ function resetScene(i) {
   void sc.offsetWidth;
 }
 
-function runActions(i) {
+function fireAction(a) {
+  if (a.type) typeText(a.type);
+  if (a.show) { const el = document.getElementById(a.show); el.style.opacity = 1; el.style.transform = "none"; }
+  if (a.cls) document.getElementById(a.cls.el).classList.add(a.cls.add);
+  if (a.count) countUp(a.count);
+}
+
+// 시점(off)을 이미 지난 액션은 완료 상태로 즉시 적용 — 시킹·재개 시 사용
+function applyAction(a) {
+  if (a.type) { const el = document.getElementById(a.type.el); el.textContent = a.type.text; el.classList.remove("typing"); }
+  if (a.show) { const el = document.getElementById(a.show); el.style.opacity = 1; el.style.transform = "none"; }
+  if (a.cls) document.getElementById(a.cls.el).classList.add(a.cls.add);
+  if (a.count) document.getElementById(a.count.el).textContent = a.count.fmt(a.count.to);
+}
+
+// 장면 i를 경과 시점 off(ms)에 맞춘다: 지난 액션은 즉시 적용, 남은 액션은 남은 시간만큼 예약
+function syncActions(i, off) {
   (ACTIONS[i] || []).forEach(a => {
     const at = reduce ? 0 : a.at;
-    timers.push(setTimeout(() => {
-      if (a.type) typeText(a.type);
-      if (a.show) { const el = document.getElementById(a.show); el.style.opacity = 1; el.style.transform = "none"; }
-      if (a.cls) document.getElementById(a.cls.el).classList.add(a.cls.add);
-      if (a.count) countUp(a.count);
-    }, at));
+    if (at <= off) applyAction(a);
+    else timers.push(setTimeout(() => fireAction(a), at - off));
   });
 }
 
@@ -509,41 +536,102 @@ function countUp({ el, to, dur, fmt }) {
   })(t0);
 }
 
-function goto(i, forcePlay) {
+// 전체 타임라인의 임의 시점(ms)으로 이동 — 클릭·드래그 시킹과 goto가 공유
+// auto=true는 자동 재생에 의한 전환(원래 템포), 그 외는 수동 이동(압축 연출)
+function seekTo(ms, auto) {
+  document.getElementById("stage").classList.toggle("quick", !auto);
+  ms = Math.max(0, Math.min(ms, TOTAL - 1));
   clearTimers();
-  if (cur >= 0) scenes[cur].classList.remove("on");
+  let i = 0, acc = 0;
+  while (i < scenes.length - 1 && ms - acc >= DUR[i]) { acc += DUR[i]; i++; }
+  const off = ms - acc;
+  const prevOff = cur < 0 ? 0 : (playing ? performance.now() - sceneStart : sceneElapsed);
+  // 장면이 바뀌거나 같은 장면에서 뒤로 가면 등장 애니메이션부터 리셋
+  if (cur !== i || off < prevOff) {
+    if (cur >= 0 && cur !== i) scenes[cur].classList.remove("on");
+    cur = i;
+    resetScene(i);
+    scenes[i].classList.add("on");
+  }
   cur = i;
-  resetScene(i);
-  scenes[i].classList.add("on");
   nameBtns.forEach((b, j) => b.classList.toggle("cur", j === i));
-  sceneStart = performance.now(); sceneElapsed = 0;
-  runActions(i);
-  if (forcePlay && !playing) setPlaying(true);
-  scheduleAdvance();
+  sceneStart = performance.now() - off; sceneElapsed = off;
+  syncActions(i, off);
+  if (playing) scheduleAdvance();
+}
+
+function goto(i, forcePlay, auto) {
+  if (forcePlay && !playing) { playing = true; updatePP(); }
+  seekTo(DUR.slice(0, i).reduce((a, b) => a + b, 0), auto);
 }
 
 function scheduleAdvance() {
   if (!playing) return;
   const remain = DUR[cur] - sceneElapsed;
   timers.push(setTimeout(() => {
-    if (cur < scenes.length - 1) goto(cur + 1);
+    if (cur < scenes.length - 1) goto(cur + 1, false, true);
     else setPlaying(false); // 마지막 장면에서 정지 (다시 보기 버튼)
   }, Math.max(60, remain)));
 }
 
-function setPlaying(p) {
-  playing = p;
-  document.getElementById("ppBtn").textContent = p ? "⏸" : "▶";
-  if (p) { sceneStart = performance.now() - sceneElapsed; scheduleAdvance(); }
-  else { sceneElapsed = performance.now() - sceneStart; clearTimers(); }
+const ICON_PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.2" y="4.6" width="4" height="14.8" rx="1.6"/><rect x="13.8" y="4.6" width="4" height="14.8" rx="1.6"/></svg>';
+const ICON_PLAY  = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="margin-left:2px"><path d="M8.6 5.4c0-1.2 1.3-1.9 2.3-1.3l10 6.6c.9.6.9 2 0 2.6l-10 6.6c-1 .6-2.3-.1-2.3-1.3V5.4z"/></svg>';
+
+function updatePP() {
+  const b = document.getElementById("ppBtn");
+  b.innerHTML = playing ? ICON_PAUSE : ICON_PLAY;
+  b.setAttribute("aria-label", playing ? "일시정지" : "재생");
 }
 
-document.getElementById("ppBtn").onclick = () => setPlaying(!playing);
+function setPlaying(p) {
+  playing = p;
+  updatePP();
+  if (p) {
+    // 일시정지가 액션 타이머를 지웠으므로, 현재 경과 시점 기준으로 재동기화
+    sceneStart = performance.now() - sceneElapsed;
+    clearTimers();
+    syncActions(cur, sceneElapsed);
+    scheduleAdvance();
+  } else { sceneElapsed = performance.now() - sceneStart; clearTimers(); }
+}
+
+function togglePlay() {
+  // 끝까지 본 뒤 재생 버튼 → 처음부터 다시
+  if (!playing && cur === scenes.length - 1 && sceneElapsed >= DUR[cur] - 80) { goto(0, true); return; }
+  setPlaying(!playing);
+}
+
+document.getElementById("ppBtn").onclick = togglePlay;
 document.addEventListener("keydown", e => {
-  if (e.key === " ") { e.preventDefault(); setPlaying(!playing); }
+  if (e.key === " ") { e.preventDefault(); togglePlay(); }
   if (e.key === "ArrowRight" && cur < scenes.length - 1) goto(cur + 1, false);
   if (e.key === "ArrowLeft" && cur > 0) goto(cur - 1, false);
 });
+
+// ───────── 진행 바 시킹 (클릭·드래그) ─────────
+const seekEl = document.getElementById("seek");
+let scrubbing = false, wasPlaying = false;
+function seekFromEvent(e) {
+  const r = seekEl.getBoundingClientRect();
+  const p = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+  seekTo(p * TOTAL);
+}
+seekEl.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  scrubbing = true; wasPlaying = playing;
+  if (playing) setPlaying(false);   // 드래그 중엔 진행 정지, 놓으면 원상태 복귀
+  seekEl.classList.add("drag");
+  seekEl.setPointerCapture(e.pointerId);
+  seekFromEvent(e);
+});
+seekEl.addEventListener("pointermove", e => { if (scrubbing) seekFromEvent(e); });
+const endScrub = () => {
+  if (!scrubbing) return;
+  scrubbing = false; seekEl.classList.remove("drag");
+  if (wasPlaying) setPlaying(true);
+};
+seekEl.addEventListener("pointerup", endScrub);
+seekEl.addEventListener("pointercancel", endScrub);
 
 // 진행 바 + 시간
 (function raf(t) {
@@ -558,8 +646,8 @@ document.addEventListener("keydown", e => {
 })();
 
 if (reduce) playing = false;
-goto(0, false);
-if (!playing) document.getElementById("ppBtn").textContent = "▶";
+goto(0, false, true);   // 첫 진입은 원래 템포의 인트로
+updatePP();
 </script>
 </body>
 </html>
