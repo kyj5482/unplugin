@@ -100,6 +100,32 @@ def cmd_kpi(_args) -> int:
     return 0
 
 
+def cmd_serve(args) -> int:
+    from . import service
+    return service.run(interval=args.interval, once=args.once)
+
+
+def cmd_mail_fetch(_args) -> int:
+    fn = _optional("mail_io", "fetch_new")
+    if fn is None:
+        return 0
+    result = fn()
+    if result is not None:
+        print(f"수신: {result}")
+    return 0
+
+
+def cmd_mail_send(args) -> int:
+    fn = _optional("mail_io", "send_pending")
+    if fn is None:
+        return 0
+    result = fn(dry_run=args.dry_run)
+    if result is not None:
+        label = "발신 대상(dry-run)" if args.dry_run else "발신"
+        print(f"{label}: {result}")
+    return 0
+
+
 def _recent_flows(limit: int = 5) -> list[tuple[str, str, str]]:
     """(파일 stem, 제목, 상태) 최신순 — common 경로만 사용해 직접 파싱."""
     if not common.FLOWS.exists():
@@ -168,6 +194,22 @@ def build_parser() -> argparse.ArgumentParser:
     ob = sub.add_parser("onboard", help="고객 프로필 생성 (온보딩 JSON)")
     ob.add_argument("json_path", help="온보딩 입력 JSON 파일 경로")
     ob.set_defaults(fn=cmd_onboard)
+
+    sv = sub.add_parser(
+        "serve", help="서비스 데몬 — 수신→처리→큐→발신→대시보드 사이클 반복")
+    sv.add_argument("--interval", type=int, default=60,
+                    help="사이클 간격(초, 기본 60)")
+    sv.add_argument("--once", action="store_true",
+                    help="1사이클만 실행 후 종료")
+    sv.set_defaults(fn=cmd_serve)
+
+    sub.add_parser("mail-fetch", help="IMAP 실수신 1회 (v0.5 — mail_io)"
+                   ).set_defaults(fn=cmd_mail_fetch)
+
+    ms = sub.add_parser("mail-send", help="outbox 실발신 (v0.5 — mail_io)")
+    ms.add_argument("--dry-run", action="store_true",
+                    help="실발신 없이 발신 대상만 확인")
+    ms.set_defaults(fn=cmd_mail_send)
 
     sub.add_parser("kpi", help="주간 KPI 리포트 생성").set_defaults(fn=cmd_kpi)
     sub.add_parser("status", help="프로필·큐·outbox·최근 Flow 요약"

@@ -12,4 +12,5 @@ data/customers/*
 !data/customers/demo/
 data/dashboard.html
 data/evidence/
-secrets/
+secrets/*
+!secrets/mail.example.json

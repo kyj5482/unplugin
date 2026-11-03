@@ -18,10 +18,12 @@
 2. ~~슬라이드형 홈페이지 + 언플러그 타입 테스트 웹 구현 (docs/)~~ (완료 — 실측 데이터 교체는 남음)
 3. ~~운영 코어 v0 (`core/`)~~ (완료 2026-11-02 — 이메일 파이프라인·큐·승인 게이트·Flow 상태 메일·
    대시보드·온보딩·KPI. 통합 검증: `python3 tests/e2e_runner.py` 15/15, 모듈: `core/selftest_*.py` 57건)
-4. AI 브라우저 세션 연동 PoC (egolite 또는 대안, 1개 위임 업무 자동화) — queue.run_tick()의
-   실행 시뮬레이션 지점을 실 실행기로 교체. 증빙 첨부(TC-DEL-010)·인젝션 방어(TC-DEL-011) 포함
-5. 이메일 v0.5 — 단일 메일박스 + 서브어드레싱(`+고객id@`) IMAP 폴링 → v1 — 전용 도메인
-   + Cloudflare Email Routing 캐치올 + Worker 수신, Resend/SES 발신 (상세: ops/email-channel.md)
+4. ~~실행기 구조 전환 (`core/executor.py`)~~ (완료 2026-11-03 — 큐 실행 지점을 교체형 실행기로.
+   맥북에서 `pip3 install playwright` + `UNPLUGIN_REAL_BROWSER=1`이면 실제 Chromium 수행 + 증빙
+   스크린샷(data/evidence/). **맥북 실증과 플러그인별 실행 스크립트 확충은 남음** — TC-DEL 계열)
+5. ~~이메일 v0.5 (`core/mail_io.py`) + 서비스 데몬 (`core/service.py`)~~ (완료 2026-11-03 —
+   IMAP 수신/SMTP 발신·스레딩 헤더·서브어드레싱, `python3 -m core serve`. **Gmail 계정 연결 실증은
+   SETUP.md 따라 대표가 수행**) → v1 — 전용 도메인 + Cloudflare Email Routing (ops/email-channel.md)
 
 ## 운영 코어 사용법 (대표 일상 루프)
 

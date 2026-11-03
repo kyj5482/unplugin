@@ -9,7 +9,7 @@
 """
 from __future__ import annotations
 
-from . import approval, common, flow, notify
+from . import approval, common, executor, flow, notify
 
 # 월 위임 시간 한도 (ops/pricing.md: One ~10h / Flow ~40h / Life 무제한급)
 TIER_HOURS = {"one": 10.0, "flow": 40.0, "life": 999.0}
@@ -122,11 +122,10 @@ def run_tick() -> dict:
 def _execute(it: dict, prof: dict, stats: dict) -> None:
     fid = it["flow"]
     if it.get("approved") is True:
-        # 고객이 명시적으로 승인 → 결제 진행 후 완료
+        # 고객이 명시적으로 승인 → 결제 진행 후 실행 (게이트 기록은 그대로 유지)
         flow.add_step(fid, "it",
                       f"고객 승인 확인 — 결제 진행: {it['summary']} / {it['amount']}원")
-        _finish(it, prof, f"결제 완료: {it['summary']} / {it['amount']}원 (고객 승인 후 진행)")
-        stats["executed"] += 1
+        _execute_via_executor(it, prof, stats)
         return
     if it.get("approved") is False:
         # 고객 거부 → 결제 없이 안전 종결, 사용량 미차감
@@ -162,17 +161,43 @@ def _execute(it: dict, prof: dict, stats: dict) -> None:
             stats["timeouts"] += 1
         stats["waiting"] += 1
         return
-    # amount == 0 → 바로 실행·완료
-    flow.add_step(fid, "it", f"실행 요약: {it['summary']} 처리 완료")
-    _finish(it, prof, f"완료: {it['summary']}")
-    stats["executed"] += 1
+    # amount == 0 → 바로 실행·완료 (실행기 경유)
+    _execute_via_executor(it, prof, stats)
 
 
-def _finish(it: dict, prof: dict, summary: str) -> None:
-    """done 이동 + flow 완결 + 사용량 차감."""
+def _execute_via_executor(it: dict, prof: dict, stats: dict) -> None:
+    """게이트 통과 후의 실제 수행 — executor 경유 (TC-DEL-010 지향).
+
+    성공: 실행 요약 step(+증빙 노트) → done 이동 → flow 완결.
+    실패: 사유 step 기록, active 유지 + fail_count 증가,
+          2회 이상이면 "확인 필요" 전환·대안 안내 (TC-DEL-004 정신).
+    """
+    fid = it["flow"]
+    result = executor.run(it, prof)
+    note = executor.evidence_note(result)
+    if result["ok"]:
+        flow.add_step(fid, "it", f"실행 요약: {result['summary']} / {note}")
+        _finish(it, prof, result["summary"], reclaimed=result.get("reclaimed"))
+        stats["executed"] += 1
+        return
+    it["fail_count"] = int(it.get("fail_count", 0)) + 1
+    flow.add_step(fid, "it",
+                  f"실행 실패({it['fail_count']}회) — 안전하게 중단: {result['summary']} / {note}")
+    if it["fail_count"] >= 2:
+        flow.ask_customer(fid, (
+            f"\"{it['summary']}\" 수행이 반복 실패해 결제·실행 없이 보류 중이에요. "
+            f"사유: {result['summary']} / "
+            "대안: ① 다른 사이트·시간대로 재시도 ② 조건을 바꿔 다시 위임 ③ 취소. "
+            "원하시는 번호(또는 \"취소\")로 이 메일에 회신해 주세요."))
+    common.write_json(common.queue_item_path("active", it["id"]), it)
+    stats["waiting"] += 1
+
+
+def _finish(it: dict, prof: dict, summary: str, reclaimed: float | None = None) -> None:
+    """done 이동 + flow 완결 + 사용량 차감 (reclaimed 미지정 시 기존 est_hours 로직)."""
     it["charged"] = True
     common.move_queue_item(it, "active", "done")
-    est = float(it.get("est_hours") or 0.0)
+    est = float(reclaimed if reclaimed is not None else (it.get("est_hours") or 0.0))
     flow.complete(it["flow"], summary, reclaimed_hours=est if est > 0 else None)
     _charge_usage(it["customer"], est, prof)
 

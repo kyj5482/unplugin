@@ -52,6 +52,9 @@ python3 tests/e2e_runner.py  # 전 구간 통합 검증
 **고객은 메일함으로 전체 흐름을 본다**: 모든 Flow 전환(접수→진행→확인→완료)마다 같은
 스레드로 상태 메일 + 타임라인이 발송된다(`data/outbox/`에서 확인).
 
+**실서비스 모드**: `python3 -m core serve` 가 실제 메일박스(IMAP/SMTP)와 브라우저 실행
+(Playwright, 증빙 스크린샷)까지 묶어 데몬으로 돈다 — 맥북 설정 가이드: [`SETUP.md`](SETUP.md)
+
 ## 시작하기 (대표용)
 
 맥북에서 Claude Code로 이 저장소를 열고:
