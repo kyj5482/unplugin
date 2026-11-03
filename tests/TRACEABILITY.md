@@ -49,6 +49,7 @@
 | UC-G4 | 이메일 규칙 실행 | TC-EML-004 | P0 | it, product | 규칙 포맷 + 조건 판정 |
 | UC-G5 | 발신자 검증·인젝션 방어 | TC-EML-005 | P0 | it | 검토함 격리 + 신뢰 등급 |
 | UC-G6 | 메일 기반 흐름 가시성 | TC-EML-006 | P0 | it | core/notify.py 상태 메일 + 타임라인 |
+| UC-G7 | 업무 자동 분류·신규 접수 | TC-EML-007 | P0 | it, product | core/classify.py + plugins/ 카탈로그 |
 
 ## 커버리지 현황
 

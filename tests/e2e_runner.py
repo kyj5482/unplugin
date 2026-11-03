@@ -88,10 +88,20 @@ def main() -> int:
     drop_mail("who@ever.example", "ghost@unplugin.me", "아무거나", "본문")
     drop_mail("minseo@example.com", a_addr, "Fwd: 공지", "> 원문 공지만 있고 지시 없음")
     drop_mail("minseo@example.com", a_addr, "Fwd: 생수 정기주문", "늘 먹던 걸로 주문해줘\n금액: 20000")
+    drop_mail("minseo@example.com", a_addr, "Fwd: 원데이 클래스 환불", "클래스 환불 분쟁 해결해줘")
 
     actions = [r["action"] for r in mailbox.process_inbox()]
     check("TC-EML-002", "포워딩 위임 접수(2건) + 모호 건 1회 질문",
           actions.count("delegated") == 2 and actions.count("clarify") == 1, str(actions))
+    new_mail = [m for m in outbox_mails() if "새로운 유형" in m["subject"]]
+    pend_kinds = [i["kind"] for i in common.list_queue("pending")]
+    check("TC-EML-007", "자동 분류 — 지원 건은 플러그인 kind로 접수, 미지원 건은 신규 안내+미실행",
+          actions.count("new_type") == 1 and len(new_mail) == 1
+          and "1~3일" in new_mail[0]["body"]
+          and sum(1 for k in pend_kinds if k.startswith("plugin:")) == 2
+          and not any("환불" in i["summary"] for i in common.list_queue("pending"))
+          and any("신규 플러그인 검토" in p.read_text(encoding="utf-8")
+                  for p in common.FLOWS.glob("*환불*.md")), str(pend_kinds))
     check("TC-EML-004", "규칙 조건 분기 — 15%만 발동, 9%는 조용히 보관",
           actions.count("rule_triggered") == 1 and actions.count("archived") == 1)
     check("TC-EML-005", "미등록 발신 자동 실행 0건 — 격리 + 고객 통지",

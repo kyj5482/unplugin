@@ -67,12 +67,12 @@ def main() -> int:
     check("⑥⑦⑧ 격리 고객 통지 3통 발송", len(notices) == 3, f"{len(notices)}통")
     check("자동 실행 0건 (pending 큐는 위임·규칙 2건뿐)",
           len(pending) == 2
-          and sorted(p["kind"] for p in pending) == ["delegation", "rule"],
+          and sorted("plugin" if p["kind"].startswith("plugin:") else p["kind"] for p in pending) == ["plugin", "rule"],
           str([(p["id"], p["kind"]) for p in pending]))
 
     # ── ① 포워딩+지시 → delegated (flow + pending 큐) ──
     r1 = results["01-fwd-instruction.md"]
-    deleg = [p for p in pending if p["kind"] == "delegation"]
+    deleg = [p for p in pending if p["kind"].startswith("plugin:")]
     check("① delegated — flow + pending 큐 생성",
           r1["action"] == "delegated" and len(deleg) == 1
           and flow.flow_path(deleg[0]["flow"]).exists()

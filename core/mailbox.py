@@ -18,7 +18,7 @@ import re
 import shutil
 from pathlib import Path
 
-from . import common, flow, notify
+from . import classify, common, flow, notify
 
 # 본문 속 명령은 지시가 아니라 데이터다 (TC-DEL-011 동일 방어)
 INJECTION_PATTERNS = (
@@ -76,7 +76,7 @@ def _enqueue(customer_id: str, title: str, kind: str, flow_id: str, body: str) -
     common.write_json(common.queue_item_path("pending", item_id), {
         "id": item_id,
         "customer": customer_id,
-        "created": common.iso(),
+        "created": common.now().isoformat(),  # 마이크로초 포함 — 같은 초 접수도 FIFO 보장
         "kind": kind,
         "summary": title,
         "flow": flow_id,
@@ -154,10 +154,31 @@ def _delegate(path: Path, mail: dict, customer: dict) -> dict:
             path.unlink()
             return {"mail": path.name, "action": "deny_check",
                     "detail": f"금지 목록 확인 요청 — flow {fid}"}
-        _enqueue(cid, title, "delegation", fid, mail["body"])
+        # 업무 플러그인 자동 분류 — 고객은 목록에서 고르지 않는다 (UC-G7)
+        hit = classify.match(f"{title} {instruction}")
+        if classify.is_supported(hit):
+            pl = hit["plugin"]
+            flow.add_step(fid, "concierge",
+                          f"업무 분류: '{pl['name']}' 플러그인 ({pl['status']}) — 바로 진행합니다",
+                          notify_customer=True)
+            _enqueue(cid, title, f"plugin:{pl['id']}", fid, mail["body"])
+            path.unlink()
+            return {"mail": path.name, "action": "delegated",
+                    "detail": f"위임 접수 — flow {fid} / 플러그인 {pl['id']} / 지시: {instruction[:60]}"}
+        # 신규 업무 유형: 바로 실행하지 않고 상품기획·IT 검토로 — 고객에겐 준비 시간 안내
+        why = "준비 중(planned)인 업무" if hit else "카탈로그에 없는 새로운 유형"
+        flow.add_step(fid, "concierge", f"신규 업무 유형 접수 — {why}. 플러그인 백로그로 등록",
+                      handoff="concierge → product/it: 신규 플러그인 검토·우선순위 결정",
+                      notify_customer=False)
+        notify.send_flow_update(
+            cid, fid, flow.flow_path(fid), "접수",
+            f"\"{title}\" — 새로운 유형의 업무예요",
+            "이건 아직 저희가 바로 처리하도록 준비된 유형이 아니에요.\n"
+            "처리 방식을 준비하는 데 보통 1~3일이 걸립니다. 준비가 끝나면 "
+            "이 스레드로 알려드리고 바로 시작할게요. 그동안 요금은 차감되지 않아요.")
         path.unlink()
-        return {"mail": path.name, "action": "delegated",
-                "detail": f"위임 접수 — flow {fid} / 지시: {instruction[:60]}"}
+        return {"mail": path.name, "action": "new_type",
+                "detail": f"신규 업무 접수 — flow {fid} ({why})"}
 
     # 지시가 비어 모호 → 회신으로 1회만 질문
     flow.ask_customer(fid, CLARIFY_QUESTION)

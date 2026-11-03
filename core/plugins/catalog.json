@@ -1,0 +1,1921 @@
+{
+  "version": "2026-11-03",
+  "comment": "업무 플러그인 전체 카탈로그 — 분류기(core/classify.py)가 포워딩 메일을 이 카탈로그에 매칭한다. 시드 10종(00-seed.json)과 id 호환. 사람용 요약: ops/usecases.md",
+  "plugins": [
+    {
+      "id": "grocery-recurring",
+      "name": "생필품·식료품 정기 주문",
+      "category": "쇼핑",
+      "triggers": [
+        "장보기",
+        "생필품",
+        "정기 주문",
+        "생수",
+        "쿠팡",
+        "마트"
+      ],
+      "examples": [
+        "늘 먹던 생수 주문해줘",
+        "이번 주 장보기 리스트 주문"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 1.5,
+      "status": "beta"
+    },
+    {
+      "id": "gift-shopping",
+      "name": "선물 준비·주문",
+      "category": "쇼핑",
+      "triggers": [
+        "선물",
+        "기념일",
+        "답례품",
+        "집들이 선물",
+        "생일 선물"
+      ],
+      "examples": [
+        "다음 주 어머니 생신 선물 골라서 주문해줘",
+        "돌잔치 답례품 30개 준비해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.5,
+      "status": "beta"
+    },
+    {
+      "id": "kids-supplies-reorder",
+      "name": "육아용품 재구매",
+      "category": "쇼핑",
+      "triggers": [
+        "기저귀",
+        "분유",
+        "물티슈",
+        "아기 용품",
+        "유아용품"
+      ],
+      "examples": [
+        "기저귀 떨어지기 전에 같은 걸로 주문해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.5,
+      "status": "beta"
+    },
+    {
+      "id": "pet-supplies-reorder",
+      "name": "반려동물 용품 주문",
+      "category": "쇼핑",
+      "triggers": [
+        "사료",
+        "배변패드",
+        "고양이 모래",
+        "강아지 간식",
+        "펫용품"
+      ],
+      "examples": [
+        "사료 3주마다 자동으로 주문해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.4,
+      "status": "beta"
+    },
+    {
+      "id": "flower-cake-order",
+      "name": "꽃·케이크·화환 주문",
+      "category": "쇼핑",
+      "triggers": [
+        "꽃배달",
+        "꽃다발",
+        "케이크 주문",
+        "화환",
+        "개업 축하"
+      ],
+      "examples": [
+        "금요일 오후에 사무실로 꽃배달 보내줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "return-exchange",
+      "name": "반품·교환 접수",
+      "category": "쇼핑",
+      "triggers": [
+        "반품",
+        "교환 신청",
+        "수거 신청",
+        "환불 접수",
+        "오배송"
+      ],
+      "examples": [
+        "어제 온 신발 사이즈 교환 신청해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.4,
+      "status": "beta"
+    },
+    {
+      "id": "restock-watch",
+      "name": "품절 상품 재입고 감시·구매",
+      "category": "쇼핑",
+      "triggers": [
+        "재입고",
+        "품절",
+        "입고 알림",
+        "드롭",
+        "발매"
+      ],
+      "examples": [
+        "이 상품 재입고되면 바로 사줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "coupon-points-apply",
+      "name": "쿠폰·적립금 챙겨 쓰기",
+      "category": "쇼핑",
+      "triggers": [
+        "쿠폰",
+        "적립금",
+        "할인코드",
+        "포인트 사용",
+        "이벤트 응모"
+      ],
+      "examples": [
+        "이번 주문에 쓸 수 있는 쿠폰 다 챙겨서 적용해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.4,
+      "status": "beta"
+    },
+    {
+      "id": "appliance-purchase",
+      "name": "가전·대형 상품 구매 대행",
+      "category": "쇼핑",
+      "triggers": [
+        "가전",
+        "냉장고",
+        "세탁기",
+        "에어컨",
+        "설치 일정"
+      ],
+      "examples": [
+        "세탁기 후보 3개 추려서 설치 날짜까지 잡아줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "grocery-fresh-sub",
+      "name": "신선식품·반찬 구독 관리",
+      "category": "쇼핑",
+      "triggers": [
+        "반찬 구독",
+        "밀키트",
+        "새벽배송",
+        "식단 배송"
+      ],
+      "examples": [
+        "다음 주 밀키트 구성 바꿔서 주문해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.4,
+      "status": "beta"
+    },
+    {
+      "id": "restaurant-booking",
+      "name": "식당 예약",
+      "category": "예약",
+      "triggers": [
+        "식당",
+        "예약",
+        "맛집",
+        "레스토랑",
+        "회식 장소",
+        "캐치테이블"
+      ],
+      "examples": [
+        "토요일 저녁 4명 식당 예약해줘",
+        "부모님 모실 조용한 맛집 잡아줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.5,
+      "status": "beta"
+    },
+    {
+      "id": "salon-booking",
+      "name": "미용실·네일 예약",
+      "category": "예약",
+      "triggers": [
+        "미용실",
+        "헤어",
+        "네일",
+        "펌",
+        "커트"
+      ],
+      "examples": [
+        "다니던 미용실 토요일 오전으로 잡아줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "ticket-booking",
+      "name": "공연·영화 예매",
+      "category": "예약",
+      "triggers": [
+        "공연",
+        "콘서트",
+        "뮤지컬",
+        "예매",
+        "영화표"
+      ],
+      "examples": [
+        "이번 뮤지컬 주말 2자리 예매해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.4,
+      "status": "beta"
+    },
+    {
+      "id": "activity-class-booking",
+      "name": "원데이클래스·체험 예약",
+      "category": "예약",
+      "triggers": [
+        "원데이클래스",
+        "클래스 예약",
+        "공방",
+        "체험 예약"
+      ],
+      "examples": [
+        "주말에 둘이 갈 도자기 공방 예약해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "camping-booking",
+      "name": "캠핑장·글램핑 예약",
+      "category": "예약",
+      "triggers": [
+        "캠핑장",
+        "글램핑",
+        "사이트 예약",
+        "차박"
+      ],
+      "examples": [
+        "다음 달 첫 주 글램핑 자리 잡아줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "sports-facility-booking",
+      "name": "운동 시설 예약",
+      "category": "예약",
+      "triggers": [
+        "테니스장",
+        "풋살장",
+        "수영 강습",
+        "코트 예약",
+        "티타임"
+      ],
+      "examples": [
+        "일요일 아침 테니스 코트 2시간 예약해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "photo-studio-booking",
+      "name": "사진 촬영 예약",
+      "category": "예약",
+      "triggers": [
+        "스튜디오",
+        "가족사진",
+        "증명사진",
+        "촬영 예약",
+        "스냅"
+      ],
+      "examples": [
+        "가족사진 스튜디오 견적 받아서 예약해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "beta"
+    },
+    {
+      "id": "pet-service-booking",
+      "name": "반려동물 미용·호텔 예약",
+      "category": "예약",
+      "triggers": [
+        "애견미용",
+        "펫호텔",
+        "애견유치원",
+        "동물병원"
+      ],
+      "examples": [
+        "연휴 동안 맡길 펫호텔 알아보고 예약해줘"
+      ],
+      "executor": "call",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "planned"
+    },
+    {
+      "id": "waiting-queue",
+      "name": "웨이팅·대기 등록",
+      "category": "예약",
+      "triggers": [
+        "웨이팅",
+        "줄서기",
+        "대기 등록",
+        "오픈런"
+      ],
+      "examples": [
+        "그 집 원격 웨이팅 열리면 바로 걸어줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "insurance-compare",
+      "name": "보험료 비교·전환",
+      "category": "금융·청구",
+      "triggers": [
+        "보험",
+        "보험료",
+        "보험 전환",
+        "갱신 안내",
+        "다이렉트"
+      ],
+      "examples": [
+        "자동차보험 갱신 전에 더 싼 데 찾아서 전환해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.5,
+      "status": "beta"
+    },
+    {
+      "id": "telecom-dispute",
+      "name": "통신요금 분쟁·이의신청",
+      "category": "금융·청구",
+      "triggers": [
+        "통신",
+        "통신비",
+        "요금",
+        "이의신청",
+        "부당 청구"
+      ],
+      "examples": [
+        "이번 달 요금 이상해, 이의신청 해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "bill-watch",
+      "name": "청구서 요약·인상 감시",
+      "category": "금융·청구",
+      "triggers": [
+        "청구서",
+        "요금 인상",
+        "인상",
+        "구독료",
+        "명세서"
+      ],
+      "examples": [
+        "청구서 오면 지난달 대비 10% 이상 오를 때만 알려줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "available"
+    },
+    {
+      "id": "telecom-plan-optimize",
+      "name": "통신 요금제 최적화",
+      "category": "금융·청구",
+      "triggers": [
+        "요금제 변경",
+        "알뜰폰",
+        "데이터 요금제",
+        "결합할인",
+        "약정 만료"
+      ],
+      "examples": [
+        "약정 끝나는데 알뜰폰 포함해서 요금제 갈아타줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "insurance-claim",
+      "name": "보험금 청구 대행",
+      "category": "금융·청구",
+      "triggers": [
+        "보험금 청구",
+        "실비",
+        "실손",
+        "진료비 영수증",
+        "청구 서류"
+      ],
+      "examples": [
+        "이 진료비 영수증으로 실비 청구해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "card-benefit-optimize",
+      "name": "카드 혜택·연회비 점검",
+      "category": "금융·청구",
+      "triggers": [
+        "카드 혜택",
+        "카드 추천",
+        "연회비",
+        "전월실적",
+        "카드 해지"
+      ],
+      "examples": [
+        "안 쓰는 카드 연회비 나가는 거 정리해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "tax-filing-support",
+      "name": "세금 신고·연말정산 챙기기",
+      "category": "금융·청구",
+      "triggers": [
+        "연말정산",
+        "홈택스",
+        "종합소득세",
+        "세금 신고",
+        "환급액"
+      ],
+      "examples": [
+        "연말정산 빠진 공제 없는지 확인해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "planned"
+    },
+    {
+      "id": "hidden-refund-recovery",
+      "name": "숨은 환급금·미수령 찾기",
+      "category": "금융·청구",
+      "triggers": [
+        "숨은 환급금",
+        "미환급",
+        "휴면예금",
+        "미수령",
+        "보험금 찾기"
+      ],
+      "examples": [
+        "내 이름으로 안 찾아간 돈 있는지 다 조회해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "beta"
+    },
+    {
+      "id": "auto-transfer-setup",
+      "name": "자동이체·납부 수단 정리",
+      "category": "금융·청구",
+      "triggers": [
+        "자동이체",
+        "납부 수단 변경",
+        "계좌 변경",
+        "출금 계좌"
+      ],
+      "examples": [
+        "관리비 자동이체 새 계좌로 바꿔줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "planned"
+    },
+    {
+      "id": "inbox-cleanup",
+      "name": "메일함 정리·구독 해지",
+      "category": "구독·계정",
+      "triggers": [
+        "메일 정리",
+        "구독 해지",
+        "뉴스레터",
+        "수신 거부",
+        "스팸"
+      ],
+      "examples": [
+        "안 읽는 뉴스레터 다 해지해줘",
+        "메일함 좀 정리해줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.5,
+      "status": "available"
+    },
+    {
+      "id": "subscription-audit",
+      "name": "구독 서비스 전수 점검",
+      "category": "구독·계정",
+      "triggers": [
+        "구독 점검",
+        "OTT",
+        "중복 구독",
+        "안 쓰는 구독",
+        "구독 목록"
+      ],
+      "examples": [
+        "결제되는 구독 전부 뽑아서 안 쓰는 거 알려줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "membership-cancel",
+      "name": "멤버십·서비스 해지 대행",
+      "category": "구독·계정",
+      "triggers": [
+        "멤버십 해지",
+        "구독 취소",
+        "해지 방어",
+        "위약금 확인"
+      ],
+      "examples": [
+        "이 멤버십 해지해줘, 위약금 있으면 먼저 알려줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "free-trial-watch",
+      "name": "무료 체험 만료 감시",
+      "category": "구독·계정",
+      "triggers": [
+        "무료 체험",
+        "체험판",
+        "자동 결제 전환",
+        "체험 해지"
+      ],
+      "examples": [
+        "무료 체험 끝나기 전날 알려주고, 안 쓰면 해지해줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "available"
+    },
+    {
+      "id": "points-expiry-watch",
+      "name": "포인트·마일리지 소멸 감시",
+      "category": "구독·계정",
+      "triggers": [
+        "포인트 소멸",
+        "마일리지 만료",
+        "소멸 예정",
+        "유효기간"
+      ],
+      "examples": [
+        "소멸 예정 포인트 생기면 모아서 알려줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "available"
+    },
+    {
+      "id": "dormant-account-cleanup",
+      "name": "휴면 계정·회원 탈퇴 정리",
+      "category": "구독·계정",
+      "triggers": [
+        "휴면 계정",
+        "회원 탈퇴",
+        "계정 정리",
+        "개인정보 삭제"
+      ],
+      "examples": [
+        "휴면 안내 온 사이트들 다 탈퇴 처리해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "app-refund-request",
+      "name": "인앱 결제·앱 환불 요청",
+      "category": "구독·계정",
+      "triggers": [
+        "인앱 결제",
+        "앱 환불",
+        "앱스토어 환불",
+        "결제 취소"
+      ],
+      "examples": [
+        "애가 실수로 결제한 인앱 결제 환불받아줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "beta"
+    },
+    {
+      "id": "account-security-check",
+      "name": "계정 보안·유출 점검",
+      "category": "구독·계정",
+      "triggers": [
+        "비밀번호 변경",
+        "유출 확인",
+        "보안 점검",
+        "2단계 인증"
+      ],
+      "examples": [
+        "유출 뉴스 난 사이트에 내 계정 있는지 확인해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "planned"
+    },
+    {
+      "id": "utility-pay",
+      "name": "공과금 납부 관리",
+      "category": "행정·민원",
+      "triggers": [
+        "공과금",
+        "납부",
+        "전기요금",
+        "가스요금",
+        "수도요금",
+        "관리비"
+      ],
+      "examples": [
+        "관리비 매달 확인하고 납부해줘",
+        "전기요금 고지서 처리해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "gov24-certificates",
+      "name": "정부 증명서 발급",
+      "category": "행정·민원",
+      "triggers": [
+        "정부24",
+        "등본",
+        "주민등록",
+        "가족관계증명서",
+        "초본"
+      ],
+      "examples": [
+        "등본 한 통 떼서 보내줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "planned"
+    },
+    {
+      "id": "civil-complaint-file",
+      "name": "민원·신고 접수",
+      "category": "행정·민원",
+      "triggers": [
+        "민원",
+        "국민신문고",
+        "신고 접수",
+        "불편 신고",
+        "소음 신고"
+      ],
+      "examples": [
+        "집 앞 가로등 고장 민원 넣어줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "fine-payment",
+      "name": "과태료·범칙금 처리",
+      "category": "행정·민원",
+      "triggers": [
+        "과태료",
+        "범칙금",
+        "주정차 위반",
+        "속도위반",
+        "벌금"
+      ],
+      "examples": [
+        "주정차 과태료 고지서 왔는데 처리해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.1,
+      "status": "beta"
+    },
+    {
+      "id": "move-in-admin",
+      "name": "이사 행정 일괄 처리",
+      "category": "행정·민원",
+      "triggers": [
+        "전입신고",
+        "주소 변경",
+        "우편물 이전",
+        "확정일자"
+      ],
+      "examples": [
+        "이사했으니 전입신고랑 주소 변경 다 해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "planned"
+    },
+    {
+      "id": "passport-id-renewal",
+      "name": "여권·면허 갱신 챙기기",
+      "category": "행정·민원",
+      "triggers": [
+        "여권 갱신",
+        "여권 만료",
+        "신분증 재발급",
+        "운전면허 갱신"
+      ],
+      "examples": [
+        "여권 만료 전에 갱신 접수까지 해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "planned"
+    },
+    {
+      "id": "welfare-apply",
+      "name": "지원금·바우처 신청",
+      "category": "행정·민원",
+      "triggers": [
+        "지원금",
+        "보조금",
+        "바우처",
+        "복지 신청",
+        "수당"
+      ],
+      "examples": [
+        "우리 집이 받을 수 있는 지원금 찾아서 신청해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "resident-parking",
+      "name": "거주자 주차·방문차량 등록",
+      "category": "행정·민원",
+      "triggers": [
+        "거주자 우선주차",
+        "주차 등록",
+        "방문차량",
+        "주차 신청"
+      ],
+      "examples": [
+        "다음 분기 거주자 우선주차 신청해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "beta"
+    },
+    {
+      "id": "local-tax-pay",
+      "name": "지방세·자동차세 납부",
+      "category": "행정·민원",
+      "triggers": [
+        "자동차세",
+        "재산세",
+        "지방세",
+        "위택스",
+        "연납"
+      ],
+      "examples": [
+        "자동차세 연납 할인으로 내줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.1,
+      "status": "planned"
+    },
+    {
+      "id": "school-digest",
+      "name": "학교 알림 요약",
+      "category": "교육·육아",
+      "triggers": [
+        "가정통신문",
+        "학교",
+        "알림장",
+        "e알리미",
+        "학사일정"
+      ],
+      "examples": [
+        "학교 알림은 금요일에 몰아서 요약해줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.5,
+      "status": "available"
+    },
+    {
+      "id": "school-form-submit",
+      "name": "학교 신청서·동의서 제출",
+      "category": "교육·육아",
+      "triggers": [
+        "체험학습 신청서",
+        "동의서 제출",
+        "학교 설문",
+        "현장학습"
+      ],
+      "examples": [
+        "이 동의서 내용 채워서 기한 안에 제출해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "school-lunch-watch",
+      "name": "급식·식단표 안내",
+      "category": "교육·육아",
+      "triggers": [
+        "급식",
+        "식단표",
+        "알레르기 식단",
+        "급식표"
+      ],
+      "examples": [
+        "급식에 애 알레르기 음식 나오는 날만 알려줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "available"
+    },
+    {
+      "id": "after-school-apply",
+      "name": "방과후·돌봄 신청",
+      "category": "교육·육아",
+      "triggers": [
+        "방과후",
+        "돌봄교실",
+        "방과후 수업",
+        "늘봄"
+      ],
+      "examples": [
+        "방과후 수업 접수 열리면 바로 신청해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "academy-research",
+      "name": "학원·과외 조사·상담 예약",
+      "category": "교육·육아",
+      "triggers": [
+        "학원",
+        "과외",
+        "학원 비교",
+        "레벨테스트",
+        "학원비"
+      ],
+      "examples": [
+        "집 근처 수학학원 3곳 비교하고 상담 잡아줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "kids-camp-booking",
+      "name": "방학 캠프·체험 프로그램 예약",
+      "category": "교육·육아",
+      "triggers": [
+        "방학 캠프",
+        "체험학습 예약",
+        "키즈 클래스",
+        "어린이 체험"
+      ],
+      "examples": [
+        "겨울방학 과학 캠프 알아보고 등록해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "daycare-waitlist",
+      "name": "어린이집·유치원 입소 관리",
+      "category": "교육·육아",
+      "triggers": [
+        "어린이집",
+        "유치원",
+        "입소 대기",
+        "처음학교로",
+        "입학 설명회"
+      ],
+      "examples": [
+        "어린이집 입소 대기 순번 바뀌면 알려줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "planned"
+    },
+    {
+      "id": "edu-content-manage",
+      "name": "학습지·인강 구독 관리",
+      "category": "교육·육아",
+      "triggers": [
+        "학습지",
+        "인강",
+        "교육 구독",
+        "수강 연장",
+        "강의 환불"
+      ],
+      "examples": [
+        "애가 안 듣는 인강 환불 규정 확인하고 해지해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "exam-schedule-track",
+      "name": "시험·접수 일정 관리",
+      "category": "교육·육아",
+      "triggers": [
+        "시험 일정",
+        "접수 기간",
+        "원서 접수",
+        "수능",
+        "자격증 시험"
+      ],
+      "examples": [
+        "자격증 시험 접수 시작하면 바로 접수해줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "available"
+    },
+    {
+      "id": "apt-notice-digest",
+      "name": "아파트 공지·관리사무소 소통",
+      "category": "주거·생활",
+      "triggers": [
+        "관리사무소",
+        "입주민 공지",
+        "아파트 공지",
+        "단지",
+        "입대의"
+      ],
+      "examples": [
+        "관리사무소 공지 중 우리 집에 해당하는 것만 알려줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "available"
+    },
+    {
+      "id": "home-repair-arrange",
+      "name": "집수리 기사 섭외",
+      "category": "주거·생활",
+      "triggers": [
+        "수리",
+        "누수",
+        "보일러 고장",
+        "하자 접수",
+        "기사 방문"
+      ],
+      "examples": [
+        "화장실 누수 기사님 이번 주 중 불러줘"
+      ],
+      "executor": "call",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "planned"
+    },
+    {
+      "id": "cleaning-service-booking",
+      "name": "청소·가사 서비스 예약",
+      "category": "주거·생활",
+      "triggers": [
+        "청소 대행",
+        "입주 청소",
+        "가사도우미",
+        "청소 예약"
+      ],
+      "examples": [
+        "격주 금요일 집 청소 서비스 잡아줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "laundry-pickup",
+      "name": "세탁 수거·배달 신청",
+      "category": "주거·생활",
+      "triggers": [
+        "세탁 수거",
+        "드라이클리닝",
+        "세탁 신청",
+        "이불 빨래"
+      ],
+      "examples": [
+        "겨울 이불 수거 세탁 신청해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "appliance-as-booking",
+      "name": "가전 AS·서비스센터 접수",
+      "category": "주거·생활",
+      "triggers": [
+        "AS 접수",
+        "수리 접수",
+        "서비스센터",
+        "고장 신고"
+      ],
+      "examples": [
+        "냉장고 AS 접수하고 기사 방문 시간 잡아줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "internet-move-install",
+      "name": "인터넷·TV 설치 및 이전",
+      "category": "주거·생활",
+      "triggers": [
+        "인터넷 설치",
+        "인터넷 이전",
+        "셋톱박스",
+        "회선 이전"
+      ],
+      "examples": [
+        "이사 날짜에 맞춰 인터넷 이전 설치 예약해줘"
+      ],
+      "executor": "call",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "planned"
+    },
+    {
+      "id": "moving-quotes",
+      "name": "이사 견적 비교·예약",
+      "category": "주거·생활",
+      "triggers": [
+        "이사 견적",
+        "포장이사",
+        "이삿날",
+        "용달"
+      ],
+      "examples": [
+        "포장이사 견적 3곳 받아서 비교해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "beta"
+    },
+    {
+      "id": "bulky-waste-disposal",
+      "name": "대형폐기물 배출 신고",
+      "category": "주거·생활",
+      "triggers": [
+        "대형폐기물",
+        "폐기물 신고",
+        "폐가전 수거",
+        "배출 스티커"
+      ],
+      "examples": [
+        "버릴 소파 폐기물 신고하고 수거 날짜 잡아줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.1,
+      "status": "beta"
+    },
+    {
+      "id": "interior-quotes",
+      "name": "인테리어·시공 견적",
+      "category": "주거·생활",
+      "triggers": [
+        "인테리어 견적",
+        "도배",
+        "장판",
+        "시공 비교"
+      ],
+      "examples": [
+        "도배 견적 받아보고 일정 조율해줘"
+      ],
+      "executor": "call",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "planned"
+    },
+    {
+      "id": "rental-device-manage",
+      "name": "렌탈 기기 관리",
+      "category": "주거·생활",
+      "triggers": [
+        "렌탈",
+        "정수기",
+        "필터 교체",
+        "렌탈 해지",
+        "매트리스 케어"
+      ],
+      "examples": [
+        "정수기 필터 교체 방문 일정 잡아줘"
+      ],
+      "executor": "call",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "planned"
+    },
+    {
+      "id": "hospital-booking",
+      "name": "병원 예약·접수",
+      "category": "건강",
+      "triggers": [
+        "병원",
+        "진료",
+        "접수",
+        "소아과",
+        "치과"
+      ],
+      "examples": [
+        "다음 주 치과 진료 잡아줘",
+        "애 소아과 아침 첫 타임 접수해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "health-checkup-booking",
+      "name": "건강검진 예약",
+      "category": "건강",
+      "triggers": [
+        "건강검진",
+        "검진 예약",
+        "국가검진",
+        "내시경"
+      ],
+      "examples": [
+        "올해 국가검진 기한 전에 주말로 예약해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "beta"
+    },
+    {
+      "id": "vaccination-booking",
+      "name": "예방접종 예약",
+      "category": "건강",
+      "triggers": [
+        "예방접종",
+        "독감 주사",
+        "접종 예약",
+        "백신"
+      ],
+      "examples": [
+        "가족 독감 주사 같은 날로 예약해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "beta"
+    },
+    {
+      "id": "supplement-reorder",
+      "name": "영양제·건강식품 재구매",
+      "category": "건강",
+      "triggers": [
+        "영양제",
+        "유산균",
+        "오메가3",
+        "건강식품"
+      ],
+      "examples": [
+        "먹던 유산균 떨어질 때마다 재주문해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "telemedicine-arrange",
+      "name": "비대면 진료·약 배달 연결",
+      "category": "건강",
+      "triggers": [
+        "비대면 진료",
+        "원격 진료",
+        "약 배달",
+        "처방 상담"
+      ],
+      "examples": [
+        "감기 비대면 진료 잡고 약 배달까지 연결해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "planned"
+    },
+    {
+      "id": "fitness-enroll",
+      "name": "운동 시설 등록·PT 상담",
+      "category": "건강",
+      "triggers": [
+        "헬스장",
+        "PT",
+        "필라테스",
+        "요가 등록",
+        "회원권"
+      ],
+      "examples": [
+        "집 근처 필라테스 가격 비교해서 등록해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "health-record-organize",
+      "name": "진료·검진 기록 정리",
+      "category": "건강",
+      "triggers": [
+        "진료 기록",
+        "검사 결과",
+        "검진 결과 요약",
+        "처방 내역"
+      ],
+      "examples": [
+        "올해 검진 결과 작년과 비교해서 요약해줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "available"
+    },
+    {
+      "id": "parent-care-arrange",
+      "name": "부모님 돌봄·병원 동행 섭외",
+      "category": "건강",
+      "triggers": [
+        "병원 동행",
+        "요양",
+        "돌봄 서비스",
+        "간병"
+      ],
+      "examples": [
+        "어머니 병원 가실 때 동행 서비스 알아봐줘"
+      ],
+      "executor": "call",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "planned"
+    },
+    {
+      "id": "flight-booking",
+      "name": "항공권 검색·예약",
+      "category": "이동·여행",
+      "triggers": [
+        "항공권",
+        "비행기표",
+        "항공 예약",
+        "특가 항공"
+      ],
+      "examples": [
+        "설 연휴 제주행 비행기표 가장 싼 걸로 예약해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "hotel-booking",
+      "name": "숙소 예약",
+      "category": "이동·여행",
+      "triggers": [
+        "호텔",
+        "숙소",
+        "펜션",
+        "호캉스",
+        "리조트"
+      ],
+      "examples": [
+        "다음 달 둘째 주 바다 보이는 숙소 잡아줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "train-bus-booking",
+      "name": "기차·버스 예매",
+      "category": "이동·여행",
+      "triggers": [
+        "KTX",
+        "SRT",
+        "기차표",
+        "기차",
+        "열차",
+        "고속버스",
+        "예매"
+      ],
+      "examples": [
+        "명절 KTX 예매 열리면 바로 잡아줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "travel-itinerary-plan",
+      "name": "여행 일정 설계",
+      "category": "이동·여행",
+      "triggers": [
+        "여행 일정",
+        "여행 계획",
+        "여행 코스",
+        "동선"
+      ],
+      "examples": [
+        "2박 3일 부산 일정 아이 동반 기준으로 짜줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "available"
+    },
+    {
+      "id": "rental-car-booking",
+      "name": "렌터카 예약",
+      "category": "이동·여행",
+      "triggers": [
+        "렌터카",
+        "차 빌리기",
+        "제주 렌트",
+        "카셰어링"
+      ],
+      "examples": [
+        "제주 여행 날짜에 맞춰 렌터카 예약해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.1,
+      "status": "beta"
+    },
+    {
+      "id": "car-maintenance-booking",
+      "name": "차량 정비·검사 예약",
+      "category": "이동·여행",
+      "triggers": [
+        "차량 정비",
+        "엔진오일",
+        "타이어 교체",
+        "자동차 검사"
+      ],
+      "examples": [
+        "자동차 정기검사 기한 전에 예약 잡아줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "visa-travel-docs",
+      "name": "비자·여행 서류 준비",
+      "category": "이동·여행",
+      "triggers": [
+        "비자",
+        "ESTA",
+        "여행 허가",
+        "국제운전면허"
+      ],
+      "examples": [
+        "미국 여행 ESTA 신청해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "planned"
+    },
+    {
+      "id": "travel-addons",
+      "name": "환전·로밍·여행자보험 준비",
+      "category": "이동·여행",
+      "triggers": [
+        "환전",
+        "로밍",
+        "여행자보험",
+        "유심",
+        "포켓와이파이"
+      ],
+      "examples": [
+        "출국 전 환전 신청하고 로밍이랑 보험까지 챙겨줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.1,
+      "status": "beta"
+    },
+    {
+      "id": "airport-services",
+      "name": "공항 주차·부가 서비스 예약",
+      "category": "이동·여행",
+      "triggers": [
+        "공항 주차",
+        "라운지",
+        "짐 배송",
+        "패스트트랙"
+      ],
+      "examples": [
+        "출국 날 공항 주차 대행 예약해줘"
+      ],
+      "executor": "browser",
+      "payment": true,
+      "est_hours_per_week": 0.1,
+      "status": "beta"
+    },
+    {
+      "id": "price-compare",
+      "name": "가격 비교·최저가 탐색",
+      "category": "정보·비교",
+      "triggers": [
+        "최저가",
+        "비교",
+        "헤드폰",
+        "가격",
+        "얼마"
+      ],
+      "examples": [
+        "노이즈캔슬링 헤드폰 최저가 찾아줘",
+        "이거 어디가 제일 싼지 비교해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 1.0,
+      "status": "beta"
+    },
+    {
+      "id": "product-research",
+      "name": "제품 리서치·추천",
+      "category": "정보·비교",
+      "triggers": [
+        "제품 추천",
+        "리뷰 분석",
+        "뭐 살지",
+        "추천해줘",
+        "장단점"
+      ],
+      "examples": [
+        "로봇청소기 리뷰 분석해서 3개로 추려줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.8,
+      "status": "beta"
+    },
+    {
+      "id": "deal-watch",
+      "name": "특가·핫딜 감시",
+      "category": "정보·비교",
+      "triggers": [
+        "특가",
+        "핫딜",
+        "할인 정보",
+        "세일 알림"
+      ],
+      "examples": [
+        "이 노트북 특가 뜨면 알려줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.5,
+      "status": "beta"
+    },
+    {
+      "id": "real-estate-scan",
+      "name": "부동산 시세·매물 탐색",
+      "category": "정보·비교",
+      "triggers": [
+        "부동산",
+        "전세",
+        "매물",
+        "시세 조회",
+        "임장"
+      ],
+      "examples": [
+        "이 동네 전세 매물 조건 맞는 것만 모아줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.4,
+      "status": "beta"
+    },
+    {
+      "id": "news-brief",
+      "name": "뉴스·관심사 브리핑",
+      "category": "정보·비교",
+      "triggers": [
+        "뉴스 요약",
+        "이슈 정리",
+        "시황",
+        "관심 뉴스"
+      ],
+      "examples": [
+        "내 관심 분야 뉴스만 아침에 한 번 요약해줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.5,
+      "status": "available"
+    },
+    {
+      "id": "local-research",
+      "name": "동네·시설 정보 조사",
+      "category": "정보·비교",
+      "triggers": [
+        "근처",
+        "동네 정보",
+        "영업시간",
+        "어디가 좋아"
+      ],
+      "examples": [
+        "집 근처 일요일에 하는 세탁소 찾아줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "weekend-outing-research",
+      "name": "주말 나들이·행사 탐색",
+      "category": "정보·비교",
+      "triggers": [
+        "전시",
+        "축제",
+        "주말에 뭐하지",
+        "나들이",
+        "가볼 만한 곳"
+      ],
+      "examples": [
+        "이번 주말 아이랑 갈 만한 전시 찾아줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.4,
+      "status": "beta"
+    },
+    {
+      "id": "warranty-manual-lookup",
+      "name": "보증·사용법 찾기",
+      "category": "정보·비교",
+      "triggers": [
+        "보증기간",
+        "사용법",
+        "매뉴얼",
+        "설명서"
+      ],
+      "examples": [
+        "이 제품 아직 무상보증 되는지 확인해줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "available"
+    },
+    {
+      "id": "mail-brief",
+      "name": "받은메일 브리핑·중요 메일 선별",
+      "category": "커뮤니케이션",
+      "triggers": [
+        "메일 요약",
+        "중요 메일",
+        "받은편지함",
+        "메일 브리핑"
+      ],
+      "examples": [
+        "하루 한 번 중요한 메일만 추려서 브리핑해줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.5,
+      "status": "available"
+    },
+    {
+      "id": "email-draft",
+      "name": "답장·메일 초안 작성",
+      "category": "커뮤니케이션",
+      "triggers": [
+        "답장 초안",
+        "메일 작성",
+        "회신 문구",
+        "정중하게 써줘"
+      ],
+      "examples": [
+        "이 메일에 정중한 거절 답장 초안 써줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "available"
+    },
+    {
+      "id": "schedule-coordination",
+      "name": "일정 조율·약속 잡기",
+      "category": "커뮤니케이션",
+      "triggers": [
+        "일정 조율",
+        "약속 잡기",
+        "시간 맞추기",
+        "모임 날짜"
+      ],
+      "examples": [
+        "동창 모임 날짜 다들한테 물어봐서 맞춰줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "available"
+    },
+    {
+      "id": "cs-contact",
+      "name": "고객센터 문의 대행",
+      "category": "커뮤니케이션",
+      "triggers": [
+        "고객센터",
+        "문의 접수",
+        "상담원",
+        "1:1 문의"
+      ],
+      "examples": [
+        "배송 왜 안 오는지 고객센터에 문의 넣고 답 받아줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "congrats-condolence",
+      "name": "경조사 메시지·일정 챙기기",
+      "category": "커뮤니케이션",
+      "triggers": [
+        "축하 메시지",
+        "조의",
+        "경조사",
+        "감사 인사",
+        "부고"
+      ],
+      "examples": [
+        "부고 문자 왔는데 조의 메시지 초안이랑 일정 정리해줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "available"
+    },
+    {
+      "id": "form-filling",
+      "name": "양식·설문 작성 대행",
+      "category": "커뮤니케이션",
+      "triggers": [
+        "양식 작성",
+        "설문 작성",
+        "신청 양식",
+        "지원서 입력"
+      ],
+      "examples": [
+        "이 신청 양식 내 정보로 채워서 제출해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "beta"
+    },
+    {
+      "id": "translation-summary",
+      "name": "번역·외국어 문서 요약",
+      "category": "커뮤니케이션",
+      "triggers": [
+        "번역",
+        "영문 메일",
+        "외국어 문서",
+        "한글로 요약"
+      ],
+      "examples": [
+        "이 영문 계약 안내 메일 한글로 요약해줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "available"
+    },
+    {
+      "id": "rsvp-manage",
+      "name": "초대·참석 회신 관리",
+      "category": "커뮤니케이션",
+      "triggers": [
+        "참석 여부",
+        "회신",
+        "초대장",
+        "RSVP"
+      ],
+      "examples": [
+        "결혼식 초대 온 것들 참석 회신 정리해서 보내줘"
+      ],
+      "executor": "auto",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "available"
+    },
+    {
+      "id": "used-sell-listing",
+      "name": "중고 판매글 작성·등록",
+      "category": "중고·거래",
+      "triggers": [
+        "중고 판매",
+        "당근",
+        "판매글",
+        "중고나라",
+        "내놓기"
+      ],
+      "examples": [
+        "안 쓰는 유모차 사진 보낼 테니 판매글 올려줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "used-buy-search",
+      "name": "중고 매물 탐색·시세 확인",
+      "category": "중고·거래",
+      "triggers": [
+        "중고 구매",
+        "중고 시세",
+        "매물 알림",
+        "중고로 구해줘"
+      ],
+      "examples": [
+        "이 모델 중고 시세 확인하고 좋은 매물 뜨면 알려줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.3,
+      "status": "beta"
+    },
+    {
+      "id": "trade-coordination",
+      "name": "거래 조율·네고 응대",
+      "category": "중고·거래",
+      "triggers": [
+        "네고",
+        "가격 제안",
+        "거래 약속",
+        "택배 거래"
+      ],
+      "examples": [
+        "문의 오는 네고는 1만원까지만 받아주고 약속 잡아줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.2,
+      "status": "planned"
+    },
+    {
+      "id": "book-media-tradein",
+      "name": "중고책·미디어 매입 신청",
+      "category": "중고·거래",
+      "triggers": [
+        "중고책",
+        "책 팔기",
+        "매입 신청",
+        "알라딘"
+      ],
+      "examples": [
+        "책장 정리할 책들 매입가 조회해서 신청해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "beta"
+    },
+    {
+      "id": "resell-market",
+      "name": "리셀·명품 중고 시세 확인",
+      "category": "중고·거래",
+      "triggers": [
+        "리셀",
+        "크림",
+        "명품 중고",
+        "리셀가"
+      ],
+      "examples": [
+        "이 신발 리셀가 얼마에 팔리는지 확인해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "planned"
+    },
+    {
+      "id": "donate-dispose",
+      "name": "기부·나눔 처리",
+      "category": "중고·거래",
+      "triggers": [
+        "기부",
+        "나눔",
+        "옷 기부",
+        "처분"
+      ],
+      "examples": [
+        "안 입는 옷 기부 수거 신청해줘"
+      ],
+      "executor": "browser",
+      "payment": false,
+      "est_hours_per_week": 0.1,
+      "status": "beta"
+    }
+  ]
+}
