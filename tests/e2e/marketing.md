@@ -1,7 +1,8 @@
 # E2E 테스트케이스 — 마케팅 (MKT)
 
 ## TC-MKT-001: 스토리 → 3막 초안 → 승인 → 게시
-- 상태: FAIL
+- 상태: PASS
+- 검증 기록: core/selftest_offline.py (2026-11-03) — 3막 초안(drafts/)·Reclaimed 숫자 포함·미승인 게시 차단 (core/marketing.py)
 - 우선순위: P1
 - 유스케이스: UC-E1
 - 워크플로우: workflows/content-pipeline.md
@@ -12,7 +13,8 @@
 - 검증: 초안 구조·숫자 포함 확인, 승인 없이 게시 시도 시 차단되는지 리허설
 
 ## TC-MKT-002: 실데이터 없으면 가상 스토리 거부
-- 상태: FAIL
+- 상태: PASS
+- 검증 기록: core/selftest_offline.py (2026-11-03) — 빈 데이터에서 가상 스토리 거부 + 대표 자가 베타 대안 제안
 - 우선순위: P0
 - 유스케이스: UC-E2
 
@@ -22,7 +24,8 @@
 - 검증: 빈 데이터 상태에서 지시 리허설, 거부+대안 응답 확인
 
 ## TC-MKT-003: 익명화 검증
-- 상태: FAIL
+- 상태: PASS
+- 검증 기록: core/selftest_offline.py (2026-11-03) — 이름(프로필 전수)·동네·기관 치환 확인
 - 우선순위: P0
 - 유스케이스: UC-E3
 

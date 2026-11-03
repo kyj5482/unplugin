@@ -1,0 +1,16 @@
+{
+  "version": "2026-11-03",
+  "comment": "오프라인 경험 카탈로그 — core/recommend.py가 타입 축(M/R, P/A)·확보 시간·프로필 제약으로 필터해 추천한다. kind: 체험·배움이 소비보다 우선 (TC-OFF-001 ③).",
+  "experiences": [
+    { "id": "pottery-class",   "title": "도자기 원데이 클래스",        "axis": "M", "social": "P", "hours": 2.0, "kind": "배움", "distance_km": 4,  "desc": "손의 감각으로 흙을 만지는 2시간" },
+    { "id": "woodwork-solo",   "title": "목공 소품 만들기",           "axis": "M", "social": "A", "hours": 2.5, "kind": "배움", "distance_km": 6,  "desc": "혼자 몰입해 완성하는 작은 가구" },
+    { "id": "home-baking",     "title": "집에서 하는 베이킹 클래스 키트", "axis": "M", "social": "A", "hours": 1.5, "kind": "배움", "distance_km": 0,  "desc": "집에서 반죽부터 굽기까지" },
+    { "id": "picnic-friends",  "title": "공원 피크닉",               "axis": "R", "social": "P", "hours": 2.0, "kind": "체험", "distance_km": 3,  "desc": "돗자리와 간식만 들고 나가는 느긋한 오후" },
+    { "id": "forest-walk",     "title": "근교 숲길 산책",             "axis": "R", "social": "A", "hours": 1.5, "kind": "체험", "distance_km": 8,  "desc": "혼자 감각을 여는 걷기" },
+    { "id": "home-tea",        "title": "동네 티하우스 다도 체험",      "axis": "R", "social": "A", "hours": 1.0, "kind": "체험", "distance_km": 2,  "desc": "가까운 곳에서 차 한 잔으로 충전" },
+    { "id": "climbing-intro",  "title": "실내 클라이밍 입문",          "axis": "M", "social": "P", "hours": 2.0, "kind": "체험", "distance_km": 5,  "desc": "온몸의 감각으로 벽을 오르는 2시간" },
+    { "id": "flower-class",    "title": "플라워 클래스",             "axis": "M", "social": "P", "hours": 1.5, "kind": "배움", "distance_km": 3,  "desc": "계절 꽃으로 완성하는 한 다발" },
+    { "id": "night-market",    "title": "야시장 나들이",             "axis": "R", "social": "P", "hours": 2.0, "kind": "소비", "distance_km": 7,  "desc": "구경과 간식의 저녁" },
+    { "id": "stationery-haul", "title": "문구점 쇼핑 산책",           "axis": "R", "social": "A", "hours": 1.0, "kind": "소비", "distance_km": 2,  "desc": "가볍게 둘러보는 동네 문구점" }
+  ]
+}

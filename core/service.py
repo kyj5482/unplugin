@@ -114,6 +114,19 @@ def run_cycle(warned: set[str] | None = None) -> dict:
     except Exception as e:
         _log(f"[오류] 큐 처리 실패: {e} — 다음 단계 진행")
 
+    # ③-1 완료 추적 틱 (환불 입금 확인·넛지) + 반복 위임 회차 생성
+    try:
+        from . import tracking
+        t = tracking.run_tick() or {}
+        stats["tracked"] = sum(t.values())
+    except Exception as e:
+        _log(f"[오류] 추적 틱 실패: {e} — 다음 단계 진행")
+    try:
+        from . import recurring
+        stats["recurring"] = recurring.run_tick()
+    except Exception as e:
+        _log(f"[오류] 반복 위임 틱 실패: {e} — 다음 단계 진행")
+
     # ④ SMTP 발신 (skip 시 outbox 파일이 그대로 남음 = 시뮬레이션 모드)
     stats["sent"] = _mail_step(mod, cfg, "send_pending", "발신", warned)
 

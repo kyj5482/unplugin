@@ -25,12 +25,16 @@ QUARANTINE = DATA / "quarantine"        # 미등록·사칭 발신 격리 (검�
 QUEUE = DATA / "queue"                  # pending/ active/ done/ cancelled/
 FLOWS = Path(os.environ.get("UNPLUGIN_FLOWS", ROOT / "flows"))  # Flow 문서 (Unified View)
 DASHBOARD = DATA / "dashboard.html"     # 로컬 Flow 대시보드 (고객 데이터 포함 → 비공개)
+CASES = DATA / "cases"                  # 스트레스 해결 케이스 (환불·분쟁·해지 등 장기 건)
+HANDOFF = DATA / "handoff"              # 사람 개입(HITL) 가이드·대기함
+EVIDENCE = DATA / "evidence"            # 수행 증빙 (영수증·스크린샷·포털 결과)
 
 QUEUE_STATES = ("pending", "active", "done", "cancelled")
 TIER_SLOTS = {"one": 1, "flow": 2, "life": 4}
 
 def ensure_dirs() -> None:
-    for d in [CUSTOMERS, INBOX, OUTBOX, QUARANTINE, *(QUEUE / s for s in QUEUE_STATES)]:
+    for d in [CUSTOMERS, INBOX, OUTBOX, QUARANTINE, CASES, HANDOFF, EVIDENCE,
+              *(QUEUE / s for s in QUEUE_STATES)]:
         d.mkdir(parents=True, exist_ok=True)
 
 # ── 시간/ID ──────────────────────────────────────────────
@@ -47,6 +51,26 @@ def slug(text: str, maxlen: int = 32) -> str:
     text = unicodedata.normalize("NFKC", text)
     text = re.sub(r"[^\w가-힣]+", "-", text).strip("-").lower()
     return text[:maxlen] or "item"
+
+# ── 민감정보 마스킹 (TC-DEL-006) ──────────────────────────
+# 카드번호·계좌번호·비밀번호는 Flow/메일/케이스 어디에도 평문 기록 금지.
+_CARD_RE = re.compile(r"\b(?:\d[ -]?){13,16}\b")
+_PW_RE = re.compile(r"(비밀번호|패스워드|password|pw)\s*[:는은]?\s*\S+", re.IGNORECASE)
+_ACCT_RE = re.compile(r"\b\d{2,6}-\d{2,6}-\d{2,8}\b")
+
+def mask_sensitive(text: str) -> str:
+    """기록 전 민감정보 마스킹. 카드/계좌/비밀번호 패턴을 ***로 치환."""
+    if not text:
+        return text
+    text = _CARD_RE.sub("[카드번호 마스킹됨]", text)
+    text = _ACCT_RE.sub("[계좌번호 마스킹됨]", text)
+    text = _PW_RE.sub(r"\1: [마스킹됨]", text)
+    return text
+
+def has_sensitive(text: str) -> bool:
+    """카드/계좌/비밀번호 패턴 포함 여부 — Takeover 안내 트리거 (TC-DEL-012)."""
+    return bool(text) and bool(_CARD_RE.search(text) or _PW_RE.search(text)
+                               or _ACCT_RE.search(text))
 
 # ── JSON IO ──────────────────────────────────────────────
 def read_json(path: Path) -> dict:

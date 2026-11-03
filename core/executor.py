@@ -1,16 +1,19 @@
-"""실행기 — 큐 active 아이템의 수행 계층 (TC-DEL-010 지향, 증빙 있는 완료 보고).
+"""실행기 — 큐 active 아이템의 수행 계층 (TC-DEL-001~004, 010, 011).
 
-기본은 v0 시뮬레이션(표준 라이브러리만 — 기존 동작과 동일한 수준).
-대표 맥북에서:
-    pip install playwright && playwright install chromium
-후 환경변수 UNPLUGIN_REAL_BROWSER=1 이면, 플러그인 executor가 "browser"인
-아이템을 headless chromium으로 실제 수행하고 증빙 스크린샷을
-data/evidence/<item_id>/step1.png 에 남긴다.
-playwright가 없으면 조용히 시뮬레이션으로 폴백한다 (선택 의존성).
+실행 경로:
+  ① executor "browser" 플러그인 + 실브라우저 가능 → playwright/egolite 실수행
+  ② executor "browser" 플러그인 (로컬) → 업무군별 결정적 시뮬레이션:
+       장보기(카트·예산·영수증) / 예약(마감 시 대안 묶음 질문) /
+       탐색(추천1+대안2 요약) / 그 외(egolite 포털 시뮬레이션)
+  ③ 그 외(auto·call·플러그인 없음) → v0 단순 시뮬레이션 (기존 동작 유지)
 
-공개 인터페이스:
-  run(item, profile) -> {"ok", "summary", "evidence", "reclaimed", "mode"}
-  evidence_note(result) -> str   (Flow 기록용 한 줄)
+반환 계약 (run):
+  {"ok", "summary", "evidence", "reclaimed", "mode"}
+  + 선택: "blocked"(봇 차단 → HITL), "injection"(보안 이벤트),
+          "ask"+"alternatives"(고객 확인 1회 묶음), "partial"(중간 결과)
+
+증빙 원칙 (TC-DEL-010): 주문·예약·접수처럼 외부 거래가 발생하는 수행
+(browser 계열)은 증빙 파일(영수증·접수번호) 없이는 완료로 처리되지 않는다.
 """
 from __future__ import annotations
 
@@ -18,18 +21,29 @@ import os
 import re
 from urllib.parse import quote_plus
 
-from . import classify, common
+from . import classify, common, egolite
 
-# 플러그인별 기본 진입점 — 카탈로그에 URL 필드가 없어 소수만 상수로 유지.
-# item 본문/summary에 `url: <주소>` 가 있으면 그 주소가 우선.
 DEFAULT_ENTRYPOINTS = {
     "price-compare": "https://search.danawa.com/dsearch.php?query={query}",
 }
 FALLBACK_SEARCH = "https://duckduckgo.com/?q={query}"
+BROWSER_TIMEOUT_MS = 30_000
 
-BROWSER_TIMEOUT_MS = 30_000  # 페이지 이동 타임아웃
+# 업무군 분류 (플러그인 id 기준)
+CART_PLUGINS = {"grocery-recurring", "kids-supplies-reorder", "pet-supplies-reorder",
+                "grocery-fresh-sub", "supplement-reorder", "gift-shopping",
+                "flower-cake-order"}
+RESEARCH_PLUGINS = {"price-compare", "product-research", "local-research",
+                    "weekend-outing-research", "used-buy-search", "real-estate-scan"}
 
-# summary 끝의 요청 어투(검색어가 아님) 제거용
+# 장보기 시뮬레이션 카탈로그 (로컬 리허설용 — 실사이트 전 검증)
+_SHOP_CATALOG = [
+    {"name": "생수 2L 12병", "price": 8900}, {"name": "화장지 30롤", "price": 15900},
+    {"name": "세제 리필", "price": 7900}, {"name": "기저귀 1박스", "price": 32900},
+    {"name": "분유 800g", "price": 24900}, {"name": "사료 7kg", "price": 29900},
+    {"name": "유산균 60포", "price": 19900}, {"name": "물티슈 10팩", "price": 9900},
+]
+
 _REQUEST_SUFFIX = re.compile(
     r"\s*(최저가\s*)?(찾아\s*줘|찾아줘|찾기|알아봐\s*줘|알려\s*줘|알려줘|비교해\s*줘|비교해줘|"
     r"주문해\s*줘|주문해줘|예약해\s*줘|예약해줘|해\s*줘|해줘|부탁해요?|주세요)\s*$")
@@ -39,18 +53,22 @@ _URL_RE = re.compile(r"url:\s*(\S+)", re.IGNORECASE)
 # ── 디스패치 ─────────────────────────────────────────────
 
 def run(item: dict, profile: dict) -> dict:
-    """아이템 1건 수행. 반환 계약:
-    {"ok": bool, "summary": str, "evidence": [경로...],
-     "reclaimed": float, "mode": "simulated"|"browser"}
-    """
     plugin = _plugin_of(item)
-    if _real_browser_ready() and plugin and plugin.get("executor") == "browser":
-        return _run_browser(item, plugin, profile)
+    if plugin and plugin.get("executor") == "browser":
+        if _real_browser_ready():
+            return _run_browser(item, plugin, profile)
+        pid = plugin.get("id", "")
+        if pid in CART_PLUGINS:
+            return _sim_cart(item, plugin, profile)
+        if pid in RESEARCH_PLUGINS:
+            return _sim_research(item, plugin)
+        if pid.endswith("-booking") or pid == "waiting-queue":
+            return _sim_booking(item, plugin)
+        return _sim_portal(item, plugin)
     return _run_simulated(item, plugin)
 
 
 def _plugin_of(item: dict) -> dict | None:
-    """item["kind"]가 "plugin:<id>"면 카탈로그에서 해당 플러그인 조회."""
     kind = item.get("kind", "") or ""
     if not kind.startswith("plugin:"):
         return None
@@ -61,8 +79,16 @@ def _plugin_of(item: dict) -> dict | None:
     return None
 
 
+def requires_evidence(item: dict) -> bool:
+    """외부 거래가 발생하는 수행인지 — 증빙 없이는 완료 불가 (TC-DEL-010)."""
+    plugin = _plugin_of(item)
+    return bool(plugin and plugin.get("executor") == "browser") \
+        or (item.get("kind", "") or "").startswith("case:")
+
+
 def _real_browser_ready() -> bool:
-    """env 켜져 있고 playwright import 가능할 때만 True (아니면 조용히 폴백)."""
+    if os.environ.get("UNPLUGIN_EGOLITE_URL"):
+        return True
     if os.environ.get("UNPLUGIN_REAL_BROWSER") != "1":
         return False
     try:
@@ -72,37 +98,136 @@ def _real_browser_ready() -> bool:
     return True
 
 
-# ── 시뮬레이션 실행 (기존 v0 동작 수준) ───────────────────
+def _reclaimed(item: dict, plugin: dict | None) -> float:
+    return float(item.get("est_hours")
+                 or (plugin or {}).get("est_hours_per_week") or 0.5)
+
+
+def _text_of(item: dict) -> str:
+    return f"{item.get('summary', '')}\n{item.get('body', '')}"
+
+
+def _receipt(item: dict, payload: dict, name: str) -> str:
+    path = common.EVIDENCE / item["id"] / f"{name}-{common.ts()}.json"
+    common.write_json(path, payload)
+    return str(path)
+
+
+# ── 시뮬레이션: 일반 (기존 v0 동작 — auto/call/플러그인 없음) ──
 
 def _run_simulated(item: dict, plugin: dict | None) -> dict:
-    reclaimed = (item.get("est_hours")
-                 or (plugin or {}).get("est_hours_per_week")
-                 or 0.5)
     return {
         "ok": True,
         "summary": f"{item['summary']} 처리 완료 (v0 시뮬레이션 — 증빙 없음)",
         "evidence": [],
-        "reclaimed": float(reclaimed),
+        "reclaimed": _reclaimed(item, plugin),
         "mode": "simulated",
     }
 
 
-# ── 브라우저 실행 (PoC — headless chromium + 증빙 스크린샷) ──
+# ── 시뮬레이션: 장보기 카트 (TC-DEL-001) ─────────────────
+
+def _sim_cart(item: dict, plugin: dict, profile: dict) -> dict:
+    """품목 매칭 → 예산 내 장바구니 구성 → 영수증 증빙. 결제는 큐 승인 게이트 몫."""
+    text = _text_of(item)
+    budget = item.get("amount") or profile.get("approval_limit") or 30000
+    cart = [p for p in _SHOP_CATALOG
+            if any(w and w in text for w in p["name"].split()[:1])]
+    if not cart:
+        cart = [_SHOP_CATALOG[0]]
+    picked, total = [], 0
+    for p in cart:
+        if total + p["price"] <= budget:
+            picked.append(p)
+            total += p["price"]
+    if not picked:
+        return {"ok": False, "mode": "sim-cart", "evidence": [], "reclaimed": 0.0,
+                "summary": (f"{item['summary']} — 예산 {budget:,}원 안에 담을 수 있는 "
+                            "품목이 없어 중단 (예산 조정 필요)")}
+    receipt = _receipt(item, {
+        "type": "order-receipt", "items": picked, "total": total,
+        "budget": budget, "order_no": f"ORD-{common.ts()}",
+    }, "receipt")
+    names = ", ".join(p["name"] for p in picked)
+    return {"ok": True, "mode": "sim-cart", "evidence": [receipt],
+            "reclaimed": _reclaimed(item, plugin),
+            "summary": (f"{item['summary']} — 장바구니 {len(picked)}개 구성 "
+                        f"(합계 {total:,}원 / 예산 {budget:,}원 이내): {names} "
+                        f"/ 주문 확정·영수증 증빙 기록")}
+
+
+# ── 시뮬레이션: 예약 (TC-DEL-002 — 마감 시 대안 묶음 1회 질문) ──
+
+def _sim_booking(item: dict, plugin: dict) -> dict:
+    text = _text_of(item)
+    if item.get("alt_choice"):
+        chosen = item["alt_choice"]
+        receipt = _receipt(item, {"type": "booking-confirm", "slot": chosen,
+                                  "booking_no": f"BK-{common.ts()}"}, "booking")
+        return {"ok": True, "mode": "sim-booking", "evidence": [receipt],
+                "reclaimed": _reclaimed(item, plugin),
+                "summary": f"{item['summary']} — 고객이 고른 대안 \"{chosen}\"으로 예약 확정 (예약번호 증빙 기록)"}
+    if "마감" in text or "slot_full" in text:
+        alts = ["같은 날 저녁 8시", "다음날 같은 시간", "인근 대체 업소 같은 시간"]
+        return {"ok": False, "ask": True, "alternatives": alts, "mode": "sim-booking",
+                "evidence": [], "reclaimed": 0.0, "partial": alts,
+                "summary": f"{item['summary']} — 희망 시간대 마감. 대안 {len(alts)}개를 한 번에 정리해 고객 확인 요청"}
+    receipt = _receipt(item, {"type": "booking-confirm", "slot": "희망 시간대",
+                              "booking_no": f"BK-{common.ts()}"}, "booking")
+    return {"ok": True, "mode": "sim-booking", "evidence": [receipt],
+            "reclaimed": _reclaimed(item, plugin),
+            "summary": f"{item['summary']} — 희망 시간대로 예약 확정 (예약번호 증빙 기록)"}
+
+
+# ── 시뮬레이션: 탐색 (TC-DEL-003 — 추천1+대안2 요약, 링크≤3) ──
+
+def _sim_research(item: dict, plugin: dict) -> dict:
+    q = _query_of(item)
+    cands = [
+        {"rank": "추천", "name": f"{q} — 1순위 후보", "price": "289,000원",
+         "why": "리뷰 평점·가격·보증 조건의 균형이 가장 좋음", "link": "https://shop.example/a"},
+        {"rank": "대안 1", "name": f"{q} — 가성비 후보", "price": "219,000원",
+         "why": "기능은 유사하나 마감 품질 리뷰가 갈림", "link": "https://shop.example/b"},
+        {"rank": "대안 2", "name": f"{q} — 상위 성능 후보", "price": "349,000원",
+         "why": "성능 최상, 예산 초과 시 제외", "link": "https://shop.example/c"},
+    ]
+    lines = [f"[{c['rank']}] {c['name']} · {c['price']} — {c['why']} ({c['link']})"
+             for c in cands]
+    doc = _receipt(item, {"type": "research-summary", "query": q, "candidates": cands},
+                   "research")
+    return {"ok": True, "mode": "sim-research", "evidence": [doc],
+            "reclaimed": _reclaimed(item, plugin), "partial": cands,
+            "summary": f"{item['summary']} — 탐색 요약: " + " / ".join(lines)}
+
+
+# ── 시뮬레이션: 일반 포털 (egolite 어댑터 경유 — 차단/인젝션 재현) ──
+
+def _sim_portal(item: dict, plugin: dict) -> dict:
+    pseudo_case = {"id": item["id"], "type": plugin.get("id", "portal"),
+                   "intent": {"merchant": item.get("summary", ""),
+                              "portal_url": _entry_url(item, plugin),
+                              "amount": item.get("amount", 0)}}
+    r = egolite.run_intent(pseudo_case, item.get("summary", ""),
+                           _entry_url(item, plugin))
+    r["reclaimed"] = _reclaimed(item, plugin) if r.get("ok") else 0.0
+    r["summary"] = f"{item['summary']} — {r['summary']}"
+    return r
+
+
+# ── 실브라우저 (playwright — 접속·증빙 PoC) ────────────────
 
 def _query_of(item: dict) -> str:
-    """검색어는 item summary에서 추출 — 요청 어투·포워딩 접두는 제거."""
     q = (item.get("summary") or "").strip()
     q = re.sub(r"^(fwd|re):\s*", "", q, flags=re.IGNORECASE)
     prev = None
-    while prev != q:  # "최저가 찾아줘" 같은 중첩 어미도 모두 제거
+    while prev != q:
         prev = q
         q = _REQUEST_SUFFIX.sub("", q).strip()
     return q or (item.get("summary") or "").strip()
 
 
 def _entry_url(item: dict, plugin: dict) -> str:
-    text = f"{item.get('summary', '')}\n{item.get('body', '')}"
-    m = _URL_RE.search(text)
+    m = _URL_RE.search(_text_of(item))
     if m:
         return m.group(1)
     query = quote_plus(_query_of(item))
@@ -111,7 +236,6 @@ def _entry_url(item: dict, plugin: dict) -> str:
 
 
 def _rel(path) -> str:
-    """증빙 경로를 가능하면 리포 루트 기준 상대 경로로 (보고 가독성)."""
     try:
         return str(path.relative_to(common.ROOT))
     except ValueError:
@@ -119,46 +243,20 @@ def _rel(path) -> str:
 
 
 def _run_browser(item: dict, plugin: dict, profile: dict) -> dict:
+    """실수행 — egolite 세션 우선, 아니면 playwright 접속·증빙."""
     url = _entry_url(item, plugin)
-    evid_dir = common.DATA / "evidence" / item["id"]
-    try:
-        from playwright.sync_api import sync_playwright
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            try:
-                page = browser.new_page()
-                page.set_default_timeout(BROWSER_TIMEOUT_MS)
-                page.goto(url, wait_until="domcontentloaded",
-                          timeout=BROWSER_TIMEOUT_MS)
-                title = (page.title() or "").strip()
-                try:
-                    body_text = page.inner_text("body", timeout=5_000)
-                except Exception:
-                    body_text = ""
-                snippet = " ".join(body_text.split())[:160]
-                evid_dir.mkdir(parents=True, exist_ok=True)
-                shot = evid_dir / "step1.png"
-                page.screenshot(path=str(shot))
-            finally:
-                browser.close()
-        reclaimed = float(item.get("est_hours")
-                          or plugin.get("est_hours_per_week") or 0.5)
-        summary = (f"{item['summary']} — 브라우저 수행 완료: 페이지 \"{title}\" ({url})"
-                   + (f" / 대표 내용: {snippet}" if snippet else "")
-                   + f" / 증빙: {_rel(shot)}")
-        return {"ok": True, "summary": summary, "evidence": [str(shot)],
-                "reclaimed": reclaimed, "mode": "browser"}
-    except Exception as e:  # 타임아웃 포함 — 큐의 기존 실패 규칙으로 위임
-        return {"ok": False,
-                "summary": (f"{item['summary']} — 브라우저 수행 실패: "
-                            f"{type(e).__name__}: {str(e).splitlines()[0][:160]} (대상: {url})"),
-                "evidence": [], "reclaimed": 0.0, "mode": "browser"}
+    pseudo_case = {"id": item["id"], "type": plugin.get("id", "portal"),
+                   "intent": {"merchant": item.get("summary", ""),
+                              "portal_url": url, "amount": item.get("amount", 0)}}
+    r = egolite.run_intent(pseudo_case, item.get("summary", ""), url)
+    r["reclaimed"] = _reclaimed(item, plugin) if r.get("ok") else 0.0
+    r["summary"] = f"{item['summary']} — {r['summary']}"
+    return r
 
 
 # ── Flow 기록용 증빙 한 줄 ────────────────────────────────
 
 def evidence_note(result: dict) -> str:
-    """예: "증빙 2건: data/evidence/.../step1.png, ..." 또는 "증빙 없음 — 시뮬레이션"."""
     evidence = result.get("evidence") or []
     if not evidence:
         return ("증빙 없음 — 시뮬레이션" if result.get("mode") == "simulated"

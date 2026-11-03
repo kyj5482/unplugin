@@ -126,6 +126,94 @@ def cmd_mail_send(args) -> int:
     return 0
 
 
+def cmd_directive(args) -> int:
+    from . import directive
+    r = directive.handle(args.text)
+    print(f"담당 부문: {r['dept']}")
+    print(f"산출물: {r['output']}")
+    print(f"Flow: {r['flow']}")
+    print(r["check"])
+    print(r["next"])
+    return 0
+
+
+def cmd_agents(_args) -> int:
+    from . import agents
+    load = agents.workload()
+    print("AI 에이전트 직원 현황:")
+    for a in agents.roster():
+        print(f"  {a['name']}({a['id']}) · {a['role']:<11} · 진행 중 {load.get(a['id'], 0)}건 — {a['desc']}")
+    return 0
+
+
+def cmd_cases(_args) -> int:
+    from . import cases
+    rows = cases.list_cases()
+    if not rows:
+        print("케이스 없음")
+        return 0
+    for c in rows:
+        amt = c["intent"].get("amount")
+        print(f"[{c['status']:<17}] {c['id']} · {c['type']} · "
+              f"{c['intent'].get('merchant', '?')}{f' · {amt:,}원' if amt else ''} "
+              f"· 라운드 {len(c['rounds'])} · 담당 {c.get('assignee')}")
+    return 0
+
+
+def cmd_hitl_list(_args) -> int:
+    from . import hitl
+    rows = hitl.list_open()
+    if not rows:
+        print("대기 중인 사람 개입 없음")
+        return 0
+    for st in rows:
+        print(f"{st['id']} · {st['kind']} · {st['reason']} "
+              f"(가이드: data/handoff/{st['id']}.md)")
+    return 0
+
+
+def cmd_hitl_done(args) -> int:
+    from . import hitl
+    st = hitl.complete(args.handoff_id, args.note, args.confirmation or "")
+    if st is None:
+        print(f"처리 실패: 열린 핸드오프 '{args.handoff_id}'를 찾지 못했어요. "
+              "`python3 -m core hitl-list`로 확인하세요.")
+        return 1
+    print(f"완료 보고 접수: {args.handoff_id} — 케이스/아이템이 자동 재개되었어요.")
+    return 0
+
+
+def cmd_track_run(_args) -> int:
+    from . import tracking
+    print(tracking.run_tick())
+    return 0
+
+
+def cmd_resurvey(args) -> int:
+    import json as _json
+    from . import recommend
+    data = _json.loads(open(args.json_path, encoding="utf-8").read())
+    path = recommend.resurvey(args.customer, data)
+    print(f"재문진 피드백 저장: {path}")
+    return 0
+
+
+def cmd_demo_list(_args) -> int:
+    from . import demo
+    demo.list_demos()
+    return 0
+
+
+def cmd_demo_run(args) -> int:
+    from . import demo
+    return demo.run(args.n, fresh=args.fresh)
+
+
+def cmd_demo_exec(args) -> int:
+    from . import demo
+    return demo.exec_scenario(args.n)
+
+
 def _recent_flows(limit: int = 5) -> list[tuple[str, str, str]]:
     """(파일 stem, 제목, 상태) 최신순 — common 경로만 사용해 직접 파싱."""
     if not common.FLOWS.exists():
@@ -214,6 +302,42 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("kpi", help="주간 KPI 리포트 생성").set_defaults(fn=cmd_kpi)
     sub.add_parser("status", help="프로필·큐·outbox·최근 Flow 요약"
                    ).set_defaults(fn=cmd_status)
+
+    dr = sub.add_parser("directive", help="대표 지시 처리 — \"지시: ...\"")
+    dr.add_argument("text", help="지시 텍스트")
+    dr.set_defaults(fn=cmd_directive)
+
+    sub.add_parser("agents", help="AI 에이전트 직원 로스터·부하 현황"
+                   ).set_defaults(fn=cmd_agents)
+    sub.add_parser("cases", help="스트레스 케이스(환불·분쟁) 목록"
+                   ).set_defaults(fn=cmd_cases)
+    sub.add_parser("track-run", help="완료 추적 1틱 (확정→완결 / 기한 초과→넛지)"
+                   ).set_defaults(fn=cmd_track_run)
+    sub.add_parser("hitl-list", help="사람 개입 대기 목록"
+                   ).set_defaults(fn=cmd_hitl_list)
+
+    hd = sub.add_parser("hitl-done", help="사람 개입 완료 보고 → 자동 재개")
+    hd.add_argument("handoff_id")
+    hd.add_argument("--note", required=True, help="처리 내용")
+    hd.add_argument("--confirmation", default="", help="접수번호 (있으면)")
+    hd.set_defaults(fn=cmd_hitl_done)
+
+    rs = sub.add_parser("resurvey", help="2주 재문진 결과 기록 (실측 Reclaimed)")
+    rs.add_argument("customer")
+    rs.add_argument("json_path")
+    rs.set_defaults(fn=cmd_resurvey)
+
+    sub.add_parser("demo-list", help="데모 시나리오(100통) 목록"
+                   ).set_defaults(fn=cmd_demo_list)
+
+    dm = sub.add_parser("demo-run", help="데모 1건을 격리 환경에서 단계별 실행")
+    dm.add_argument("n", type=int, help="데모 번호 (1~100)")
+    dm.add_argument("--fresh", action="store_true", help="demo/runtime 초기화 후 실행")
+    dm.set_defaults(fn=cmd_demo_run)
+
+    dx = sub.add_parser("demo-exec", help="(내부용) 격리 env 안에서 데모 실행")
+    dx.add_argument("n", type=int)
+    dx.set_defaults(fn=cmd_demo_exec)
     return p
 
 

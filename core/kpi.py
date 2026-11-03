@@ -59,19 +59,86 @@ def validate_feedback(path) -> list[str]:
     return problems
 
 
+def classify_cause(story: str) -> str:
+    """offline_realized=no 스토리에서 원인 자동 분류 (TC-FBK-002)."""
+    s = story or ""
+    if any(k in s for k in ("유튜브", "넷플", "폰만", "그냥 쉬", "의욕", "귀찮")):
+        return "동기 부족"
+    if any(k in s for k in ("멀", "거리", "이동")):
+        return "추천 부적합(거리)"
+    if any(k in s for k in ("짬", "파편", "짧아", "틈틈")):
+        return "시간 파편화"
+    if any(k in s for k in ("안 맞", "취향", "재미없")):
+        return "추천 부적합(취향)"
+    return "미분류"
+
+
 def handoff_unrealized(feedback_dir) -> dict[str, list[dict]]:
-    """offline_realized=no 피드백을 원인 태그(cause, 없으면 '미분류')별로 분류 (TC-FBK-002)."""
+    """offline_realized=no 피드백을 원인 태그별로 분류 (TC-FBK-002).
+
+    cause 필드가 없으면 스토리에서 자동 분류한다.
+    """
     groups: dict[str, list[dict]] = {}
     for p in sorted(Path(feedback_dir).glob("*.md")):
         fm = _frontmatter(p)
         if fm.get("offline_realized", "").lower() == "no":
-            cause = fm.get("cause") or "미분류"
+            cause = fm.get("cause") or classify_cause(fm.get("offline_story", ""))
             groups.setdefault(cause, []).append({
                 "file": p.name,
                 "delegation": fm.get("delegation", ""),
                 "story": fm.get("offline_story", ""),
             })
     return groups
+
+
+def process_unrealized(feedback_dir) -> list[str]:
+    """no 케이스를 원인별로 상품기획 개선 Flow로 핸드오프 (TC-FBK-002 ②).
+
+    원인 그룹당 Flow 1건 — 중복 생성 방지를 위해 같은 날 같은 원인은 1건.
+    반환: 생성된 flow id 목록.
+    """
+    from . import flow as flow_mod
+    created = []
+    for cause, items in handoff_unrealized(feedback_dir).items():
+        files = ", ".join(i["file"] for i in items)
+        fid = flow_mod.create_flow(
+            "ops", f"오프라인 미전환 개선 — 원인 {cause}", "개선 과제",
+            f"offline_realized=no {len(items)}건 (원인: {cause}) — {files}")
+        flow_mod.add_step(fid, "cs",
+                          f"원인 분류 완료: {cause} ({len(items)}건)",
+                          handoff="cs → product: 추천 적중률 개선 — 이 케이스가 KPI의 최대 적",
+                          notify_customer=False)
+        created.append(fid)
+    return created
+
+
+def weekly_complaints(feedback_dir) -> list[dict]:
+    """반복 불만 감지 — 같은 불만(complaint 태그)이 고객 2명 이상이면
+    담당 부문 개선 과제 Flow 생성 (TC-FBK-004). 반환: 생성 내역."""
+    from . import flow as flow_mod
+    groups: dict[str, set[str]] = {}
+    for p in sorted(Path(feedback_dir).glob("*.md")):
+        fm = _frontmatter(p)
+        tag = fm.get("complaint", "").strip()
+        if tag:
+            groups.setdefault(tag, set()).add(fm.get("customer", p.name))
+    dept_map = {"승인": "it", "속도": "it", "지연": "it", "추천": "product",
+                "메일": "it", "가격": "product", "요금": "product"}
+    created = []
+    for tag, customers in groups.items():
+        if len(customers) < 2:
+            continue
+        dept = next((d for k, d in dept_map.items() if k in tag), "it")
+        fid = flow_mod.create_flow(
+            "ops", f"반복 불만 개선 — {tag}", "개선 과제",
+            f"고객 {len(customers)}명에게서 같은 유형의 불만 접수: {tag}")
+        flow_mod.add_step(fid, "cs",
+                          f"반복 불만 감지: \"{tag}\" (고객 {len(customers)}명)",
+                          handoff=f"cs → {dept}: 개선 과제 — 반복 불만은 구조 문제",
+                          notify_customer=False)
+        created.append({"tag": tag, "customers": len(customers),
+                        "dept": dept, "flow": fid})
+    return created
 
 
 def aggregate(feedback_dir=None) -> dict:

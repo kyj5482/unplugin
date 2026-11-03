@@ -12,5 +12,13 @@ data/customers/*
 !data/customers/demo/
 data/dashboard.html
 data/evidence/
+data/cases/
+data/handoff/
+data/usage/
+demo/runtime/
+departments/*/outputs/
+departments/marketing/drafts/
+departments/marketing/published/
+departments/cs/feedback/
 secrets/*
 !secrets/mail.example.json

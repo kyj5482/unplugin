@@ -13,7 +13,8 @@
 - 검증: 피드백 파일 frontmatter 필드 존재를 스크립트로 검사 (추후 자동화 1순위)
 
 ## TC-FBK-002: offline_realized=no → 원인 분류·핸드오프
-- 상태: FAIL
+- 상태: PASS
+- 검증 기록: core/selftest_offline.py (2026-11-03) — 원인 자동 분류(core/kpi.py classify_cause) + 상품기획 핸드오프 Flow 생성
 - 우선순위: P0
 - 유스케이스: UC-D2
 
@@ -34,7 +35,8 @@
 - 검증: 샘플 데이터 3건으로 집계 리허설, 수기 계산과 일치 확인
 
 ## TC-FBK-004: 반복 불만 → 개선 과제 전환
-- 상태: FAIL
+- 상태: PASS
+- 검증 기록: core/selftest_offline.py (2026-11-03) — 동일 불만 2명 이상 → IT 개선 과제 Flow, 1명은 미전환
 - 우선순위: P1
 - 유스케이스: UC-D4
 

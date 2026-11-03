@@ -62,9 +62,11 @@ def main() -> int:
     item2 = {"id": "t-exec-2", "kind": "plugin:grocery-recurring",
              "summary": "생수 정기주문"}  # 카탈로그: est_hours_per_week=1.5
     r2 = executor.run(item2, {})
-    check("② plugin:grocery-recurring → 카탈로그 est_hours_per_week=1.5 반영",
-          r2["mode"] == "simulated" and r2["reclaimed"] == 1.5,
-          f"reclaimed={r2['reclaimed']}")
+    check("② plugin:grocery-recurring → 장보기 시뮬(est 1.5 + 영수증 증빙 + 예산 내)",
+          r2["mode"] == "sim-cart" and r2["reclaimed"] == 1.5
+          and r2["ok"] and len(r2["evidence"]) == 1
+          and "예산" in r2["summary"],
+          f"r2={r2}")
     item2b = dict(item2, est_hours=2.0)
     r2b = executor.run(item2b, {})
     check("② item의 est_hours가 있으면 그것이 우선 (2.0)",
@@ -101,8 +103,8 @@ def main() -> int:
                 sys.modules.pop(k, None)
             else:
                 sys.modules[k] = v
-    check("④ UNPLUGIN_REAL_BROWSER=1 + playwright 없음 → simulated 폴백 (예외 없음)",
-          r4["ok"] is True and r4["mode"] == "simulated" and r4["evidence"] == [],
+    check("④ UNPLUGIN_REAL_BROWSER=1 + playwright 없음 → 시뮬 폴백 (예외 없음)",
+          r4["ok"] is True and r4["mode"] == "sim-cart",
           str(r4))
 
     # ── ⑤ queue.run_tick 통합 (amount=0 → executor 경유 done) ──

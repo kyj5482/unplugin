@@ -1,0 +1,12 @@
+{
+  "version": "2026-11-03",
+  "comment": "AI 에이전트 직원 로스터 — core/agents.py가 역할 기반으로 배정한다. 사람은 대표 1인뿐이고, coordinator가 사람 개입이 필요한 일을 대표(또는 직원)에게 가이드로 넘긴다.",
+  "agents": [
+    { "id": "aru",  "name": "아루", "role": "concierge",   "dept": "concierge", "desc": "접수·분류·고객 커뮤니케이션 오케스트레이터" },
+    { "id": "bomi", "name": "보미", "role": "resolver",    "dept": "it",        "desc": "일반 위임 수행 1 — 브라우저·자동 실행" },
+    { "id": "dano", "name": "다노", "role": "resolver",    "dept": "it",        "desc": "일반 위임 수행 2 — 브라우저·자동 실행" },
+    { "id": "rena", "name": "레나", "role": "negotiator",  "dept": "cs",        "desc": "상대방 이메일 협상 — 환불·분쟁 멀티라운드" },
+    { "id": "tomi", "name": "토미", "role": "tracker",     "dept": "cs",        "desc": "완료 추적 — 환불 입금 확인·기한 넛지" },
+    { "id": "haru", "name": "하루", "role": "coordinator", "dept": "it",        "desc": "사람 개입(HITL) 창구 — 클릭 가이드 발행·결과 회수" }
+  ]
+}

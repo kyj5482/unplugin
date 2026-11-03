@@ -134,9 +134,95 @@ def create_profile(data: dict) -> dict:
         "",
         f"승인 한도 {profile['approval_limit']:,}원까지는 묻지 않고 진행하고, "
         "그 이상은 꼭 먼저 여쭤볼게요.",
+        "",
+        "해지·환불 규정(사전 고지): 위임 수행 전 해지는 당월 전액 환불, 수행 중에는 "
+        "미사용분 일할 환불, 완료 후에는 분쟁 절차(CS 접수 → 3영업일 검토)로 처리돼요. "
+        "전문: ops/pricing.md",
     ]), thread=fid)
 
     return profile
+
+
+# ── 부분 온보딩·이어하기 (TC-ONB-002/006) ──────────────────
+
+PENDING_FIELDS = ("tier", "approval_limit", "deny_list", "first_delegation")
+
+
+def start_partial(data: dict) -> dict:
+    """타입 테스트까지 마친 고객의 부분 프로필 — 남은 확인 항목을 pending에 기록.
+
+    전용 주소는 먼저 발급해 포워딩은 가능하게 하되, onboarded=False 상태에서는
+    결제성 위임이 시작되지 않는다 (mailbox 게이트, TC-ONB-006).
+    """
+    for key in ("name", "contact", "type"):
+        if key not in data:
+            raise ValueError(f"필수 항목 누락: {key}")
+    tcode = str(data["type"]).upper()
+    if tcode not in VALID_TYPES:
+        raise ValueError(f"타입 코드 오류: {data['type']}")
+    common.ensure_dirs()
+    cid = _unique_id(common.slug(data.get("roman") or data["name"]))
+    ascii_local = re.sub(r"[^a-z0-9]", "", cid.lower()) or f"u{secrets.token_hex(2)}"
+    profile = {
+        "id": cid, "name": data["name"], "contact": data["contact"],
+        "type": tcode, "onboarded": False,
+        "address": f"{ascii_local}.{secrets.token_hex(2)}@unplugin.me",
+        "pending": [k for k in PENDING_FIELDS if k not in data],
+    }
+    for k in PENDING_FIELDS:
+        if k in data:
+            profile[k] = data[k]
+    common.write_json(common.CUSTOMERS / cid / "profile.json", profile)
+    common.write_json(common.CUSTOMERS / cid / "rules.json", {"rules": []})
+    return profile
+
+
+def resume(customer_id: str, data: dict) -> dict:
+    """이탈 고객 재접수 — 타입 테스트를 다시 시키지 않고 남은 항목만 채운다.
+
+    반환 프로필에 "asked"(이번에 물은 항목)와 "skipped"(중복 질문 안 한 항목)를
+    담아 재개 시 중복 질문이 없음을 검증할 수 있게 한다 (TC-ONB-002).
+    """
+    ppath = common.CUSTOMERS / customer_id / "profile.json"
+    profile = common.read_json(ppath)
+    if profile.get("onboarded"):
+        return profile
+    pending_before = list(profile.get("pending", []))
+    asked = [k for k in pending_before if k in data]
+    for k in asked:
+        profile[k] = data[k]
+    profile["pending"] = [k for k in pending_before if k not in data]
+    profile["asked"] = asked
+    profile["skipped"] = ["type(타입 테스트 재시행 없음)"] + \
+        [k for k in PENDING_FIELDS if k not in pending_before]
+    if not profile["pending"]:
+        merged = {k: profile.get(k) for k in
+                  ("name", "contact", "type", "tier", "approval_limit",
+                   "deny_list", "first_delegation")}
+        merged.setdefault("tier", "one")
+        _validate(merged)
+        profile["onboarded"] = True
+        fid = flow.create_flow(customer_id, f"온보딩(이어하기): {profile['name']}",
+                               "onboarding",
+                               f"중도 이탈 후 재개 — 남은 항목 {', '.join(asked)}만 확인, "
+                               "타입 테스트 재시행 없음")
+        flow.add_step(fid, "cs",
+                      f"이어하기 완료 — 이번에 물은 항목: {', '.join(asked) or '없음'} / "
+                      f"중복 질문 생략: 타입 테스트", notify_customer=False)
+        flow.set_status(fid, "완료")
+        profile["onboarding_flow"] = fid
+    common.write_json(ppath, profile)
+    return profile
+
+
+def minimal_missing(profile: dict) -> list[str]:
+    """결제성 위임 시작에 필요한 최소 항목 중 미설정 목록 (TC-ONB-006)."""
+    missing = []
+    if not profile.get("approval_limit"):
+        missing.append("승인 한도")
+    if profile.get("deny_list") is None:
+        missing.append("위임 금지 목록")
+    return missing
 
 
 def check_deny(profile: dict, task_text: str) -> bool:

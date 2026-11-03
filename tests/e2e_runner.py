@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 shutil.rmtree(BASE, ignore_errors=True)
 
-from core import common, dashboard, flow, kpi, mailbox, onboarding, queue  # noqa: E402
+from core import cases, common, dashboard, flow, kpi, mailbox, onboarding, queue, tracking  # noqa: E402
 
 RESULTS: list[tuple[str, bool, str]] = []
 
@@ -88,7 +88,11 @@ def main() -> int:
     drop_mail("who@ever.example", "ghost@unplugin.me", "아무거나", "본문")
     drop_mail("minseo@example.com", a_addr, "Fwd: 공지", "> 원문 공지만 있고 지시 없음")
     drop_mail("minseo@example.com", a_addr, "Fwd: 생수 정기주문", "늘 먹던 걸로 주문해줘\n금액: 20000")
-    drop_mail("minseo@example.com", a_addr, "Fwd: 원데이 클래스 환불", "클래스 환불 분쟁 해결해줘")
+    drop_mail("minseo@example.com", a_addr, "Fwd: 드론 부품 조립 대행",
+              "드론 부품 조립 좀 대신해줘")
+    drop_mail("minseo@example.com", a_addr, "Fwd: 공방 클래스 환불 분쟁",
+              "환불 거부당했어. 환불 요구 계속해서 환불 분쟁 끝까지 해결해줘\n"
+              "업체: 달빛공방\n상대 이메일: cs@dalbit.example\n금액: 89000\n주문번호: CL-1")
 
     actions = [r["action"] for r in mailbox.process_inbox()]
     check("TC-EML-002", "포워딩 위임 접수(2건) + 모호 건 1회 질문",
@@ -99,9 +103,20 @@ def main() -> int:
           actions.count("new_type") == 1 and len(new_mail) == 1
           and "1~3일" in new_mail[0]["body"]
           and sum(1 for k in pend_kinds if k.startswith("plugin:")) == 2
-          and not any("환불" in i["summary"] for i in common.list_queue("pending"))
+          and not any("드론" in i["summary"] for i in common.list_queue("pending"))
           and any("신규 플러그인 검토" in p.read_text(encoding="utf-8")
-                  for p in common.FLOWS.glob("*환불*.md")), str(pend_kinds))
+                  for p in common.FLOWS.glob("*드론*.md")), str(pend_kinds))
+    check("TC-STR-001", "스트레스 유형(환불 분쟁) — 케이스 접수 + 우선순위 high",
+          actions.count("case_opened") == 1
+          and any(k.startswith("case:refund-dispute") for k in pend_kinds)
+          and all(i["priority"] == "high" for i in common.list_queue("pending")
+                  if i["kind"].startswith("case:")), str(pend_kinds))
+    str_case = cases.list_cases("open")[0]
+    check("TC-STR-002", "인텐트 추출 — 상대·금액·주문번호 + 담당 배정",
+          str_case["intent"].get("merchant_email") == "cs@dalbit.example"
+          and str_case["intent"].get("amount") == 89000
+          and str_case["intent"].get("order_no") == "CL-1"
+          and str_case.get("assignee"), str(str_case["intent"]))
     check("TC-EML-004", "규칙 조건 분기 — 15%만 발동, 9%는 조용히 보관",
           actions.count("rule_triggered") == 1 and actions.count("archived") == 1)
     check("TC-EML-005", "미등록 발신 자동 실행 0건 — 격리 + 고객 통지",
@@ -164,6 +179,30 @@ def main() -> int:
     dhtml = dpath.read_text(encoding="utf-8")
     check("TC-OPS-002", "대시보드에 전체 Flow·확인 필요 강조 반영",
           dpath.exists() and "확인 필요" in dhtml and "생수" in dhtml)
+
+    # ── 7. 스트레스 케이스 — 협상→수락→입금 확인→완결 (STR-003/006) ──
+    str_case = cases.load(str_case["id"])
+    out_rounds = [r for r in str_case["rounds"] if r["direction"] == "out"]
+    check("TC-STR-003", "협상 개시 — 상대방에게 1차 요구 발송 + 라운드 기록",
+          str_case["status"] == "negotiating" and len(out_rounds) >= 1
+          and any("cs@dalbit.example" == m.get("to") for m in outbox_mails()),
+          str_case["status"])
+    drop_mail("cs@dalbit.example", a_addr, "RE: 환불 요청",
+              "검토 결과 환불 처리하겠습니다.")
+    actions7 = [r["action"] for r in mailbox.process_inbox()]
+    str_case = cases.load(str_case["id"])
+    check("TC-STR-003", "상대방 수락 회신 → 추적 전환 (완결 아님 — 입금 확인 전)",
+          "counterpart_agreed" in actions7 and str_case["status"] == "tracking"
+          and "완료" not in flow.status_of(str_case["flow"]), str(actions7))
+    drop_mail("cs@dalbit.example", a_addr, "RE: 환불 완료 안내",
+              "환불 완료되었습니다. 입금되었으니 확인 바랍니다.")
+    mailbox.process_inbox()
+    t_stats = tracking.run_tick()
+    str_case = cases.load(str_case["id"])
+    check("TC-STR-006", "입금 확인 후에만 완결 — 케이스 resolved + Flow 완료 + 증빙",
+          t_stats["resolved"] == 1 and str_case["status"] == "resolved"
+          and flow.status_of(str_case["flow"]) == "완료"
+          and len(str_case["evidence"]) >= 1, str(t_stats))
 
     # ── 결과 ─────────────────────────────────────────────
     fails = [r for r in RESULTS if not r[1]]

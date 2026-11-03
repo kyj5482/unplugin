@@ -24,18 +24,30 @@
 5. ~~이메일 v0.5 (`core/mail_io.py`) + 서비스 데몬 (`core/service.py`)~~ (완료 2026-11-03 —
    IMAP 수신/SMTP 발신·스레딩 헤더·서브어드레싱, `python3 -m core serve`. **Gmail 계정 연결 실증은
    SETUP.md 따라 대표가 수행**) → v1 — 전용 도메인 + Cloudflare Email Routing (ops/email-channel.md)
+6. ~~스트레스 케이스 엔진 + AI 에이전트 조직~~ (완료 2026-11-03 — 환불·분쟁·해지 10유형
+   플레이북(`core/stress.py`), 케이스 수명주기(`cases.py`), 이메일 협상 멀티라운드(`negotiation.py`),
+   egolite 어댑터·포털 레지스트리(`egolite.py`/`portals.json`), 봇차단→사람 개입 가이드(`hitl.py`),
+   입금 확인까지 완료 추적(`tracking.py`), 직원 로스터·배정(`agents.py`), 데모 100통 + 단계별
+   실행(`demo/`, `python3 -m core demo-run <n>`). TC 53/53 PASS. **egolite 실세션
+   (UNPLUGIN_EGOLITE_URL) 연결과 맥북 실브라우저 실증은 남음** — TC-STR-004 재검증)
 
 ## 운영 코어 사용법 (대표 일상 루프)
 
 ```
 python3 -m core onboard tests/fixtures/onboard-demo.json   # 신규 고객
 # data/inbox/ 에 메일 파일 투입 (실환경에선 IMAP이 대신)
-python3 -m core mail-poll     # 수신 처리 (격리/규칙/위임 접수 + 고객 상태 메일)
-python3 -m core queue-run     # 큐 1틱 (슬롯·승인 게이트·타임아웃)
+python3 -m core mail-poll     # 수신 처리 (격리/규칙/위임/케이스 접수 + 고객 상태 메일)
+python3 -m core queue-run     # 큐 1틱 (스트레스 우선·슬롯·승인 게이트·타임아웃)
+python3 -m core track-run     # 완료 추적 1틱 (환불 입금 확인·넛지·에스컬레이션)
+python3 -m core cases         # 열린 환불·분쟁 케이스 현황
+python3 -m core hitl-list     # 사람이 처리해야 할 일 (클릭 가이드)
+python3 -m core hitl-done <id> --note "..." --confirmation "접수번호"
 python3 -m core approve <id>  # 결제 승인 (고객 회신 반영)
+python3 -m core agents        # AI 에이전트 직원 부하 현황
 python3 -m core dashboard     # data/dashboard.html — 대표용 Unified View
 python3 -m core kpi           # Reclaimed Hours 주간 리포트
 python3 -m core status        # 한 줄 현황
+python3 -m core demo-run <n>  # 데모 100통 중 1건 단계별 시연 (격리 환경)
 ```
 
 ## 산출물 위치

@@ -50,10 +50,19 @@
 | UC-G5 | 발신자 검증·인젝션 방어 | TC-EML-005 | P0 | it | 검토함 격리 + 신뢰 등급 |
 | UC-G6 | 메일 기반 흐름 가시성 | TC-EML-006 | P0 | it | core/notify.py 상태 메일 + 타임라인 |
 | UC-G7 | 업무 자동 분류·신규 접수 | TC-EML-007 | P0 | it, product | core/classify.py + plugins/ 카탈로그 |
+| UC-S1 | 스트레스 유형 우선 처리 | TC-STR-001 | P0 | concierge, it | core/stress.py 플레이북 + 큐 priority |
+| UC-S2 | 인텐트 → 케이스 생성 | TC-STR-002 | P0 | it | core/cases.py + 인텐트 추출 |
+| UC-S3 | 이메일 협상 멀티라운드 | TC-STR-003 | P0 | cs, it | core/negotiation.py 라운드 사다리 |
+| UC-S4 | 포털(egolite) 실행·증빙 | TC-STR-004 | P0 | it | core/egolite.py + portals.json |
+| UC-S5 | 봇 차단 → 사람 개입 | TC-STR-005 | P0 | it | core/hitl.py 클릭 가이드·재개 |
+| UC-S6 | 입금 확인까지 추적 | TC-STR-006 | P0 | cs, it | core/tracking.py 넛지·에스컬레이션 |
+| UC-S7 | AI 에이전트 직원 조직 | TC-STR-007 | P1 | it | core/agents.py + 로스터 |
+| UC-S8 | 데모 100통·단계별 실행 | TC-STR-008 | P0 | it | demo/ + core/demo.py |
 
 ## 커버리지 현황
 
-- 유스케이스 43개 전부 TC로 커버됨 (1:1), 벤치마킹 근거: `ops/benchmarking.md`
-- P0 28건 = 베타(대표 자가 사용 + 지인 1~2명) 전에 PASS 해야 하는 범위
-- P1 13건 = 유료 고객 받기 전 / P2 2건 = 과금 운영 본격화 전 (합계 43 = `python3 tests/status.py`와 일치해야 함)
+- 유스케이스 51개 전부 TC로 커버됨 (1:1), 벤치마킹 근거: `ops/benchmarking.md`
+- P0 = 베타(대표 자가 사용 + 지인 1~2명) 전에 PASS 해야 하는 범위
+- 합계 53 = `python3 tests/status.py`와 일치해야 함 — 2026-11-03 기준 **53/53 PASS**
+- 시뮬레이션으로 검증된 실행형 TC(DEL-001, STR-004 등)는 egolite 실세션·맥북 실브라우저 연결 시 재검증
 - 보류 2건(멀티채널 dedupe, 결제수단 사전 등록)은 benchmarking.md "체크리스트 반영 현황" 참고

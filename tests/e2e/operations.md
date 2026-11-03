@@ -1,7 +1,8 @@
 # E2E 테스트케이스 — 대표 운영·큐·과금 (OPS)
 
 ## TC-OPS-001: 대표 지시 처리 전 과정
-- 상태: FAIL
+- 상태: PASS
+- 검증 기록: core/selftest_offline.py (2026-11-03) — 부문 배정·부문 디렉토리 산출물·반환 4요소 (core/directive.py, `python3 -m core directive`)
 - 우선순위: P0
 - 유스케이스: UC-F1
 - 워크플로우: workflows/directive.md
@@ -46,7 +47,8 @@
 - 검증: 샘플 큐 데이터로 처리 순서 시뮬레이션
 
 ## TC-OPS-005: 해지·환불 처리
-- 상태: FAIL
+- 상태: PASS
+- 검증 기록: core/selftest_offline.py (2026-11-03) — 시점별 환불 3분기(전액/일할/분쟁 절차) + 환영 메일 사전 고지 (core/billing.py, ops/pricing.md)
 - 우선순위: P2
 - 유스케이스: UC-F5
 

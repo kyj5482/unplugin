@@ -65,19 +65,23 @@ def main() -> int:
           str({b: results[b]["action"] for b in bad}))
     notices = [m for m in mails if "메일 격리 안내" in m["subject"]]
     check("⑥⑦⑧ 격리 고객 통지 3통 발송", len(notices) == 3, f"{len(notices)}통")
-    check("자동 실행 0건 (pending 큐는 위임·규칙 2건뿐)",
+    check("자동 실행 0건 (pending 큐는 케이스·규칙 2건뿐)",
           len(pending) == 2
-          and sorted("plugin" if p["kind"].startswith("plugin:") else p["kind"] for p in pending) == ["plugin", "rule"],
+          and sorted("case" if p["kind"].startswith("case:") else p["kind"] for p in pending) == ["case", "rule"],
           str([(p["id"], p["kind"]) for p in pending]))
 
-    # ── ① 포워딩+지시 → delegated (flow + pending 큐) ──
+    # ── ① 포워딩+지시(이의신청) → 스트레스 케이스 접수 (TC-STR-001/002) ──
+    from core import cases as cases_mod
     r1 = results["01-fwd-instruction.md"]
-    deleg = [p for p in pending if p["kind"].startswith("plugin:")]
-    check("① delegated — flow + pending 큐 생성",
-          r1["action"] == "delegated" and len(deleg) == 1
-          and flow.flow_path(deleg[0]["flow"]).exists()
-          and deleg[0]["amount"] == 54000,
-          f"result={r1}, queue={deleg}")
+    case_items = [p for p in pending if p["kind"].startswith("case:")]
+    c1 = cases_mod.list_cases("open")
+    check("① case_opened — flow + 우선순위 high 케이스 큐 + 인텐트(금액·상대) 추출",
+          r1["action"] == "case_opened" and len(case_items) == 1
+          and case_items[0]["priority"] == "high"
+          and flow.flow_path(case_items[0]["flow"]).exists()
+          and len(c1) == 1 and c1[0]["intent"].get("amount") == 54000
+          and c1[0]["intent"].get("merchant_email") == "billing@telecom.example",
+          f"result={r1}, queue={case_items}, case={c1}")
 
     # ── ② 포워딩 모호 → clarify 1회 ──
     r2 = results["02-fwd-ambiguous.md"]

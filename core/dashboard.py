@@ -258,6 +258,49 @@ def _card(f: dict) -> str:
 </details>"""
 
 
+def _cases_summary() -> tuple[int, str]:
+    """열린 스트레스 케이스 수 + 요약 HTML (환불·분쟁 — 입금 확인까지 추적 중)."""
+    try:
+        from . import cases as cases_mod
+        open_cases = cases_mod.list_cases("open")
+    except Exception:
+        open_cases = []
+    if not open_cases:
+        return 0, ""
+    rows = ""
+    for c in open_cases:
+        amt = c["intent"].get("amount")
+        rows += (f'<tr><td class="t-dept">{_esc(c["type"])}</td>'
+                 f'<td>{_esc(c["intent"].get("merchant", "?"))}</td>'
+                 f'<td class="t-time">{_esc(f"{amt:,}원" if amt else "—")}</td>'
+                 f'<td>{_esc(c["status"])}</td>'
+                 f'<td class="t-time">라운드 {len(c["rounds"])} · {_esc(c.get("assignee", ""))}</td></tr>')
+    html = (f'<section id="cases"><h2>진행 중 케이스 — 입금 확인까지 추적 '
+            f'<span class="cnt">{len(open_cases)}건</span></h2>'
+            f'<div class="card" style="padding:14px 20px;"><table class="tl-table">'
+            f'<thead><tr><th>유형</th><th>상대</th><th>금액</th><th>상태</th><th>진행</th></tr></thead>'
+            f'<tbody>{rows}</tbody></table></div></section>')
+    return len(open_cases), html
+
+
+def _hitl_summary() -> str:
+    """사람 개입 대기 — 대표/직원이 지금 해야 할 일."""
+    try:
+        from . import hitl
+        rows = hitl.list_open()
+    except Exception:
+        rows = []
+    if not rows:
+        return ""
+    items = "".join(
+        f'<li>{_esc(st["reason"])} — 가이드 <b>data/handoff/{_esc(st["id"])}.md</b>'
+        f' · 완료 보고: <b>python3 -m core hitl-done {_esc(st["id"])}</b></li>'
+        for st in rows)
+    return (f'<section class="attention" id="hitl">'
+            f'<h2>사람 개입 대기 — 클릭 가이드 <span class="cnt">{len(rows)}건</span></h2>'
+            f'<div class="card" style="padding:16px 20px;"><ul class="qlist">{items}</ul></div></section>')
+
+
 def render(flows: list[dict], queue_counts: dict[str, int]) -> str:
     counts = {s: 0 for s in STATUSES}
     other = 0
@@ -281,6 +324,8 @@ def render(flows: list[dict], queue_counts: dict[str, int]) -> str:
     if other:
         chips += f'<span class="schip"><i class="dot-new"></i>기타 <b>{other}</b></span>'
 
+    n_cases, cases_html = _cases_summary()
+    hitl_html = _hitl_summary()
     att_html = ""
     if attention:
         att_html = (
@@ -319,14 +364,17 @@ def render(flows: list[dict], queue_counts: dict[str, int]) -> str:
   <div class="tile hero"><div class="tl">Reclaimed Hours 합계</div>
     <div class="num"><span data-stat="reclaimed">{_fmt_hours(total_rh)}</span><span class="unit">h</span></div>
     <div class="sub">고객에게 되돌려준 시간</div></div>
-  <div class="tile"><div class="tl">큐</div>
+  <div class="tile"><div class="tl">큐 · 케이스</div>
     <div class="num"><span data-stat="pending">{queue_counts.get("pending", 0)}</span><span class="unit">대기</span>
-      · <span data-stat="active">{queue_counts.get("active", 0)}</span><span class="unit">진행</span></div>
-    <div class="sub">data/queue/pending · active</div></div>
+      · <span data-stat="active">{queue_counts.get("active", 0)}</span><span class="unit">진행</span>
+      · <span data-stat="cases">{n_cases}</span><span class="unit">케이스</span></div>
+    <div class="sub">queue + 환불·분쟁 추적 중</div></div>
 </div>
 <div class="statusbar">{chips}</div>
 
+{hitl_html}
 {att_html}
+{cases_html}
 
 <div class="toolrow"><button type="button" id="toggleAll" data-open="0">모두 펼치기</button></div>
 <section id="flows">

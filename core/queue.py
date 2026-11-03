@@ -9,6 +9,8 @@
 """
 from __future__ import annotations
 
+import re
+
 from . import approval, common, executor, flow, notify
 
 # 월 위임 시간 한도 (ops/pricing.md: One ~10h / Flow ~40h / Life 무제한급)
@@ -19,11 +21,18 @@ USAGE_DIR = common.DATA / "usage"
 # ── enqueue ──────────────────────────────────────────────
 
 def enqueue(customer_id: str, kind: str, summary: str, flow_id: str,
-            amount: int = 0, est_hours: float = 0.0) -> str:
-    """pending에 아이템 생성. 슬롯이 없어 대기면 대기 순번·예상을 1회 안내."""
+            amount: int = 0, est_hours: float = 0.0,
+            priority: str = "normal", case_id: str = "", body: str = "") -> str:
+    """pending에 아이템 생성. 슬롯이 없어 대기면 대기 순번·예상을 1회 안내.
+
+    priority="high"는 스트레스 유형(환불·분쟁 등) — 먼저 대응해 멘탈 케어에
+    기여한다 (TC-STR-001). case_id는 케이스 연동, body는 실행기 참고용 원문.
+    """
+    from . import agents
     common.ensure_dirs()
     created = common.now()
     item_id = f"{created.strftime('%Y%m%d-%H%M%S-%f')}-{customer_id}-{common.slug(summary, 24)}"
+    role = "negotiator" if kind.startswith("case:") else "resolver"
     item = {
         "id": item_id,
         "customer": customer_id,
@@ -33,6 +42,10 @@ def enqueue(customer_id: str, kind: str, summary: str, flow_id: str,
         "flow": flow_id,
         "amount": amount,
         "est_hours": est_hours,
+        "priority": priority,
+        "case": case_id,
+        "body": common.mask_sensitive(body)[:500],
+        "assignee": agents.assign(role)["id"],
         "approved": None,
         "asked": False,              # 승인 질문 1회 플래그 (재질문 금지)
         "notified_hold": False,      # 승인 무응답 보류 통지 1회 플래그
@@ -80,11 +93,15 @@ def run_tick() -> dict:
     profiles = common.load_profiles()
     stats = {"promoted": 0, "executed": 0, "waiting": 0, "timeouts": 0}
 
-    # 1. 고객별 티어 슬롯 내 pending→active FIFO 승격 (created 순서 보장)
+    # 1. 고객별 티어 슬롯 내 pending→active 승격
+    #    스트레스 유형(priority=high)이 먼저, 같은 우선순위끼리는 FIFO (TC-STR-001)
     active_cnt: dict[str, int] = {}
     for it in common.list_queue("active"):
         active_cnt[it["customer"]] = active_cnt.get(it["customer"], 0) + 1
-    for it in common.list_queue("pending"):  # created 오름차순
+    pending_sorted = sorted(
+        common.list_queue("pending"),
+        key=lambda i: (0 if i.get("priority") == "high" else 1, i["created"]))
+    for it in pending_sorted:
         prof = profiles.get(it["customer"], {})
         slots = common.TIER_SLOTS.get(prof.get("tier", "one"), 1)
         if active_cnt.get(it["customer"], 0) < slots:
@@ -121,6 +138,13 @@ def run_tick() -> dict:
 
 def _execute(it: dict, prof: dict, stats: dict) -> None:
     fid = it["flow"]
+    if it.get("hold"):
+        # 보안 이벤트·사람 개입·고객 확인 대기 중 — 재처리하지 않음
+        stats["waiting"] += 1
+        return
+    if (it.get("kind") or "").startswith("case:"):
+        _launch_case(it, prof, stats)
+        return
     if it.get("approved") is True:
         # 고객이 명시적으로 승인 → 결제 진행 후 실행 (게이트 기록은 그대로 유지)
         flow.add_step(fid, "it",
@@ -165,30 +189,162 @@ def _execute(it: dict, prof: dict, stats: dict) -> None:
     _execute_via_executor(it, prof, stats)
 
 
+def _launch_case(it: dict, prof: dict, stats: dict) -> None:
+    """케이스 아이템 착수 — 이메일 협상 개시 또는 포털 수행 (TC-STR-003/004/005).
+
+    케이스는 결과 확인(입금 등)까지가 완료이므로, 여기서는 착수까지만 하고
+    슬롯을 반납(done)한다. Flow 완결은 tracking이 확정 후에만 수행한다.
+    """
+    from . import cases as cases_mod, egolite, hitl, negotiation, tracking
+    fid = it["flow"]
+    case = cases_mod.load(it.get("case", ""))
+    if case is None:
+        flow.ask_customer(fid, f"케이스 기록({it.get('case')})을 찾지 못해 보류 중이에요. 다시 요청해 주세요.")
+        it["hold"] = "case_missing"
+        common.write_json(common.queue_item_path("active", it["id"]), it)
+        stats["waiting"] += 1
+        return
+    if case["status"] != "open":
+        # 이미 착수된 케이스 — 슬롯만 반납
+        _release_case_slot(it, prof, stats)
+        return
+
+    if case["channel"] == "email":
+        negotiation.start(case)
+        _release_case_slot(it, prof, stats,
+                           note=f"협상 개시 완료 — 상대방 회신 대기 (케이스 {case['id']})")
+        return
+
+    # portal / hybrid — egolite 세션으로 절차 수행
+    intent_text = f"{cases_mod.playbook_of(case)['opener']} — {it['summary']}"
+    r = egolite.run_intent(case, intent_text, case["intent"].get("portal_url", ""))
+    if r.get("injection"):
+        _security_hold(it, fid, r, stats)
+        return
+    if r.get("blocked"):
+        portal = egolite._match_portal(case["intent"].get("portal_url", ""),
+                                       case["intent"].get("merchant", ""))
+        steps = (portal or {}).get("manual_steps") or [
+            "해당 포털에 접속해 환불/해지 절차 진행", "접수번호를 완료 보고에 입력"]
+        kind = "takeover" if any("takeover" in s.lower() or "본인" in s or "고객" in s
+                                 for s in steps) else "manual"
+        hitl.request(case, r["summary"], steps, kind=kind)
+        _release_case_slot(it, prof, stats,
+                           note=f"봇 차단 포털 — 사람 개입 가이드 발행 (케이스 {case['id']})")
+        return
+    if not r.get("ok"):
+        cases_mod.add_round(case, "sys", f"포털 수행 실패: {r['summary']}")
+        it["fail_count"] = int(it.get("fail_count", 0)) + 1
+        flow.add_step(fid, "it", f"실행 실패({it['fail_count']}회) — 안전하게 중단: {r['summary']}")
+        if it["fail_count"] >= 2:
+            flow.ask_customer(fid, (
+                f"\"{it['summary']}\" 포털 수행이 반복 실패해 보류 중이에요. "
+                "대안: ① 재시도 ② 사람이 직접 처리 ③ 취소 — 번호로 회신해 주세요."))
+            it["hold"] = "await_customer"
+        common.write_json(common.queue_item_path("active", it["id"]), it)
+        stats["waiting"] += 1
+        return
+    for e in r.get("evidence", []):
+        cases_mod.add_evidence(case, e, "포털 접수 증빙")
+    cases_mod.add_round(case, "sys", f"포털 접수 완료: {r['summary']}")
+    flow.add_step(fid, "it", f"포털 접수 완료: {r['summary']} / {executor.evidence_note(r)}")
+    tracking.schedule(case)
+    _release_case_slot(it, prof, stats,
+                       note=f"포털 접수 완료 — 실제 처리(입금) 확인까지 추적 (케이스 {case['id']})")
+
+
+def _release_case_slot(it: dict, prof: dict, stats: dict, note: str = "") -> None:
+    """케이스 착수 후 슬롯 반납 — Flow는 완결하지 않는다 (추적이 완결 담당)."""
+    it["charged"] = True
+    common.move_queue_item(it, "active", "done")
+    if note:
+        flow.add_step(it["flow"], "concierge", note, notify_customer=False)
+    _charge_usage(it["customer"], float(it.get("est_hours") or 2.0), prof)
+    stats["executed"] += 1
+
+
+def _security_hold(it: dict, fid: str, result: dict, stats: dict) -> None:
+    """인젝션 감지 — 수행 중단 + 보안 이벤트 기록 + 고객 안내 (TC-DEL-011)."""
+    flow.add_step(fid, "it", f"[보안 이벤트] {result['summary']} — 페이지 지시는 따르지 않았어요")
+    flow.ask_customer(fid, (
+        f"\"{it['summary']}\" 수행 중 방문한 페이지에서 악성 지시가 감지되어 "
+        "안전하게 중단했어요. 다른 경로로 재시도할까요? (재시도/취소로 회신)"))
+    it["hold"] = "security"
+    common.write_json(common.queue_item_path("active", it["id"]), it)
+    stats["waiting"] += 1
+
+
 def _execute_via_executor(it: dict, prof: dict, stats: dict) -> None:
     """게이트 통과 후의 실제 수행 — executor 경유 (TC-DEL-010 지향).
 
     성공: 실행 요약 step(+증빙 노트) → done 이동 → flow 완결.
+    단, 외부 거래 수행(browser 계열)은 증빙 없이는 완료 처리하지 않는다.
     실패: 사유 step 기록, active 유지 + fail_count 증가,
-          2회 이상이면 "확인 필요" 전환·대안 안내 (TC-DEL-004 정신).
+          2회 이상이면 "확인 필요" 전환·대안 안내 (TC-DEL-004).
+    봇 차단: 재시도 없이 즉시 사람 개입 가이드 발행 (TC-DEL-004 ⑤).
     """
+    from . import hitl
     fid = it["flow"]
     result = executor.run(it, prof)
     note = executor.evidence_note(result)
+
+    if result.get("injection"):
+        _security_hold(it, fid, result, stats)
+        return
+
+    if result.get("blocked"):
+        hitl.request_for_item(it, result["summary"], [
+            "차단된 포털에 직원 계정/브라우저로 직접 접속",
+            f"요청 내용 수행: {it['summary']}",
+            "완료 화면의 접수·확정 번호를 완료 보고에 입력"])
+        it["hold"] = "handoff"
+        common.write_json(common.queue_item_path("active", it["id"]), it)
+        stats["waiting"] += 1
+        return
+
+    if result.get("ask"):
+        # 선택지 발생 — 대안을 한 번에 묶어 1회만 질문 (TC-DEL-002)
+        if not it.get("asked_alt"):
+            alts = result.get("alternatives", [])
+            opts = " / ".join(f"{i}. {a}" for i, a in enumerate(alts, 1))
+            flow.ask_customer(fid, (
+                f"\"{it['summary']}\" 진행 중 희망 조건이 마감되었어요. "
+                f"대안을 한 번에 정리했어요 — {opts} — 원하시는 번호로 회신해 주세요. "
+                "(추가 질문 없이 이 한 번으로 끝낼게요)"))
+            it["asked_alt"] = True
+            it["partial"] = result.get("partial", [])
+            it["hold"] = "await_choice"
+            common.write_json(common.queue_item_path("active", it["id"]), it)
+        stats["waiting"] += 1
+        return
+
     if result["ok"]:
+        if executor.requires_evidence(it) and not result.get("evidence"):
+            # 증빙 없는 완료 주장 — 완결 차단 (TC-DEL-010)
+            flow.add_step(fid, "it",
+                          f"완료 보고에 증빙이 없어 완결을 보류했어요: {result['summary']} "
+                          "(주문번호·영수증·스크린샷 중 1개 이상 필요)")
+            it["hold"] = "no_evidence"
+            common.write_json(common.queue_item_path("active", it["id"]), it)
+            stats["waiting"] += 1
+            return
         flow.add_step(fid, "it", f"실행 요약: {result['summary']} / {note}")
         _finish(it, prof, result["summary"], reclaimed=result.get("reclaimed"))
         stats["executed"] += 1
         return
+
     it["fail_count"] = int(it.get("fail_count", 0)) + 1
     flow.add_step(fid, "it",
                   f"실행 실패({it['fail_count']}회) — 안전하게 중단: {result['summary']} / {note}")
     if it["fail_count"] >= 2:
+        partial = it.get("partial") or result.get("partial")
+        partial_txt = f" 지금까지의 중간 결과: {partial}" if partial else ""
         flow.ask_customer(fid, (
             f"\"{it['summary']}\" 수행이 반복 실패해 결제·실행 없이 보류 중이에요. "
-            f"사유: {result['summary']} / "
+            f"사유: {result['summary']} /{partial_txt} "
             "대안: ① 다른 사이트·시간대로 재시도 ② 조건을 바꿔 다시 위임 ③ 취소. "
             "원하시는 번호(또는 \"취소\")로 이 메일에 회신해 주세요."))
+        it["hold"] = "await_customer"
     common.write_json(common.queue_item_path("active", it["id"]), it)
     stats["waiting"] += 1
 
@@ -200,12 +356,61 @@ def _finish(it: dict, prof: dict, summary: str, reclaimed: float | None = None) 
     est = float(reclaimed if reclaimed is not None else (it.get("est_hours") or 0.0))
     flow.complete(it["flow"], summary, reclaimed_hours=est if est > 0 else None)
     _charge_usage(it["customer"], est, prof)
+    if est > 0:
+        # 확보된 시간 → 오프라인 경험 추천 (TC-OFF-001). 실패해도 완결은 유지.
+        try:
+            from . import recommend
+            recommend.maybe_recommend(it["flow"], it["customer"], est)
+        except Exception:
+            pass
+
+
+def resume_choice(item_id: str, choice_text: str) -> dict | None:
+    """고객이 대안 번호를 회신 — hold 해제 + 선택 반영, 다음 틱에 재실행 (TC-DEL-002)."""
+    for state in ("active", "pending"):
+        p = common.queue_item_path(state, item_id)
+        if p.exists():
+            it = common.read_json(p)
+            alts = it.get("partial") or []
+            m = re.match(r"\s*(\d)", choice_text or "")
+            idx = int(m.group(1)) - 1 if m else 0
+            chosen = alts[idx] if (alts and isinstance(alts[0], str)
+                                   and 0 <= idx < len(alts)) else (choice_text or "").strip()
+            it["alt_choice"] = chosen
+            it.pop("hold", None)
+            common.write_json(p, it)
+            flow.add_step(it["flow"], "concierge", f"고객 선택 수신: \"{chosen}\" — 재개합니다")
+            return it
+    return None
+
+
+def finish_after_hitl(item_id: str, note: str, confirmation_no: str = "") -> dict | None:
+    """사람 처리 완료 보고로 보류 아이템 완결 — 사람 증빙 첨부 (TC-DEL-004 ⑤)."""
+    p = common.queue_item_path("active", item_id)
+    if not p.exists():
+        return None
+    it = common.read_json(p)
+    receipt = common.EVIDENCE / it["id"] / f"manual-{common.ts()}.json"
+    common.write_json(receipt, {"mode": "human", "note": common.mask_sensitive(note),
+                                "confirmation_no": confirmation_no, "ts": common.iso()})
+    flow.add_step(it["flow"], "it/haru",
+                  f"사람 처리 완료 보고: {common.mask_sensitive(note)}"
+                  + (f" (접수번호 {confirmation_no})" if confirmation_no else "")
+                  + f" / 증빙: {receipt}")
+    it.pop("hold", None)
+    prof = common.load_profiles().get(it["customer"], {})
+    _finish(it, prof, f"{it['summary']} — 사람 개입으로 처리 완료"
+            + (f" (접수번호 {confirmation_no})" if confirmation_no else ""))
+    return it
 
 
 # ── 취소 / 승인·거부 ──────────────────────────────────────
 
 def cancel(item_id: str, by_customer: bool = True) -> dict | None:
-    """pending/active 어디서든 cancelled로 이동. 사용량 미차감(charged=False)."""
+    """pending/active 어디서든 cancelled로 이동. 사용량 미차감(charged=False).
+
+    진행 중이던 중간 결과(partial)가 있으면 고객에게 함께 반환한다 (TC-DEL-009).
+    """
     for state in ("pending", "active"):
         p = common.queue_item_path(state, item_id)
         if p.exists():
@@ -213,7 +418,16 @@ def cancel(item_id: str, by_customer: bool = True) -> dict | None:
             it["charged"] = False  # 미차감 기록
             common.move_queue_item(it, state, "cancelled")
             who = "고객 요청으로" if by_customer else "운영 판단으로"
-            flow.cancel(it["flow"], f"{who} 취소했어요. 위임 시간(사용량)은 차감되지 않아요.")
+            msg = f"{who} 취소했어요. 위임 시간(사용량)은 차감되지 않아요."
+            partial = it.get("partial")
+            if partial:
+                if isinstance(partial, list) and partial and isinstance(partial[0], dict):
+                    mid = " / ".join(f"{c.get('rank', '')} {c.get('name', '')} {c.get('price', '')}"
+                                     for c in partial[:3])
+                else:
+                    mid = " / ".join(str(x) for x in list(partial)[:3])
+                msg += f" 지금까지의 중간 결과를 남겨드려요: {mid}"
+            flow.cancel(it["flow"], msg)
             return it
     return None
 
