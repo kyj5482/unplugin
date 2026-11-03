@@ -111,6 +111,21 @@
   .tlbox { margin-top:12px; padding:11px 14px; border-radius:12px; font-size:.76rem; line-height:1.85;
     background:rgba(12,23,17,.55); color:var(--w-ink3); font-family:ui-monospace,SFMono-Regular,monospace; white-space:pre-line; }
 
+  /* 미니 바 차트 (완료 장면 — 되찾은 시간 강조) */
+  .rbar { width:min(560px,92vw); text-align:left; }
+  .rrow { display:flex; justify-content:space-between; align-items:baseline; font-size:.82rem;
+    color:var(--w-ink2); margin:10px 0 6px; }
+  .rrow b { color:var(--w-ink); font-weight:800; font-variant-numeric:tabular-nums; }
+  .rrow.hl span { color:var(--w-ink); font-weight:800; }
+  .rrow.hl b { color:var(--amber); font-size:1rem; }
+  .rtrack { height:11px; border-radius:999px; background:rgba(255,255,255,.09); overflow:hidden; }
+  .rtrack.hl { height:15px; }
+  .rtrack i { display:block; height:100%; width:0; border-radius:999px; }
+  .rtrack i.g { background:linear-gradient(90deg,#3E8A5F,#5CA87C); }
+  .rtrack i.o { background:linear-gradient(90deg,#E5AC6C,#C97840); }
+  .scene.on .rtrack i { animation:rgrow 1.2s var(--ease) both; animation-delay:var(--d,0s); }
+  @keyframes rgrow { from { width:0; } to { width:var(--w); } }
+
   /* 스테퍼 */
   .stepper { width:min(640px,92vw); }
   .stepper .lane { position:relative; display:flex; justify-content:space-between; margin:34px 0 10px; }
@@ -198,6 +213,17 @@
     .stepper .rail i, .limit .fill { transition:none; width:100% !important; }
   }
 </style>
+<script>
+// 뒤로가기(bfcache) 복원 시 구버전 화면 방지 + 내부 링크 캐시 무효화
+addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
+addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll('a[href]').forEach(a => {
+    const h = a.getAttribute("href");
+    if (h && /^[^/:]+\.html(#|$)/.test(h))
+      a.href = h.replace(/\.html/, ".html?r=" + Date.now().toString(36));
+  });
+});
+</script>
 </head>
 <body>
 <div class="aurora au1"></div><div class="aurora au2"></div><div class="grain"></div>
@@ -284,7 +310,13 @@
   · 10:04  it — 결제 직전 내역 요약 (한도 이내)
   · 10:06  executor — 주문 완료 · 증빙 확보</div>
       </div>
-      <span class="chip ok a pop" style="--d:2.6s">📬 메일 스레드 하나 = 일 하나 — 전 과정이 메일함에 남습니다</span>
+      <div class="rbar a" style="--d:2.2s" role="img" aria-label="위임한 시간 2.5시간, 화면 밖에서 쓴 시간 2.0시간">
+        <div class="rrow"><span>위임한 시간</span><b>2.5h</b></div>
+        <div class="rtrack"><i class="g" style="--w:100%; --d:2.5s"></i></div>
+        <div class="rrow hl"><span>화면 밖에서 쓴 시간</span><b>2.0h</b></div>
+        <div class="rtrack hl"><i class="o" style="--w:80%; --d:2.9s"></i></div>
+      </div>
+      <span class="chip ok a pop" style="--d:4.2s">📬 메일 스레드 하나 = 일 하나 — 전 과정이 메일함에 남습니다</span>
     </div>
   </section>
 

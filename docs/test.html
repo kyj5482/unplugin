@@ -129,6 +129,17 @@
     .aurora { animation:none; } .panel > * { animation:none; }
   }
 </style>
+<script>
+// 뒤로가기(bfcache) 복원 시 구버전 화면 방지 + 내부 링크 캐시 무효화
+addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
+addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll('a[href]').forEach(a => {
+    const h = a.getAttribute("href");
+    if (h && /^[^/:]+\.html(#|$)/.test(h))
+      a.href = h.replace(/\.html/, ".html?r=" + Date.now().toString(36));
+  });
+});
+</script>
 </head>
 <body>
 <div class="aurora au1"></div><div class="aurora au2"></div><div class="grain"></div>
