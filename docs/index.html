@@ -409,7 +409,9 @@
     .tier { padding:24px 20px; }
     #s8 footer { margin-top:48px; }
   }
-  @media (max-height: 760px) {
+  /* 노트북(맥북 1440×900 ≈ 뷰포트 790px 등)에서 가장 긴 섹션(s3b)도
+     한 화면 스냅에 들어오도록 — 세로가 넉넉한 FHD+에서만 기본 여백 유지 */
+  @media (max-height: 860px) {
     section { padding-top: 78px; padding-bottom: 40px; }
     .journey { margin-top: 18px; }
     .jt { padding-bottom: 8px; }
@@ -544,25 +546,25 @@ addEventListener("DOMContentLoaded", () => {
     <div class="wrap" style="text-align:center;">
       <div class="eyebrow rv" style="justify-content:center;">Stress-first</div>
       <h2 class="rv d1">미루던 골칫거리부터, <span class="serif">돈이 들어올 때까지</span></h2>
-      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">환불·분쟁·해지처럼 시작하면 오래 걸리고 감정이 소모되는 일 — <br>이런 건 대기열 맨 앞에서 처리하고, 접수가 아니라 <b>입금 확인까지</b> 추적합니다.</p>
+      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">환불·분쟁·해지 — 감정이 소모되는 일일수록 대기열 맨 앞에서 처리하고, 접수가 아니라 <b>입금 확인까지</b> 추적합니다.</p>
       <div class="journey" role="img" aria-label="환불 분쟁 처리 예시: 포워딩 → 업체와 협상 → 환불 합의 → 입금 확인까지 추적 후 완료">
         <div class="jt me rv d1"><span class="av me">나</span>
           <div class="jb"><div class="jw">나 · 09:12</div>
             <div class="jm">Fwd: 공방 클래스 환불 거부 — <b>"석 달째 미루고 있어. 끝까지 받아줘"</b></div></div></div>
         <div class="jt rv d2"><span class="av ag">U</span>
           <div class="jb"><div class="jw">UNPLUGIN · 09:14</div>
-            <div class="jm"><b>'환불 분쟁'</b> 케이스로 최우선 접수했어요. 소비자분쟁해결기준을 근거로 업체에 1차 요구를 보냈습니다. 거부하면 단계적으로 수위를 올릴게요.</div>
+            <div class="jm"><b>'환불 분쟁'</b> 케이스로 최우선 접수 — 소비자분쟁해결기준을 근거로 업체에 1차 요구를 보냈어요.</div>
             <span class="jtag g">스트레스 유형 우선 처리</span><span class="jtag o">근거 포함 협상</span></div></div>
         <div class="jt rv d3"><span class="av ag">U</span>
           <div class="jb"><div class="jw">UNPLUGIN · 3일 뒤</div>
-            <div class="jm">업체가 <b>89,000원 전액 환불에 합의</b>했어요. 하지만 아직 끝이 아니에요 — 실제 입금될 때까지 제가 지켜봅니다.</div>
+            <div class="jm">업체가 <b>89,000원 전액 환불에 합의</b> — 아직 끝이 아니에요. 입금까지 지켜봅니다.</div>
             <span class="jtag o">입금 확인 전 완료 아님</span></div></div>
         <div class="jt rv d4"><span class="av ag">U</span>
           <div class="jb"><div class="jw">UNPLUGIN · 6일 뒤</div>
-            <div class="jm"><b>입금 확인 — 이제 완료입니다.</b> 주고받은 메일 5통과 증빙을 기록으로 남겼어요. 묵은 숙제 하나가 사라졌네요.</div>
+            <div class="jm"><b>입금 확인 — 이제 완료입니다.</b> 묵은 숙제 하나가 사라졌네요.</div>
             <span class="jtag g">✓ 입금 확인 · 증빙</span><span class="jtag o">멘탈 케어 완료</span></div></div>
       </div>
-      <p class="lead rv d4" style="margin:22px auto 0;">사람 확인이 꼭 필요한 곳(앱스토어·본인 인증)만 클릭 가이드로 넘기고, <br>나머지는 AI 에이전트 직원들이 끝까지 진행합니다.</p>
+      <p class="fineprint rv d4" style="margin-top:18px;">본인 인증처럼 사람 확인이 꼭 필요한 순간만 클릭 가이드로 넘기고, 나머지는 AI 에이전트 직원들이 끝까지 진행합니다.</p>
     </div>
   </section>
 
