@@ -19,6 +19,7 @@
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   html,body { height:100%; }
+  html { background: var(--dark0); }  /* 3D 전환 중 회전으로 드러나는 모서리 배경 */
   body {
     font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo",sans-serif;
     background:linear-gradient(180deg,var(--dark0),var(--dark1)) fixed;
@@ -235,13 +236,34 @@
     header { height:58px; }
     .stage { inset:58px 0 76px; }
   }
+  /* ───── 페이지 3D 전환 (소개 ↔ 데모) ─────
+     소개에서 넘어오면 오른쪽에서 회전하며 입장하고, 돌아갈 때는
+     같은 포즈로 빠지며 index.html을 미리 받는 .52s가 로딩을 가린다 */
+  html.pt-enter body { animation: ptEnter .6s var(--ease) both; }
+  body.pt-leave { animation: ptLeave .52s var(--ease) both; pointer-events:none; }
+  @keyframes ptEnter {
+    from { opacity:0; transform: perspective(1200px) translate3d(9%,0,-150px) rotateY(-12deg); }
+  }
+  @keyframes ptLeave {
+    to { opacity:0; transform: perspective(1200px) translate3d(9%,0,-150px) rotateY(-12deg); }
+  }
+
   @media (prefers-reduced-motion:reduce) {
     .aurora { animation:none; }
     .a, .kt .line span, .nd .c, .nd .t { animation:none !important; opacity:1 !important; transform:none !important; }
     .stepper .rail i, .limit .fill { transition:none; width:100% !important; }
+    html.pt-enter body, body.pt-leave { animation:none; }
   }
 </style>
 <script>
+// 소개 → 데모 3D 입장 — 첫 페인트 전에 클래스를 달아야 번쩍임이 없다
+try {
+  if (sessionStorage.getItem("pt")) {
+    sessionStorage.removeItem("pt");
+    document.documentElement.classList.add("pt-enter");
+    setTimeout(() => document.documentElement.classList.remove("pt-enter"), 900);
+  }
+} catch (_) {}
 // 뒤로가기(bfcache) 복원 시 구버전 화면 방지 + 내부 링크 캐시 무효화
 addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
 addEventListener("DOMContentLoaded", () => {
@@ -648,6 +670,42 @@ seekEl.addEventListener("pointercancel", endScrub);
 if (reduce) playing = false;
 goto(0, false, true);   // 첫 진입은 원래 템포의 인트로
 updatePP();
+
+// ───── 데모 → 소개 복귀 3D 전환 ─────
+// 빠지는 연출(.52s) 동안 index.html을 fetch로 미리 받아 도착 끊김을 없앤다.
+const PT_MS = 520, PT_CAP = 1200;
+const ptWarmed = new Set();
+let ptBusy = false;
+
+function ptTarget(a) {
+  if (!a || a.target || a.hasAttribute("download")) return null;
+  let u; try { u = new URL(a.href, location.href); } catch (_) { return null; }
+  return (u.origin === location.origin && /(^|\/)index\.html$/.test(u.pathname)) ? u : null;
+}
+function ptWarm(href) {
+  if (ptWarmed.has(href)) return Promise.resolve();
+  ptWarmed.add(href);
+  return fetch(href, { credentials: "same-origin" }).catch(() => {});
+}
+
+document.addEventListener("pointerover", e => {
+  const u = ptTarget(e.target.closest("a[href]"));
+  if (u) ptWarm(u.href);
+});
+document.addEventListener("click", e => {
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+  const u = ptTarget(e.target.closest("a[href]"));
+  if (!u) return;
+  e.preventDefault();
+  if (ptBusy) return;
+  ptBusy = true;
+  try { sessionStorage.setItem("pt", "1"); } catch (_) {}
+  if (reduce) { location.href = u.href; return; }
+  const net = Promise.race([ptWarm(u.href), new Promise(r => setTimeout(r, PT_CAP))]);
+  document.body.classList.add("pt-leave");
+  const anim = new Promise(r => setTimeout(r, PT_MS));
+  Promise.all([anim, net]).then(() => { location.href = u.href; });
+});
 </script>
 </body>
 </html>

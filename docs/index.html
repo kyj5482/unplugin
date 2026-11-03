@@ -326,6 +326,20 @@
   #s8 footer { margin-top:72px; font-size:.8rem; color:var(--w-ink3); }
   #s8 footer a { color:var(--w-ink2); }
 
+  /* ───────── 페이지 3D 전환 (소개 ↔ 라이브 데모) ─────────
+     클릭 즉시 페이지 전체가 카드처럼 회전하며 빠지고(.52s), 그 사이에
+     다음 문서를 미리 받아(fetch 캐시 워밍) 도착 직후 끊김이 없게 한다.
+     데모에서 돌아올 때는 같은 포즈에서 역방향으로 들어온다. */
+  html.pt, html.pt-enter { background: var(--dark0); }
+  body.pt-leave { animation: ptLeave .52s var(--ease) both; pointer-events:none; }
+  html.pt-enter body { animation: ptEnter .6s var(--ease) both; }
+  @keyframes ptLeave {
+    to { opacity:0; transform: perspective(1200px) translate3d(-9%,0,-150px) rotateY(12deg); }
+  }
+  @keyframes ptEnter {
+    from { opacity:0; transform: perspective(1200px) translate3d(-9%,0,-150px) rotateY(12deg); }
+  }
+
   /* ───────── 반응형 ───────── */
   @media (max-width: 880px) {
     /* 모바일도 PC처럼 한 섹션 = 한 화면 스냅. 화면보다 긴 섹션(요금제 등)은
@@ -422,9 +436,18 @@
     .aurora, .pcard, .scroll-hint::after { animation:none !important; }
     .rv { transition:none; opacity:1; transform:none; }
     main { scroll-behavior:auto; }
+    body.pt-leave, html.pt-enter body { animation:none; }
   }
 </style>
 <script>
+// 데모 → 소개 복귀 시 3D 입장 — 첫 페인트 전에 클래스를 달아야 번쩍임이 없다
+try {
+  if (sessionStorage.getItem("pt")) {
+    sessionStorage.removeItem("pt");
+    document.documentElement.classList.add("pt-enter");
+    setTimeout(() => document.documentElement.classList.remove("pt-enter"), 900);
+  }
+} catch (_) {}
 // 뒤로가기(bfcache) 복원 시 구버전 화면 방지 + 내부 링크 캐시 무효화
 addEventListener("pageshow", e => { if (e.persisted) location.reload(); });
 addEventListener("DOMContentLoaded", () => {
@@ -773,6 +796,46 @@ main.addEventListener('scroll', () => {
   const p = main.scrollTop / (main.scrollHeight - main.clientHeight);
   pbar.style.width = (p * 100).toFixed(2) + '%';
 }, { passive: true });
+
+// ───── 소개 → 라이브 데모 3D 전환 ─────
+// 나가는 연출(.52s)이 곧 로딩 시간: 클릭 즉시 demo.html을 fetch로 미리 받아
+// HTTP 캐시를 데우고, 연출과 다운로드가 모두 끝난 시점에 이동한다.
+// 호버(데스크톱) 시점부터 선로딩하면 클릭 때는 대부분 캐시 히트다.
+const PT_MS = 520, PT_CAP = 1200;  // 연출 길이 / 네트워크 대기 상한
+const ptReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ptWarmed = new Set();
+let ptBusy = false;
+
+function ptTarget(a) {
+  if (!a || a.target || a.hasAttribute('download')) return null;
+  let u; try { u = new URL(a.href, location.href); } catch (_) { return null; }
+  return (u.origin === location.origin && /(^|\/)demo\.html$/.test(u.pathname)) ? u : null;
+}
+function ptWarm(href) {
+  if (ptWarmed.has(href)) return Promise.resolve();
+  ptWarmed.add(href);
+  return fetch(href, { credentials: 'same-origin' }).catch(() => {});
+}
+
+document.addEventListener('pointerover', e => {
+  const u = ptTarget(e.target.closest('a[href]'));
+  if (u) ptWarm(u.href);
+});
+document.addEventListener('click', e => {
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+  const u = ptTarget(e.target.closest('a[href]'));
+  if (!u) return;
+  e.preventDefault();
+  if (ptBusy) return;
+  ptBusy = true;
+  try { sessionStorage.setItem('pt', '1'); } catch (_) {}
+  if (ptReduce) { location.href = u.href; return; }
+  const net = Promise.race([ptWarm(u.href), new Promise(r => setTimeout(r, PT_CAP))]);
+  document.documentElement.classList.add('pt');
+  document.body.classList.add('pt-leave');
+  const anim = new Promise(r => setTimeout(r, PT_MS));
+  Promise.all([anim, net]).then(() => { location.href = u.href; });
+});
 
 </script>
 </body>
