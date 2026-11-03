@@ -48,7 +48,6 @@
   }
   .wrap { width:100%; max-width:1080px; margin:0 auto; position:relative; z-index:2; }
   section[data-theme="dark"] { background: linear-gradient(180deg, var(--dark0), var(--dark1)); color: var(--w-ink); }
-  section[data-theme="cream"] { background: var(--bg1); }
 
   /* 입자감 (grain) */
   .grain { position:absolute; inset:0; z-index:1; pointer-events:none; opacity:.05;
@@ -414,20 +413,23 @@
   </section>
 
   <!-- 3 ── 작동 방식 -->
-  <section id="s3" data-theme="cream">
+  <section id="s3">
     <div class="wrap" style="text-align:center;">
       <div class="eyebrow rv" style="justify-content:center;">How it works</div>
-      <h2 class="rv d1">설문 말고, <span class="serif">놀이처럼</span> 시작합니다</h2>
+      <h2 class="rv d1">포워딩 한 번이면, <span class="serif">나머지는 저희가</span> 합니다</h2>
       <div class="steps">
-        <div class="stepc rv d1"><span class="gnum">01</span><span class="k">TYPE</span>
-          <h3>언플러그 타입 테스트</h3>
-          <p>지루한 문진 대신 1분짜리 성향 테스트. 나의 디지털 습관과 오프라인 취향이 16가지 타입 중 하나로 나옵니다.</p></div>
-        <div class="stepc rv d2"><span class="gnum">02</span><span class="k">DELEGATE</span>
-          <h3>한 가지만 위임</h3>
-          <p>내 타입이 가장 많이 맡기는 일부터 딱 하나. 에이전트가 대신 처리하고, 증빙과 함께 보고합니다.</p></div>
+        <div class="stepc rv d1"><span class="gnum">01</span><span class="k">START</span>
+          <h3>타입 테스트 + 전용 주소</h3>
+          <p>1분 성향 테스트로 16가지 타입 중 나를 찾고, 나만의 에이전트 이메일 주소를 받습니다. 앱 설치는 없습니다.</p></div>
+        <div class="stepc rv d2"><span class="gnum">02</span><span class="k">FORWARD</span>
+          <h3>포워딩하면 자동 분류</h3>
+          <p>처리하고 싶은 메일을 넘기면 103종 업무 중 알아서 분류 — 지원 업무는 바로 진행하고, 처음 보는 일은 준비해서(1~3일) 알려드립니다. 결제는 승인 없이는 없습니다.</p></div>
         <div class="stepc rv d3"><span class="gnum">03</span><span class="k">RECLAIM</span>
-          <h3>삶의 시간 추천</h3>
-          <p>되찾은 시간에 맞춰 내 타입이 좋아하는 오프라인 경험 — 공방, 숲길, 시장, 클래스 — 를 골라 건넵니다.</p></div>
+          <h3>스레드 하나로 끝까지</h3>
+          <p>접수부터 완료까지 같은 메일 스레드로 전 과정과 증빙이 옵니다. 되찾은 시간엔 내 타입에 맞는 오프라인 경험을 건네드립니다.</p></div>
+      </div>
+      <div class="rv d3" style="margin-top:30px;">
+        <a class="btn btn-dark" href="demo.html">▶ 1분 데모로 직접 보기</a>
       </div>
     </div>
   </section>
@@ -503,7 +505,7 @@
   </section>
 
   <!-- 6 ── 이메일 -->
-  <section id="s6" data-theme="cream">
+  <section id="s6">
     <div class="wrap cols">
       <div>
         <div class="eyebrow rv">Your Agent's Inbox</div>
