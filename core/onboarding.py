@@ -11,6 +11,7 @@ ONB-004(일괄 위임 → 한 가지로 축소, UC-A4), ONB-005(타입 축 근�
 from __future__ import annotations
 
 import itertools
+import re
 import secrets
 
 from . import common, flow, notify
@@ -77,7 +78,9 @@ def create_profile(data: dict) -> dict:
     base = common.slug(data.get("roman") or data["name"])
     cid = _unique_id(base)
     # 주소 추측 방지: 이름 슬러그에 난수 토큰을 붙여 발급 (ops/email-channel.md)
-    address = f"{cid}.{secrets.token_hex(2)}@unplugin.me"
+    # 실메일 호환: 주소 local part는 ASCII만 (한글 id면 난수 대체)
+    ascii_local = re.sub(r"[^a-z0-9]", "", cid.lower()) or f"u{secrets.token_hex(2)}"
+    address = f"{ascii_local}.{secrets.token_hex(2)}@unplugin.me"
 
     profile = {
         "id": cid,

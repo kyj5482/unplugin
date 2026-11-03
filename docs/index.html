@@ -223,17 +223,28 @@
   .conv .pct { font-size:2.4rem; font-weight:800; letter-spacing:-.03em; color:var(--green-deep); line-height:1; }
   .conv .pd { font-size:.82rem; color:var(--ink2); }
 
-  /* ───────── S3 스텝 ───────── */
-  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:46px; }
-  .stepc { position:relative; background:#fff; border:1px solid var(--hair); border-radius:22px;
-    padding:30px 26px 26px; text-align:left; box-shadow:var(--shadow);
-    transition: transform .35s var(--ease), box-shadow .35s; overflow:hidden; }
-  .stepc:hover { transform:translateY(-6px); box-shadow:0 2px 3px rgba(23,33,26,.05), 0 22px 44px rgba(23,33,26,.13); }
-  .stepc .gnum { position:absolute; top:14px; right:20px; font-size:4rem; font-weight:800; line-height:1; letter-spacing:-.04em;
-    color:transparent; -webkit-text-stroke:1.2px rgba(23,33,26,.14); }
-  .stepc h3 { font-size:1.12rem; font-weight:800; letter-spacing:-.02em; margin:14px 0 8px; }
-  .stepc p { font-size:.9rem; color:var(--ink2); }
-  .stepc .k { font-size:.74rem; font-weight:700; letter-spacing:.14em; color:var(--amber-deep); }
+  /* ───────── S3 대화 타임라인 (실제 메일 스레드 형태) ───────── */
+  .journey { max-width:600px; margin:38px auto 0; text-align:left; }
+  .jt { position:relative; display:flex; gap:14px; padding-bottom:18px; }
+  .jt:last-child { padding-bottom:0; }
+  .jt::before { content:""; position:absolute; left:17px; top:40px; bottom:-2px; width:2px;
+    background:linear-gradient(rgba(47,107,74,.28), rgba(47,107,74,.08)); }
+  .jt:last-child::before { display:none; }
+  .jt .av { width:36px; height:36px; border-radius:50%; flex:none; z-index:1;
+    display:flex; align-items:center; justify-content:center; font-size:.76rem; font-weight:800; color:#fff;
+    box-shadow:0 0 0 4px var(--bg0); }
+  .jt .av.me { background:#8B958D; }
+  .jt .av.ag { background:radial-gradient(circle at 32% 30%, #5CA87C, #1E4733); }
+  .jt .jb { flex:1; background:#fff; border:1px solid var(--hair); border-radius:4px 16px 16px 16px;
+    padding:13px 17px; box-shadow:var(--shadow); }
+  .jt.me .jb { background:#F1EBDE; border-radius:16px 4px 16px 16px; }
+  .jt .jw { font-size:.72rem; font-weight:800; color:var(--ink3); letter-spacing:.06em; margin-bottom:3px; }
+  .jt .jm { font-size:.92rem; color:var(--ink); line-height:1.6; }
+  .jt .jm b { font-weight:800; }
+  .jtag { display:inline-block; margin-top:8px; margin-right:6px; font-size:.7rem; font-weight:800;
+    padding:4px 12px; border-radius:999px; }
+  .jtag.g { color:var(--green-deep); background:rgba(47,107,74,.1); border:1px solid rgba(47,107,74,.25); }
+  .jtag.o { color:var(--amber-deep); background:rgba(201,120,64,.1); border:1px solid rgba(201,120,64,.3); }
 
   /* ───────── S4 타입 (다크) ───────── */
   .typegrid { display:flex; flex-wrap:wrap; gap:9px; margin-top:30px; max-width:560px; }
@@ -425,19 +436,27 @@ addEventListener("DOMContentLoaded", () => {
     <div class="wrap" style="text-align:center;">
       <div class="eyebrow rv" style="justify-content:center;">How it works</div>
       <h2 class="rv d1">포워딩 한 번이면, <span class="serif">나머지는 저희가</span> 합니다</h2>
-      <div class="steps">
-        <div class="stepc rv d1"><span class="gnum">01</span><span class="k">START</span>
-          <h3>타입 테스트 + 전용 주소</h3>
-          <p>1분 성향 테스트로 16가지 타입 중 나를 찾고, 나만의 에이전트 이메일 주소를 받습니다. 앱 설치는 없습니다.</p></div>
-        <div class="stepc rv d2"><span class="gnum">02</span><span class="k">FORWARD</span>
-          <h3>포워딩하면 자동 분류</h3>
-          <p>처리하고 싶은 메일을 넘기면 103종 업무 중 알아서 분류 — 지원 업무는 바로 진행하고, 처음 보는 일은 준비해서(1~3일) 알려드립니다. 결제는 승인 없이는 없습니다.</p></div>
-        <div class="stepc rv d3"><span class="gnum">03</span><span class="k">RECLAIM</span>
-          <h3>스레드 하나로 끝까지</h3>
-          <p>접수부터 완료까지 같은 메일 스레드로 전 과정과 증빙이 옵니다. 되찾은 시간엔 내 타입에 맞는 오프라인 경험을 건네드립니다.</p></div>
+      <div class="journey" role="img" aria-label="실제 메일 스레드 예시: 포워딩 → 자동 분류 → 승인 요청 → 승인 → 완료와 오프라인 추천">
+        <div class="jt me rv d1"><span class="av me">나</span>
+          <div class="jb"><div class="jw">나 · 10:02</div>
+            <div class="jm">Fwd: 보험료 안내 — <b>"작년보다 많이 올랐으면 더 나은 데 알아봐줘"</b></div></div></div>
+        <div class="jt rv d2"><span class="av ag">U</span>
+          <div class="jb"><div class="jw">UNPLUGIN · 10:02</div>
+            <div class="jm"><b>'보험료 비교·전환'</b> 업무네요 — 바로 진행합니다.</div>
+            <span class="jtag g">103종 중 자동 분류</span></div></div>
+        <div class="jt rv d2"><span class="av ag">U</span>
+          <div class="jb"><div class="jw">UNPLUGIN · 11:40</div>
+            <div class="jm">18% 인상을 확인했어요. 동일 보장으로 더 나은 조건 2건 — 전환에 <b>50,000원</b>이 필요해 여쭤봅니다.</div>
+            <span class="jtag o">승인 없인 결제 없음</span></div></div>
+        <div class="jt me rv d3"><span class="av me">나</span>
+          <div class="jb"><div class="jw">나 · 12:05</div><div class="jm"><b>승인</b></div></div></div>
+        <div class="jt rv d3"><span class="av ag">U</span>
+          <div class="jb"><div class="jw">UNPLUGIN · 12:11</div>
+            <div class="jm">전환 완료 — <b>연 86,000원 절감</b> (증빙 첨부). 이번 주 2시간이 비었어요. 토요일 아침, 숲길 어떠세요? 🌿</div>
+            <span class="jtag g">✓ 완료 · 증빙</span><span class="jtag o">+2h 삶의 시간</span></div></div>
       </div>
-      <div class="rv d3" style="margin-top:30px;">
-        <a class="btn btn-dark" href="demo.html">▶ 1분 데모로 직접 보기</a>
+      <div class="rv d4" style="margin-top:30px;">
+        <a class="btn btn-dark" href="demo.html">▶ 이 대화가 실제로 도는 모습 — 1분 데모</a>
       </div>
     </div>
   </section>
@@ -504,7 +523,7 @@ addEventListener("DOMContentLoaded", () => {
       <div>
         <div class="eyebrow rv">Your Agent's Inbox</div>
         <h2 class="rv d1">앱도, 로그인도 없이.<br><span class="serif">이메일 한 통</span>이면 됩니다</h2>
-        <p class="lead rv d2">가입하면 <span class="addr">나만의주소@unplugin.me</span> 같은 전용 주소가 생깁니다. 당신만 소유하는 격리된 창구라 안전하고 — 무엇이 가능한지 몰라도 괜찮습니다. 포워딩하면 에이전트가 100여 종의 업무 중 알아서 분류하고, 처음 보는 일이면 준비해서 알려드립니다.</p>
+        <p class="lead rv d2">가입하면 <span class="addr">minseo.k7x2@unplugin.me</span> 같은 나만의 주소가 생깁니다. 당신만 소유하는 격리된 창구라 안전하고 — 무엇이 가능한지 몰라도 괜찮습니다. 포워딩하면 에이전트가 100여 종의 업무 중 알아서 분류하고, 처음 보는 일이면 준비해서 알려드립니다.</p>
         <div class="feat">
           <div class="f rv d2">
             <span class="fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></span>
