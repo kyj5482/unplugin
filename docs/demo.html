@@ -206,6 +206,19 @@
   @media (max-width:680px) {
     .prog .names button { font-size:.58rem; }
     .kt .line span { letter-spacing:-.03em; }
+    .logo small { display:none; }
+    /* 장면 내용이 화면보다 길면 중앙 정렬로 위아래가 잘린다 → 위 정렬 + 스크롤 */
+    .scene { justify-content:flex-start; overflow-y:auto; padding-top:18px; padding-bottom:18px; }
+    .scene > :first-child { margin-top:auto; }
+    .scene > :last-child { margin-bottom:auto; }
+  }
+  @media (max-width:480px) {
+    .prog .names { display:none; }   /* 장면 이름 8개는 좁은 화면에서 겹침 — 바만 유지 */
+    .tlabel { width:44px; font-size:.68rem; }
+    .controls { gap:12px; height:76px; }
+    .pp { width:42px; height:42px; }
+    header { height:58px; }
+    .stage { inset:58px 0 76px; }
   }
   @media (prefers-reduced-motion:reduce) {
     .aurora { animation:none; }
