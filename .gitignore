@@ -11,3 +11,5 @@ data/queue/
 data/customers/*
 !data/customers/demo/
 data/dashboard.html
+data/evidence/
+secrets/

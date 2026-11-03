@@ -3,431 +3,518 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>라이브 데모 — Unplugin 운영 코어 v0</title>
-<meta name="description" content="실제 개발된 Unplugin 운영 코어의 고객·Admin 시나리오를 단계별로 재생하는 데모.">
+<title>프로덕트 데모 — Unplugin</title>
+<meta name="description" content="Unplugin 운영 코어가 실제로 일하는 70초 — 모션그래픽 제품 데모.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   :root {
-    --bg0:#FBF8F3; --dark0:#0C1711; --dark1:#13241A;
-    --ink:#141D16; --ink2:#46514A; --ink3:#79847C;
+    --dark0:#0C1711; --dark1:#13241A;
     --w-ink:#F6F4EC; --w-ink2:#C3CDC4; --w-ink3:#93A096;
-    --green:#2F6B4A; --green-deep:#1E4733; --green-soft:#5CA87C;
     --amber:#D89A5B; --amber-deep:#C97840;
-    --hair:rgba(23,33,26,.1); --hair-d:rgba(242,239,231,.12);
-    --shadow:0 1px 2px rgba(23,33,26,.05), 0 12px 32px rgba(23,33,26,.09);
+    --green:#2F6B4A; --green-soft:#5CA87C;
+    --red-soft:#E8A9A0;
+    --hair-d:rgba(242,239,231,.13);
     --ease:cubic-bezier(.22,.61,.36,1);
+    --spring:cubic-bezier(.34,1.45,.5,1);
   }
   * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
   body {
     font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo",sans-serif;
     background:linear-gradient(180deg,var(--dark0),var(--dark1)) fixed;
-    color:var(--w-ink); line-height:1.65; min-height:100svh;
-    -webkit-font-smoothing:antialiased;
+    color:var(--w-ink); overflow:hidden; -webkit-font-smoothing:antialiased; line-height:1.6;
   }
-  ::selection { background:rgba(216,154,91,.4); }
+  .aurora { position:fixed; border-radius:50%; filter:blur(100px); pointer-events:none; }
+  .au1 { width:640px; height:640px; left:-220px; top:-240px;
+    background:radial-gradient(circle, rgba(47,107,74,.45), transparent 65%); animation:drift 18s ease-in-out infinite alternate; }
+  .au2 { width:560px; height:560px; right:-200px; bottom:-220px;
+    background:radial-gradient(circle, rgba(201,120,64,.3), transparent 65%); animation:drift 22s ease-in-out infinite alternate-reverse; }
+  @keyframes drift { from { transform:translate(0,0); } to { transform:translate(60px,44px); } }
+  .grain { position:fixed; inset:0; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
-  header { padding:0 clamp(18px,3vw,40px); height:64px; display:flex; justify-content:space-between; align-items:center;
-    border-bottom:1px solid var(--hair-d); }
-  .logo { font-weight:800; font-size:1.15rem; letter-spacing:-.02em; color:var(--w-ink); text-decoration:none; }
+  header { position:fixed; top:0; left:0; right:0; z-index:30; height:62px;
+    display:flex; justify-content:space-between; align-items:center; padding:0 clamp(18px,3vw,40px); }
+  .logo { font-weight:800; font-size:1.12rem; letter-spacing:-.02em; color:var(--w-ink); text-decoration:none; }
   .logo i { font-style:normal; color:var(--amber); }
-  .logo small { font-weight:600; color:var(--w-ink3); font-size:.75rem; margin-left:10px; letter-spacing:.08em; }
-  header a.back { font-size:.85rem; color:var(--w-ink3); text-decoration:none; }
+  .logo small { font-weight:700; color:var(--w-ink3); font-size:.68rem; margin-left:10px; letter-spacing:.16em; }
+  header a.back { font-size:.84rem; color:var(--w-ink3); text-decoration:none; }
   header a.back:hover { color:var(--w-ink2); }
 
-  .wrap { max-width:1200px; margin:0 auto; padding:26px clamp(16px,3vw,36px) 60px; }
+  /* ───── 스테이지 & 장면 ───── */
+  .stage { position:fixed; inset:62px 0 86px; }
+  .scene { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:12px clamp(16px,4vw,48px); opacity:0; visibility:hidden; transition:opacity .55s var(--ease), visibility .55s; }
+  .scene.on { opacity:1; visibility:visible; }
 
-  /* ── 플레이어 ── */
-  .player { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:10px; }
-  .pbtn { font-family:inherit; font-weight:700; font-size:.9rem; border:none; cursor:pointer;
-    border-radius:11px; padding:11px 20px; transition:transform .2s var(--ease), opacity .2s; }
-  .pbtn:hover { transform:translateY(-1px); }
-  .pbtn:disabled { opacity:.35; cursor:default; transform:none; }
-  .pbtn.next { background:linear-gradient(135deg,#E5AC6C,#C97840); color:#231306;
-    box-shadow:0 8px 22px rgba(201,120,64,.3); }
-  .pbtn.prev, .pbtn.auto { background:rgba(255,255,255,.07); color:var(--w-ink); border:1px solid var(--hair-d); }
-  .stepmeter { flex:1; min-width:180px; }
-  .stepmeter .lbl { font-size:.74rem; font-weight:700; letter-spacing:.12em; color:var(--w-ink3); margin-bottom:6px; }
-  .stepmeter .lbl b { color:var(--amber); }
-  .track { height:5px; border-radius:999px; background:rgba(255,255,255,.09); overflow:hidden; }
-  .track i { display:block; height:100%; width:0; border-radius:999px;
-    background:linear-gradient(90deg,var(--green-soft),var(--amber)); transition:width .4s var(--ease); }
+  /* 등장 애니메이션 프리미티브 — .scene.on 일 때만 재생, --d 로 지연 */
+  .a { opacity:0; }
+  .scene.on .a { animation:rise .75s var(--ease) both; animation-delay:var(--d,0s); }
+  .scene.on .a.pop { animation:pop .6s var(--spring) both; animation-delay:var(--d,0s); }
+  @keyframes rise { from { opacity:0; transform:translateY(26px); } to { opacity:1; transform:none; } }
+  @keyframes pop { from { opacity:0; transform:scale(.6); } to { opacity:1; transform:scale(1); } }
 
-  /* 캡션 (지금 코어가 한 일) */
-  .caption {
-    margin:14px 0 22px; padding:16px 20px; border-radius:16px;
-    background:linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-    border:1px solid var(--hair-d); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-  }
-  .caption .ct { font-weight:800; font-size:1.02rem; letter-spacing:-.01em; }
-  .caption .ct .mod { font-size:.72rem; font-weight:700; color:var(--green-soft);
-    background:rgba(92,168,124,.12); border:1px solid rgba(92,168,124,.3);
-    border-radius:999px; padding:2px 10px; margin-left:10px; vertical-align:2px;
-    font-family:ui-monospace,SFMono-Regular,monospace; }
-  .caption .cd { font-size:.88rem; color:var(--w-ink2); margin-top:5px; }
-  .caption .tc { font-size:.74rem; color:var(--w-ink3); margin-top:7px; }
-  .caption .tc b { color:var(--amber); font-weight:700; }
+  /* 키네틱 타이틀 */
+  .kt { text-align:center; }
+  .kt .line { display:block; overflow:hidden; }
+  .kt .line span { display:inline-block; font-size:clamp(1.9rem,5.6vw,3.4rem); font-weight:800;
+    letter-spacing:-.04em; line-height:1.25; transform:translateY(110%); }
+  .scene.on .kt .line span { animation:ktup .8s var(--ease) both; animation-delay:var(--d,0s); }
+  @keyframes ktup { to { transform:translateY(0); } }
+  .kt em { font-style:normal; color:var(--amber); }
+  .scsub { margin-top:16px; color:var(--w-ink2); font-size:clamp(.95rem,1.6vw,1.1rem); text-align:center; max-width:580px; }
 
-  /* ── 2분할 ── */
-  .split { display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:start; }
-  .pane { border-radius:20px; overflow:hidden; border:1px solid var(--hair-d);
-    background:rgba(255,255,255,.04); min-height:480px; }
-  .pane .phead { display:flex; align-items:center; gap:10px; padding:13px 18px;
-    border-bottom:1px solid var(--hair-d); font-size:.85rem; font-weight:800; letter-spacing:.02em; }
-  .pane .phead .who { font-size:.68rem; font-weight:700; letter-spacing:.1em; padding:3px 10px; border-radius:999px; }
-  .who.user { color:#F3CFA6; background:rgba(216,154,91,.15); border:1px solid rgba(216,154,91,.35); }
-  .who.admin { color:#A9DDBE; background:rgba(92,168,124,.14); border:1px solid rgba(92,168,124,.35); }
-  /* 잘림 방지: 패널은 자연 높이 — 내용 전체가 항상 보이고 페이지가 스크롤된다 */
-  .pbody { padding:16px; display:flex; flex-direction:column; gap:12px; }
+  .eyebrow { font-size:.74rem; font-weight:800; letter-spacing:.22em; color:var(--amber); margin-bottom:16px; }
 
-  /* 플레이어·캡션은 상단 고정 — 길게 스크롤해도 조작·맥락 유지 */
-  .sticky-top { position:sticky; top:0; z-index:20; padding:14px 0 4px;
-    background:rgba(13,25,18,.88); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-    margin:0 -8px; padding-left:8px; padding-right:8px; border-radius:0 0 16px 16px; }
+  /* 메일 윈도우 */
+  .win { width:min(560px,92vw); border-radius:20px; overflow:hidden;
+    background:linear-gradient(165deg, rgba(255,255,255,.1), rgba(255,255,255,.04));
+    border:1px solid var(--hair-d); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    box-shadow:0 34px 70px rgba(0,0,0,.45); text-align:left;
+    transition:transform .7s var(--ease), opacity .7s var(--ease); }
+  .win .bar { display:flex; gap:7px; padding:13px 16px; border-bottom:1px solid var(--hair-d); align-items:center; }
+  .win .bar i { width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,.14); }
+  .win .bar .wt { margin-left:8px; font-size:.74rem; font-weight:700; color:var(--w-ink3); letter-spacing:.06em; }
+  .win .row { padding:11px 18px; border-bottom:1px solid var(--hair-d); font-size:.85rem; display:flex; gap:10px; }
+  .win .row b { color:var(--w-ink3); font-weight:700; width:52px; flex:none; font-size:.76rem; padding-top:2px; }
+  .win .body { padding:16px 18px 18px; font-size:.95rem; min-height:92px; white-space:pre-line; color:var(--w-ink); }
+  .typing::after { content:""; display:inline-block; width:2px; height:1em; background:var(--amber);
+    margin-left:2px; vertical-align:-2px; animation:blink .9s steps(1) infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+  .win.sent { transform:translateY(-52px) scale(.92); opacity:0; }
 
-  /* 고객: 메일함 */
-  .thread { border:1px solid var(--hair-d); border-radius:14px; overflow:hidden; background:rgba(255,255,255,.03); }
-  .thread summary.th { padding:11px 15px; font-size:.82rem; font-weight:800; display:flex; justify-content:space-between; gap:8px;
-    background:rgba(255,255,255,.04); cursor:pointer; list-style:none; }
-  .thread[open] summary.th { border-bottom:1px solid var(--hair-d); }
-  .thread summary.th::-webkit-details-marker { display:none; }
-  .thread .th .cnt { color:var(--w-ink3); font-weight:600; white-space:nowrap; }
-  .thread .th .cnt::after { content:" ▾"; }
-  .thread:not([open]) .th .cnt::after { content:" ▸"; }
-  .mail { padding:13px 15px; }
-  .mail + .mail { border-top:1px dashed var(--hair-d); }
-  .mail .mh { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
-  .mail .av { width:22px; height:22px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center;
-    font-size:.6rem; font-weight:800; color:#fff; }
-  .av.agent { background:radial-gradient(circle at 32% 30%, #5CA87C, #1E4733); }
-  .av.me { background:#8B958D; } .av.sys { background:#6E5B47; }
-  .mail .from { font-size:.72rem; font-weight:700; color:var(--w-ink2); }
-  .mail .subj { font-size:.86rem; font-weight:700; margin-bottom:4px; }
-  .mail .body { font-size:.84rem; color:var(--w-ink2); white-space:pre-line; }
-  .mail .timeline { margin-top:9px; padding:9px 12px; border-radius:10px; font-size:.74rem; line-height:1.8;
+  .sendbtn { margin:0 18px 18px; display:inline-flex; align-items:center; gap:8px; font-weight:800; font-size:.88rem;
+    background:linear-gradient(135deg,#E5AC6C,#C97840); color:#231306; border-radius:11px; padding:10px 22px; }
+  .sendbtn.pulse { animation:pulse .5s var(--spring) 2; }
+  @keyframes pulse { 50% { transform:scale(1.08); } }
+
+  /* 칩 */
+  .chip { display:inline-flex; align-items:center; gap:8px; font-size:.84rem; font-weight:800;
+    padding:10px 20px; border-radius:999px; }
+  .chip.ok { color:#A9DDBE; background:rgba(92,168,124,.14); border:1px solid rgba(92,168,124,.4); }
+  .chip.warn { color:#F3CFA6; background:rgba(216,154,91,.15); border:1px solid rgba(216,154,91,.45); }
+  .chip.sec { color:var(--red-soft); background:rgba(190,90,80,.13); border:1px solid rgba(190,90,80,.4); }
+  .chip.big { font-size:.95rem; padding:13px 26px; }
+
+  /* 수신 메일 카드 */
+  .mailcard { width:min(560px,92vw); border-radius:18px; text-align:left; padding:20px 22px;
+    background:linear-gradient(165deg, rgba(255,255,255,.1), rgba(255,255,255,.045));
+    border:1px solid var(--hair-d); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    box-shadow:0 28px 58px rgba(0,0,0,.42); }
+  .mailcard .mh { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .mailcard .dot { width:28px; height:28px; border-radius:50%; flex:none;
+    background:radial-gradient(circle at 32% 30%, #5CA87C, #1E4733); box-shadow:0 0 16px rgba(92,168,124,.5);
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.8rem; }
+  .mailcard .who { font-size:.74rem; font-weight:800; color:var(--w-ink3); letter-spacing:.08em; }
+  .mailcard .ms { font-size:1rem; font-weight:800; margin-bottom:6px; }
+  .mailcard .mb { font-size:.9rem; color:var(--w-ink2); white-space:pre-line; }
+  .tlbox { margin-top:12px; padding:11px 14px; border-radius:12px; font-size:.76rem; line-height:1.85;
     background:rgba(12,23,17,.55); color:var(--w-ink3); font-family:ui-monospace,SFMono-Regular,monospace; white-space:pre-line; }
-  .mail .mtag { display:inline-block; margin-top:8px; font-size:.68rem; font-weight:800; padding:3px 10px; border-radius:999px; }
-  .mtag.ok { color:#A9DDBE; background:rgba(92,168,124,.13); border:1px solid rgba(92,168,124,.3); }
-  .mtag.warn { color:#F3CFA6; background:rgba(216,154,91,.14); border:1px solid rgba(216,154,91,.3); }
-  .mtag.sec { color:#E8A9A0; background:rgba(190,90,80,.13); border:1px solid rgba(190,90,80,.35); }
 
-  /* Admin: 대시보드 */
-  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(96px,1fr)); gap:8px; }
-  .stat { border:1px solid var(--hair-d); border-radius:12px; padding:10px 12px; background:rgba(255,255,255,.03); }
-  .stat .sv { font-size:1.3rem; font-weight:800; font-variant-numeric:tabular-nums; }
-  .stat .sv.amber { color:var(--amber); }
-  .stat .sl { font-size:.68rem; color:var(--w-ink3); font-weight:600; }
-  .fcard { border:1px solid var(--hair-d); border-radius:14px; padding:12px 15px; background:rgba(255,255,255,.03); }
-  .fcard.attn { border-color:rgba(216,154,91,.45); background:rgba(216,154,91,.07); }
-  .fcard .fh { display:flex; justify-content:space-between; align-items:center; gap:8px; }
-  .fcard .ft { font-size:.85rem; font-weight:800; }
-  .badge { font-size:.66rem; font-weight:800; padding:3px 10px; border-radius:999px; white-space:nowrap; }
-  .b-접수 { color:var(--w-ink2); background:rgba(255,255,255,.08); border:1px solid var(--hair-d); }
-  .b-진행중 { color:#A9CFF3; background:rgba(110,160,210,.13); border:1px solid rgba(110,160,210,.35); }
-  .b-확인필요 { color:#F3CFA6; background:rgba(216,154,91,.14); border:1px solid rgba(216,154,91,.4); }
-  .b-완료 { color:#A9DDBE; background:rgba(92,168,124,.13); border:1px solid rgba(92,168,124,.35); }
-  .b-격리 { color:#E8A9A0; background:rgba(190,90,80,.13); border:1px solid rgba(190,90,80,.35); }
-  .fcard .fl { font-size:.76rem; color:var(--w-ink3); margin-top:5px; }
-  .fcard .fsteps { margin-top:8px; font-size:.73rem; line-height:1.8; color:var(--w-ink2);
-    font-family:ui-monospace,SFMono-Regular,monospace; white-space:pre-line;
-    border-top:1px dashed var(--hair-d); padding-top:7px; }
-  .sechead { font-size:.7rem; font-weight:800; letter-spacing:.14em; color:var(--w-ink3); margin-top:4px; }
-  .empty { font-size:.8rem; color:var(--w-ink3); text-align:center; padding:28px 0; }
-
-  .enter { animation:enter .5s var(--ease) both; }
-  @keyframes enter { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
-
-  footer { text-align:center; font-size:.78rem; color:var(--w-ink3); padding:0 20px 30px; }
-  footer a { color:var(--w-ink2); }
-
-  @media (max-width:900px) {
-    .split { grid-template-columns:1fr; }
-    .pbody { max-height:none; }
-    .stats { grid-template-columns:repeat(2,1fr); }
+  /* 스테퍼 */
+  .stepper { width:min(640px,92vw); }
+  .stepper .lane { position:relative; display:flex; justify-content:space-between; margin:34px 0 10px; }
+  .stepper .rail { position:absolute; left:7%; right:7%; top:17px; height:3px; background:rgba(255,255,255,.1); border-radius:99px; }
+  .stepper .rail i { display:block; height:100%; width:0; border-radius:99px;
+    background:linear-gradient(90deg,var(--green-soft),var(--amber)); transition:width 4.6s linear; }
+  .scene.on .stepper .rail i { width:100%; }
+  .nd { position:relative; z-index:1; width:25%; text-align:center; }
+  .nd .c { width:37px; height:37px; margin:0 auto; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.07); border:1.5px solid var(--hair-d); font-size:.95rem; transition:all .4s var(--ease); }
+  .nd .t { margin-top:9px; font-size:.78rem; font-weight:700; color:var(--w-ink3); transition:color .4s; }
+  .nd .s { font-size:.68rem; color:var(--w-ink3); opacity:.75; }
+  .scene.on .nd { animation:ndon .45s var(--spring) both; animation-delay:var(--d); }
+  @keyframes ndon {
+    from { } to { }
   }
-  @media (prefers-reduced-motion:reduce) { .enter { animation:none; } }
+  .scene.on .nd .c { animation:ndc .45s var(--spring) both; animation-delay:var(--d); }
+  .scene.on .nd .t { animation:ndt .45s var(--ease) both; animation-delay:var(--d); }
+  @keyframes ndc { to { background:rgba(92,168,124,.2); border-color:var(--green-soft); box-shadow:0 0 18px rgba(92,168,124,.35); } }
+  @keyframes ndt { to { color:var(--w-ink); } }
+
+  /* 한도 게이지 */
+  .limit { width:min(520px,90vw); text-align:left; }
+  .limit .lt { display:flex; justify-content:space-between; font-size:.82rem; font-weight:700; color:var(--w-ink2); margin-bottom:8px; }
+  .limit .track { position:relative; height:16px; border-radius:999px; background:rgba(255,255,255,.09); overflow:visible; }
+  .limit .fill { position:absolute; inset:0 auto 0 0; width:0; border-radius:999px;
+    background:linear-gradient(90deg,var(--green-soft),var(--amber),#D97B6A); transition:width 2.4s var(--ease) .6s; }
+  .scene.on .limit .fill { width:100%; }
+  .limit .mark { position:absolute; left:60%; top:-7px; bottom:-7px; width:2.5px; background:var(--w-ink); border-radius:2px; }
+  .limit .mark::after { content:"한도 30,000"; position:absolute; top:-24px; left:50%; transform:translateX(-50%);
+    font-size:.7rem; font-weight:700; color:var(--w-ink2); white-space:nowrap; }
+
+  /* 승인 회신 버블 */
+  .bubble { display:inline-block; background:rgba(255,255,255,.1); border:1px solid var(--hair-d);
+    border-radius:16px 16px 4px 16px; padding:12px 22px; font-weight:800; font-size:1.05rem; }
+
+  /* Admin 피날레 */
+  .dash { width:min(680px,94vw); text-align:left; }
+  .dash .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; }
+  .tile { border:1px solid var(--hair-d); border-radius:16px; padding:16px 18px;
+    background:linear-gradient(165deg, rgba(255,255,255,.08), rgba(255,255,255,.03)); }
+  .tile .v { font-size:1.9rem; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-.02em; }
+  .tile .v.amber { color:var(--amber); }
+  .tile .l { font-size:.72rem; color:var(--w-ink3); font-weight:700; margin-top:2px; }
+  .dash .rowline { display:flex; justify-content:space-between; align-items:center; font-size:.84rem;
+    padding:10px 4px; border-bottom:1px dashed var(--hair-d); }
+  .badge { font-size:.66rem; font-weight:800; padding:3px 11px; border-radius:999px;
+    color:#A9DDBE; background:rgba(92,168,124,.13); border:1px solid rgba(92,168,124,.35); }
+  .badge.w { color:#F3CFA6; background:rgba(216,154,91,.14); border-color:rgba(216,154,91,.4); }
+
+  .ctas { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:26px; }
+  .btn { display:inline-flex; align-items:center; gap:9px; padding:14px 28px; border-radius:13px; font-weight:800;
+    font-size:.95rem; text-decoration:none; transition:transform .25s var(--ease); cursor:pointer; border:none; font-family:inherit; }
+  .btn:hover { transform:translateY(-2px); }
+  .btn-accent { background:linear-gradient(135deg,#E5AC6C,#C97840); color:#231306; box-shadow:0 10px 28px rgba(201,120,64,.32); }
+  .btn-glass { background:rgba(255,255,255,.07); color:var(--w-ink); border:1px solid var(--hair-d); }
+
+  .stack { display:flex; flex-direction:column; align-items:center; gap:18px; }
+  .duo { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
+
+  /* ───── 컨트롤 바 ───── */
+  .controls { position:fixed; left:0; right:0; bottom:0; height:86px; z-index:30;
+    display:flex; align-items:center; gap:16px; padding:0 clamp(16px,3vw,40px);
+    background:linear-gradient(transparent, rgba(10,19,14,.92) 40%); }
+  .pp { width:46px; height:46px; border-radius:50%; flex:none; border:1px solid var(--hair-d); cursor:pointer;
+    background:rgba(255,255,255,.08); color:var(--w-ink); font-size:1rem; backdrop-filter:blur(10px); }
+  .pp:hover { background:rgba(255,255,255,.14); }
+  .prog { flex:1; }
+  .prog .names { display:flex; justify-content:space-between; margin-bottom:8px; }
+  .prog .names button { background:none; border:none; cursor:pointer; font-family:inherit;
+    font-size:.68rem; font-weight:700; color:var(--w-ink3); padding:2px 4px; transition:color .3s; letter-spacing:.02em; }
+  .prog .names button.cur { color:var(--amber); }
+  .prog .names button:hover { color:var(--w-ink2); }
+  .prog .bar { height:4px; border-radius:99px; background:rgba(255,255,255,.1); overflow:hidden; }
+  .prog .bar i { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--green-soft),var(--amber)); }
+  .tlabel { font-size:.74rem; color:var(--w-ink3); font-variant-numeric:tabular-nums; width:52px; text-align:right; }
+
+  @media (max-width:680px) {
+    .prog .names button { font-size:.58rem; }
+    .kt .line span { letter-spacing:-.03em; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    .aurora { animation:none; }
+    .a, .kt .line span, .nd .c, .nd .t { animation:none !important; opacity:1 !important; transform:none !important; }
+    .stepper .rail i, .limit .fill { transition:none; width:100% !important; }
+  }
 </style>
 </head>
 <body>
+<div class="aurora au1"></div><div class="aurora au2"></div><div class="grain"></div>
 
 <header>
-  <a class="logo" href="index.html">un<i>plugin</i><small>LIVE DEMO · 운영 코어 v0</small></a>
+  <a class="logo" href="index.html">un<i>plugin</i><small>PRODUCT DEMO</small></a>
   <a class="back" href="index.html">← 소개로 돌아가기</a>
 </header>
 
-<div class="wrap">
-  <div class="sticky-top">
-  <div class="player">
-    <button class="pbtn prev" id="btnPrev">← 이전</button>
-    <button class="pbtn next" id="btnNext">다음 단계 →</button>
-    <button class="pbtn auto" id="btnAuto">▶ 자동 재생</button>
-    <div class="stepmeter">
-      <div class="lbl"><b id="stepNow">0</b> / <span id="stepTotal">0</span> — <span id="stepTitle">시작 전</span></div>
-      <div class="track"><i id="stepBar"></i></div>
-    </div>
-  </div>
+<div class="stage" id="stage">
 
-  <div class="caption" id="caption">
-    <div class="ct">실제 개발된 운영 코어의 시나리오를 그대로 재생합니다</div>
-    <div class="cd">아래는 목업이 아니라, 저장소의 <b>통합 테스트(tests/e2e_runner.py · 16/16 PASS)</b>가 검증한 실제 처리 흐름입니다. 왼쪽은 고객 민서님의 메일함, 오른쪽은 대표(1인 운영자)의 Admin 화면 — 같은 사건을 양쪽이 어떻게 보는지 확인하세요. [다음 단계]를 눌러 시작합니다.</div>
-  </div>
-  </div>
+  <!-- 0 타이틀 -->
+  <section class="scene" data-dur="4600">
+    <div class="kt">
+      <span class="line"><span style="--d:.1s">당신의 디지털 잡무가</span></span>
+      <span class="line"><span style="--d:.3s"><em>삶의 시간</em>이 되기까지, 70초</span></span>
+    </div>
+    <p class="scsub a" style="--d:.8s">아래 모든 장면은 목업이 아니라, 저장소의 운영 코어(core/)와<br>통합 테스트 16/16 PASS가 검증한 실제 처리 흐름입니다.</p>
+  </section>
 
-  <div class="split">
-    <div class="pane">
-      <div class="phead"><span class="who user">USER</span> 고객 민서님의 메일함 <span style="color:var(--w-ink3);font-weight:600;">— 메일만으로 전체 흐름이 보입니다</span></div>
-      <div class="pbody" id="userPane"><div class="empty">아직 메일이 없습니다</div></div>
+  <!-- 1 온보딩 -->
+  <section class="scene" data-dur="8200">
+    <div class="stack">
+      <div class="eyebrow a">01 — ONBOARD</div>
+      <div class="kt"><span class="line"><span style="--d:.1s">1분 테스트, 그리고 <em>나만의 주소</em></span></span></div>
+      <div class="mailcard a pop" style="--d:.7s">
+        <div class="mh"><span class="dot">U</span><span class="who">UNPLUGIN 에이전트</span></div>
+        <div class="ms">환영합니다, 민서님 — 타입: TFRA 맨발 러너</div>
+        <div class="mb">전용 주소가 발급되었어요:</div>
+        <div class="mb" style="margin-top:6px;"><b id="typeAddr" style="color:var(--amber); font-family:ui-monospace,monospace;" class="typing"></b></div>
+        <div class="mb" style="margin-top:10px;">처리할 메일이 생기면 이 주소로 포워딩만 하세요.<br>나머지는 저희가 합니다.</div>
+      </div>
+      <span class="chip ok a pop" style="--d:3.4s">🔐 고객별 1:1 격리 주소 · 앱 설치 없음</span>
     </div>
-    <div class="pane">
-      <div class="phead"><span class="who admin">ADMIN</span> 대표 대시보드 <span style="color:var(--w-ink3);font-weight:600;">— python3 -m core dashboard</span></div>
-      <div class="pbody" id="adminPane"></div>
+  </section>
+
+  <!-- 2 포워딩 + 자동 분류 -->
+  <section class="scene" data-dur="11000">
+    <div class="stack">
+      <div class="eyebrow a">02 — FORWARD</div>
+      <div class="kt"><span class="line"><span style="--d:.1s">가능한지 몰라도, <em>그냥 포워딩</em></span></span></div>
+      <div class="win a pop" style="--d:.6s" id="composeWin">
+        <div class="bar"><i></i><i></i><i></i><span class="wt">새 메일</span></div>
+        <div class="row"><b>받는이</b><span id="composeTo" class="typing"></span></div>
+        <div class="row"><b>제목</b><span>Fwd: 생수 정기주문</span></div>
+        <div class="body" id="composeBody"></div>
+        <span class="sendbtn" id="sendBtn">보내기 ↗</span>
+      </div>
+      <span class="chip ok big" id="classChip" style="opacity:0; transform:scale(.6); transition:all .5s var(--spring);">⚡ 자동 분류 — '생필품 정기 주문' 플러그인 · 103종 중 매칭 · 바로 진행</span>
     </div>
-  </div>
+  </section>
+
+  <!-- 3 처리 타임라인 -->
+  <section class="scene" data-dur="9200">
+    <div class="stack">
+      <div class="eyebrow a">03 — RUN</div>
+      <div class="kt"><span class="line"><span style="--d:.1s">접수부터 완료까지, <em>스스로</em></span></span></div>
+      <div class="stepper a" style="--d:.5s">
+        <div class="lane">
+          <div class="rail"><i></i></div>
+          <div class="nd" style="--d:.8s"><div class="c">📥</div><div class="t">접수</div><div class="s">concierge</div></div>
+          <div class="nd" style="--d:2.1s"><div class="c">🎟️</div><div class="t">슬롯 배정</div><div class="s">queue</div></div>
+          <div class="nd" style="--d:3.6s"><div class="c">🧾</div><div class="t">결제 직전 요약</div><div class="s">20,000원 · 한도 이내</div></div>
+          <div class="nd" style="--d:5.2s"><div class="c">✅</div><div class="t">완료 + 증빙</div><div class="s">executor</div></div>
+        </div>
+      </div>
+      <span class="chip warn a pop" style="--d:6.2s">🛡️ 한도를 넘는 결제는 이 선을 절대 혼자 넘지 않습니다</span>
+    </div>
+  </section>
+
+  <!-- 4 완료 메일 -->
+  <section class="scene" data-dur="8600">
+    <div class="stack">
+      <div class="eyebrow a">04 — RECLAIM</div>
+      <div class="kt"><span class="line"><span style="--d:.1s">되찾은 시간: <em id="rhCount">+0.0h</em></span></span></div>
+      <div class="mailcard a pop" style="--d:.7s">
+        <div class="mh"><span class="dot">U</span><span class="who">UNPLUGIN 에이전트 · 같은 스레드</span></div>
+        <div class="ms">"생수 정기주문" 완료 ✅</div>
+        <div class="mb">주문 완료 — 주문번호 #20261103-184 (증빙 스크린샷 첨부)
+이번 일로 약 2시간이 비었어요. 토요일 아침, 러닝 코스를 준비해둘게요.</div>
+        <div class="tlbox">— 지금까지의 진행 —
+  · 10:02  concierge — 접수 · 자동 분류
+  · 10:03  queue — 슬롯 배정
+  · 10:04  it — 결제 직전 내역 요약 (한도 이내)
+  · 10:06  executor — 주문 완료 · 증빙 확보</div>
+      </div>
+      <span class="chip ok a pop" style="--d:2.6s">📬 메일 스레드 하나 = 일 하나 — 전 과정이 메일함에 남습니다</span>
+    </div>
+  </section>
+
+  <!-- 5 승인 게이트 -->
+  <section class="scene" data-dur="11400">
+    <div class="stack">
+      <div class="eyebrow a">05 — APPROVE</div>
+      <div class="kt"><span class="line"><span style="--d:.1s">큰돈 앞에선, <em>반드시 멈춥니다</em></span></span></div>
+      <div class="limit a" style="--d:.6s">
+        <div class="lt"><span>보험료 전환 — 결제 요청</span><span>₩50,000</span></div>
+        <div class="track"><span class="fill"></span><span class="mark"></span></div>
+      </div>
+      <span class="chip warn big" id="holdChip" style="opacity:0; transform:scale(.6); transition:all .5s var(--spring);">⏸ 한도 초과 — 승인 대기 · 결제 정지</span>
+      <div class="bubble" id="replyBubble" style="opacity:0; transform:translateY(16px); transition:all .5s var(--spring);"><span id="replyText" class="typing"></span></div>
+      <span class="chip ok big" id="doneChip" style="opacity:0; transform:scale(.6); transition:all .5s var(--spring);">✅ 승인 확인 — 전환 완료 · 연 86,000원 절감 (증빙 첨부)</span>
+    </div>
+  </section>
+
+  <!-- 6 보안 + 신규 -->
+  <section class="scene" data-dur="9200">
+    <div class="stack">
+      <div class="eyebrow a">06 — TRUST</div>
+      <div class="kt"><span class="line"><span style="--d:.1s">모르는 건 <em>실행하지 않습니다</em></span></span></div>
+      <div class="duo">
+        <div class="mailcard a pop" style="--d:.7s; width:min(330px,88vw);">
+          <div class="mh"><span class="dot" style="background:radial-gradient(circle at 32% 30%, #C97A6A, #5A2E26);">!</span><span class="who">보안</span></div>
+          <div class="ms">미등록 발신 "긴급 입금 요청"</div>
+          <div class="mb">검토함 격리 · 자동 실행 0건.
+사칭(인증 실패)·본문 속 명령(인젝션)도 같은 방식으로 차단됩니다.</div>
+          <div style="margin-top:10px;"><span class="chip sec">🔒 격리됨</span></div>
+        </div>
+        <div class="mailcard a pop" style="--d:1.5s; width:min(330px,88vw);">
+          <div class="mh"><span class="dot">U</span><span class="who">신규 업무</span></div>
+          <div class="ms">"클래스 환불 분쟁" — 처음 보는 유형</div>
+          <div class="mb">103종 카탈로그에 없는 요청은 함부로 하지 않고,
+준비해서(1~3일) 알려드립니다. 그동안 요금 미차감.
+이 요청은 다음 플러그인이 됩니다.</div>
+          <div style="margin-top:10px;"><span class="chip warn">🌱 플러그인 백로그 +1</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 Admin 피날레 -->
+  <section class="scene" data-dur="12000">
+    <div class="stack">
+      <div class="eyebrow a">07 — OPERATE</div>
+      <div class="kt"><span class="line"><span style="--d:.1s">그리고 대표는, <em>화면 한 장</em></span></span></div>
+      <div class="dash a" style="--d:.6s">
+        <div class="tiles">
+          <div class="tile"><div class="v" id="cFlow">0</div><div class="l">전체 Flow</div></div>
+          <div class="tile"><div class="v amber" id="cRh">0.0h</div><div class="l">Reclaimed Hours</div></div>
+          <div class="tile"><div class="v" id="cPlug">0</div><div class="l">업무 플러그인</div></div>
+          <div class="tile"><div class="v" id="cQuar">0</div><div class="l">검토함(격리)</div></div>
+        </div>
+        <div style="margin-top:14px;">
+          <div class="rowline a" style="--d:2.2s"><span>생수 정기주문 — 민서</span><span class="badge">완료 · +2.0h</span></div>
+          <div class="rowline a" style="--d:2.6s"><span>보험료 전환 — 민서</span><span class="badge">완료 · +1.5h</span></div>
+          <div class="rowline a" style="--d:3.0s"><span>신규: 클래스 환불 분쟁</span><span class="badge w">백로그 · 검토</span></div>
+        </div>
+      </div>
+      <div class="ctas a" style="--d:3.8s">
+        <a class="btn btn-accent" href="test.html">내 타입으로 시작하기 →</a>
+        <a class="btn btn-glass" href="https://github.com/kyj5482/unplugin">코드로 확인 (GitHub)</a>
+        <button class="btn btn-glass" onclick="goto(0,true)">↺ 다시 보기</button>
+      </div>
+    </div>
+  </section>
 </div>
 
-<footer>이 데모의 모든 단계는 저장소 core/ 모듈과 테스트 픽스처 기준입니다 · <a href="https://github.com/kyj5482/unplugin">GitHub</a> · <a href="index.html">Unplugin</a></footer>
+<div class="controls">
+  <button class="pp" id="ppBtn" aria-label="재생/일시정지">⏸</button>
+  <div class="prog">
+    <div class="names" id="names"></div>
+    <div class="bar"><i id="pbar"></i></div>
+  </div>
+  <div class="tlabel" id="tlabel">0:00</div>
+</div>
 
 <script>
-// ───────────────────────────────────────────────────────
-// 시나리오: tests/e2e_runner.py 가 검증한 여정 그대로
-// mail: {thread, who(agent|me|sys), from, subj, body, timeline?, tag?{cls,txt}}
-// flow: {id, title, status, step(추가될 한 줄), attn?}
-// q: {p,a,d} 큐 수치 / quar: 격리 +1 / rh: Reclaimed Hours
-// ───────────────────────────────────────────────────────
-const STEPS = [
-{
-  title: "온보딩 — 타입 테스트 후 가입",
-  mod: "core/onboarding.py", tc: "TC-ONB-001 · 004 PASS",
-  cap: "민서님(타입 TFRA · Unplug One)이 가입했습니다. 전용 주소가 난수 슬러그로 발급되고, \"정기 주문·예약·메일 정리 다 맡길래요\"라는 일괄 요청은 첫 위임 1개로 줄이고 나머지는 대기 후보로 기록됩니다.",
-  mail: { thread:"환영", who:"agent", from:"Unplugin 에이전트", subj:"환영합니다, 민서님 — 전용 주소가 발급되었어요",
-    body:"🔌 민서님, Unplugin에 오신 것을 환영해요.\n\n전용 주소: 민서.ed7a@unplugin.me\n\n첫 위임은 \"생수 정기 주문\"으로 시작할게요. 한 번에 한 가지씩, 신뢰를 한 단계씩 쌓아가요.\n(예약 처리, 메일 정리는 대기 후보로 적어뒀어요.)\n\n처리할 메일이 생기면 이 주소로 포워딩만 하세요 — 나머지는 저희가 합니다.",
-    tag:{cls:"ok",txt:"주소 발급 · 격리 보장"} },
-  flow: { id:"F1", title:"온보딩: 민서", status:"완료",
-    step:"cs  프로필 생성·전용 주소 발급\ncs  첫 위임 확정: 생수 정기 주문 (한 번에 한 가지)\ncs  대기 위임 후보 기록: 예약 처리, 메일 정리" },
-  q:{p:0,a:0,d:0}, rh:0
-},
-{
-  title: "고객이 메일을 포워딩 — 가능한지 몰라도 됩니다",
-  mod: "core/mailbox.py + classify.py", tc: "TC-EML-002 · 007 PASS",
-  cap: "민서님이 쇼핑몰 메일을 전용 주소로 포워딩하며 한 줄 지시를 남겼습니다. 고객은 '되는 업무 목록'을 고를 필요가 없습니다 — 파이프라인이 고객을 식별하고(1:1 격리), 분류기가 업무 플러그인 카탈로그와 자동 매칭합니다.",
-  mail: { thread:"생수 정기주문", who:"me", from:"민서 → 민서.ed7a@unplugin.me", subj:"Fwd: 생수 정기주문",
-    body:"늘 먹던 걸로 주문해줘\n금액: 20,000원\n\n> [쇼핑몰] 장바구니에 담아두신 상품이 있어요..." },
-  flow: { id:"F2", title:"생수 정기주문", status:"접수",
-    step:"concierge  접수 (이메일 포워딩, 본인 발신 확인)\nclassify  자동 분류: '생필품·식료품 정기 주문' 플러그인 (beta)" },
-  q:{p:1,a:0,d:0}
-},
-{
-  title: "접수 확인 — 분류 결과와 함께 스레드가 시작됩니다",
-  mod: "core/flow.py + notify.py", tc: "TC-EML-006 PASS",
-  cap: "접수 즉시 같은 스레드로 상태 메일이 갑니다. 어떤 업무로 분류됐고 바로 가능한지가 첫 회신에 담깁니다. 이후 이 일의 모든 소식은 이 스레드 하나로만 옵니다.",
-  mail: { thread:"생수 정기주문", who:"agent", from:"Unplugin 에이전트", subj:"[Unplugin] \"생수 정기주문\" 접수했어요 · 접수",
-    body:"📥 \"생수 정기주문\" 접수했어요.\n'생필품·식료품 정기 주문' 업무로 분류됐어요 — 바로 진행 가능한 유형입니다.",
-    timeline:"— 지금까지의 진행 —\n· 10:02  concierge — 접수\n· 10:02  classify — 자동 분류: 생필품 정기 주문 (바로 진행)",
-    tag:{cls:"ok",txt:"지원 업무 · 바로 진행"} },
-  flow: { id:"F2", title:"생수 정기주문", status:"진행중", step:"queue  슬롯 배정 (Unplug One · 1/1)" },
-  q:{p:0,a:1,d:0}
-},
-{
-  title: "한도 이내 결제 — 자동 진행",
-  mod: "core/queue.py + approval.py", tc: "TC-DEL-005 PASS (v0)",
-  cap: "20,000원은 민서님이 정한 승인 한도(30,000원) 이내 — 묻지 않고 진행하되, 결제 직전 내역 요약을 Flow와 메일에 남깁니다. 한도는 고객이 온보딩에서 직접 정한 값입니다.",
-  mail: { thread:"생수 정기주문", who:"agent", from:"Unplugin 에이전트", subj:"[Unplugin] \"생수 정기주문\" 진행 중 · 진행 중",
-    body:"⚙️ 결제 직전 내역 요약: 생수 2L×12 정기 주문 / 20,000원\n승인 한도(30,000원) 이내라 바로 진행했어요.",
-    timeline:"— 지금까지의 진행 —\n· 10:02  concierge — 접수·분류\n· 10:03  queue — 슬롯 배정\n· 10:04  it — 결제 직전 내역 요약 (한도 이내 자동 진행)" },
-  flow: { id:"F2", title:"생수 정기주문", status:"진행중", step:"it  결제 직전 내역 요약: 20,000원 (한도 이내 자동 진행)" }
-},
-{
-  title: "완료 — 되찾은 시간과 추천까지",
-  mod: "core/flow.py → complete()", tc: "TC-EML-006 · OPS-002 PASS",
-  cap: "주문 완료. 완료 메일에 전체 타임라인과 함께 '이번 일로 비워진 시간'이 담깁니다. Admin 쪽에선 Flow가 완결되고 Reclaimed Hours가 집계됩니다.",
-  mail: { thread:"생수 정기주문", who:"agent", from:"Unplugin 에이전트", subj:"[Unplugin] \"생수 정기주문\" 완료 · 완료",
-    body:"✅ 주문 완료 — 주문번호 #20261102-184 (증빙 첨부)\n\n이번 일로 약 2시간이 비었어요. 타입(TFRA·맨발 러너)에 맞춰 토요일 아침 러닝 코스를 준비해둘게요.",
-    timeline:"— 지금까지의 진행 —\n· 10:02  concierge — 접수·분류\n· 10:03  queue — 슬롯 배정\n· 10:04  it — 결제 직전 내역 요약\n· 10:06  it — 주문 완료·증빙 확보\n· 10:06  concierge — 완결",
-    tag:{cls:"ok",txt:"✓ 완료 · Reclaimed +2.0h"} },
-  flow: { id:"F2", title:"생수 정기주문", status:"완료", step:"concierge  완결: 주문 완료 (Reclaimed 2.0h)" },
-  q:{p:0,a:0,d:1}, rh:2.0
-},
-{
-  title: "두 번째 요청 — 한도 초과",
-  mod: "core/queue.py → 승인 게이트", tc: "TC-DEL-005 PASS (v0)",
-  cap: "이번엔 보험료 전환 건, 50,000원 — 한도(30,000원) 초과입니다. 에이전트는 멈추고 승인을 요청합니다. 질문은 딱 한 번, 금액·내용·승인 방법 포함. 승인 없인 어떤 경우에도 결제되지 않습니다.",
-  mail: { thread:"보험료 전환", who:"agent", from:"Unplugin 에이전트", subj:"[Unplugin] \"보험료 전환\" 확인이 필요해요 · 확인 필요",
-    body:"❓ 더 나은 조건의 보험으로 전환하려면 50,000원 결제가 필요해요.\n승인 한도(30,000원)를 넘어 여쭤봅니다.\n\n\"승인\" 또는 \"거부\"로 회신해 주세요.",
-    timeline:"— 지금까지의 진행 —\n· 10:10  concierge — 접수·분류 (포워딩)\n· 10:11  it — 조건 비교 완료, 결제 대기",
-    tag:{cls:"warn",txt:"승인 대기 · 결제 정지"} },
-  flow: { id:"F3", title:"보험료 전환", status:"확인필요", attn:true,
-    step:"concierge  접수 (포워딩)\nit  비교 완료 — 50,000원, 한도 초과 → 승인 요청 1회" },
-  q:{p:0,a:1,d:1}
-},
-{
-  title: "고객이 \"승인\" 회신 → 실행",
-  mod: "core/queue.py → approve()", tc: "TC-DEL-005 PASS (v0)",
-  cap: "민서님이 같은 스레드에서 \"승인\"이라고 회신합니다. 다음 큐 틱에서 결제·실행이 진행되고 완료 메일이 옵니다. 재질문은 없습니다(asked 플래그).",
-  mail: { thread:"보험료 전환", who:"me", from:"민서", subj:"Re: 보험료 전환", body:"승인" },
-  mail2: { thread:"보험료 전환", who:"agent", from:"Unplugin 에이전트", subj:"[Unplugin] \"보험료 전환\" 완료 · 완료",
-    body:"✅ 승인 확인 — 전환 완료했어요. 연 86,000원 절감 (증빙 첨부)",
-    timeline:"— 지금까지의 진행 —\n· 10:10  concierge — 접수\n· 10:11  it — 비교 완료, 승인 요청\n· 10:18  고객 — 승인\n· 10:19  it — 결제·전환 완료",
-    tag:{cls:"ok",txt:"✓ 완료 · Reclaimed +1.5h"} },
-  flow: { id:"F3", title:"보험료 전환", status:"완료", attn:false,
-    step:"고객  승인 회신\nit  결제 진행·전환 완료 (연 86,000원 절감)" },
-  q:{p:0,a:0,d:2}, rh:3.5
-},
-{
-  title: "보안 — 수상한 메일이 왔다면",
-  mod: "core/mailbox.py → 격리", tc: "TC-EML-005 PASS",
-  cap: "미등록 발신자가 \"긴급! 이 계좌로 입금\" 메일을 보냈습니다. 자동 실행 0건 — 검토함에 격리되고 고객에게만 알립니다. 사칭(인증 실패)·본문 속 명령(인젝션)도 같은 방식으로 차단됩니다.",
-  mail: { thread:"보안 알림", who:"agent", from:"Unplugin 에이전트", subj:"[Unplugin] 메일 격리 안내",
-    body:"🔒 민서님 주소로 온 메일 1통을 검토함에 격리했어요.\n\n발신: scam@bad.example (미등록)\n제목: \"긴급 안내 — 이 계좌로 입금 바랍니다\"\n\n등록되지 않은 발신자의 요청은 어떤 것도 자동 실행되지 않아요. 아는 발신자라면 알려주세요.",
-    tag:{cls:"sec",txt:"격리 · 자동 실행 0건"} },
-  flow: { id:"F4", title:"보안: 미등록 발신 격리", status:"격리", step:"mailbox  검토함 격리 + 고객 통지 (자동 실행 0)" },
-  quar: 1
-},
-{
-  title: "규칙 자동화 — \"A가 오면 B 해줘\"",
-  mod: "core/mailbox.py → 규칙 엔진", tc: "TC-EML-004 PASS",
-  cap: "민서님의 규칙: \"요금 메일이 지난달보다 10% 이상 오르면 알려줘\". 9% 인상 메일은 조용히 보관(메일 0통), 15% 인상 메일만 알림이 옵니다 — 필요한 것만 울리는 받은편지함.",
-  mail: { thread:"요금 감시 규칙", who:"agent", from:"Unplugin 에이전트", subj:"[Unplugin] 통신 요금이 15% 올랐어요",
-    body:"⚙️ 규칙 발동: \"10% 이상 오르면 알려줘\"\n\n11월 요금이 지난달보다 15% 올랐어요. 원인 확인과 이의신청을 진행할까요?\n(지난달 9% 인상분은 기준 미만이라 보관만 해뒀어요.)",
-    tag:{cls:"warn",txt:"규칙 발동 · 15% ≥ 10%"} },
-  flow: { id:"F5", title:"규칙: 요금 15% 인상 감지", status:"진행중", step:"mailbox  규칙 매칭 (9%는 보관, 15%만 발동)" },
-  q:{p:1,a:0,d:2}
-},
-{
-  title: "카탈로그에 없는 요청 — 신규 업무로 접수",
-  mod: "core/classify.py → 신규 백로그", tc: "TC-EML-007 PASS",
-  cap: "민서님이 '원데이 클래스 환불 분쟁'을 포워딩했지만 이 유형은 아직 플러그인 카탈로그에 없습니다. 에이전트는 함부로 실행하지 않고 \"준비에 1~3일\"을 안내하며, 이 요청은 상품기획·IT의 신규 플러그인 백로그가 됩니다 — 고객의 실제 요청이 서비스가 자라는 방향을 정합니다. 준비될 때까지 요금은 차감되지 않습니다.",
-  mail: { thread:"클래스 환불 분쟁", who:"me", from:"민서", subj:"Fwd: 원데이 클래스 환불",
-    body:"환불 분쟁 좀 해결해줘\n\n> [공방] 환불 규정 안내..." },
-  mail2: { thread:"클래스 환불 분쟁", who:"agent", from:"Unplugin 에이전트", subj:"[Unplugin] \"원데이 클래스 환불\" — 새로운 유형의 업무예요 · 접수",
-    body:"📥 이건 아직 저희가 바로 처리하도록 준비된 유형이 아니에요.\n처리 방식을 준비하는 데 보통 1~3일이 걸립니다. 준비가 끝나면 이 스레드로 알려드리고 바로 시작할게요.\n그동안 요금은 차감되지 않아요.",
-    timeline:"— 지금까지의 진행 —\n· 11:02  concierge — 접수 (포워딩)\n· 11:02  classify — 카탈로그 미매칭 → 신규 업무\n· 11:02  핸드오프 — product/it: 신규 플러그인 검토",
-    tag:{cls:"warn",txt:"신규 업무 · 준비 1~3일 · 미차감"} },
-  flow: { id:"N1", title:"신규: 클래스 환불 분쟁 (플러그인 백로그)", status:"접수", attn:true,
-    step:"classify  카탈로그 미매칭 — 신규 업무 유형\nconcierge → product/it  신규 플러그인 검토·우선순위 핸드오프" },
-},
-{
-  title: "대표의 하루 끝 — KPI 리포트",
-  mod: "core/kpi.py + dashboard.py", tc: "TC-FBK-001 · 003 PASS",
-  cap: "대표는 python3 -m core kpi 한 번으로 주간 리포트를 받습니다: Delegated 9.0h → Reclaimed 5.5h (전환율 61%). 오프라인으로 이어지지 못한 피드백은 원인별로 상품기획에 자동 핸드오프됩니다. 이것이 Unplugin의 단 하나의 지표입니다.",
-  mail: null,
-  flow: { id:"F6", title:"주간 KPI 리포트 (ops/reports/)", status:"완료",
-    step:"kpi  Delegated 9.0h → Reclaimed 5.5h (61%)\nkpi  미전환 1건 → 원인 \"추천 부적합\" 상품기획 핸드오프" },
-  rh:5.5
-},
-];
+// ───────── 타임라인 엔진 ─────────
+const scenes = [...document.querySelectorAll(".scene")];
+const DUR = scenes.map(s => +s.dataset.dur);
+const TOTAL = DUR.reduce((a, b) => a + b, 0);
+const NAMES = ["인트로", "온보딩", "포워딩", "처리", "완료", "승인", "보안·신규", "Admin"];
 
-// ── 상태 재구성 렌더러 ──────────────────────────────────
-const PLUGIN_COUNT = "103"; // core/plugins/ 카탈로그 수 (available 18 · beta 67 · planned 18)
-const userPane = document.getElementById("userPane");
-const adminPane = document.getElementById("adminPane");
-let cur = 0; // 0 = 시작 전, 1..N = 해당 단계까지 적용
-let autoTimer = null;
-document.getElementById("stepTotal").textContent = STEPS.length;
-
-function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
-
-function build(upto) {
-  const threads = new Map(); // name -> mails[]
-  const flows = new Map();   // id -> {title,status,steps[],attn}
-  let q = {p:0,a:0,d:0}, quar = 0, rh = 0;
-  for (let i = 0; i < upto; i++) {
-    const s = STEPS[i];
-    for (const m of [s.mail, s.mail2]) {
-      if (!m) continue;
-      if (!threads.has(m.thread)) threads.set(m.thread, []);
-      threads.get(m.thread).push(m);
-    }
-    if (s.flow) {
-      if (!flows.has(s.flow.id)) flows.set(s.flow.id, { title:s.flow.title, steps:[], attn:false });
-      const f = flows.get(s.flow.id);
-      f.status = s.flow.status; f.steps.push(s.flow.step);
-      if (s.flow.attn !== undefined) f.attn = s.flow.attn;
-    }
-    if (s.q) q = s.q;
-    if (s.quar) quar += s.quar;
-    if (s.rh !== undefined) rh = s.rh;
-  }
-  return { threads, flows, q, quar, rh };
-}
-
-function render() {
-  const st = build(cur);
-  // 플레이어
-  document.getElementById("stepNow").textContent = cur;
-  document.getElementById("stepBar").style.width = (cur / STEPS.length * 100) + "%";
-  document.getElementById("stepTitle").textContent = cur ? STEPS[cur-1].title : "시작 전";
-  document.getElementById("btnPrev").disabled = cur === 0;
-  document.getElementById("btnNext").disabled = cur === STEPS.length;
-  // 캡션
-  if (cur) {
-    const s = STEPS[cur-1];
-    document.getElementById("caption").innerHTML =
-      `<div class="ct">${esc(s.title)}<span class="mod">${esc(s.mod)}</span></div>
-       <div class="cd">${esc(s.cap)}</div>
-       <div class="tc">검증: <b>${esc(s.tc)}</b> — 저장소에서 python3 tests/e2e_runner.py 로 재현 가능</div>`;
-  }
-  // 고객 메일함 (최신 스레드가 위로)
-  if (!st.threads.size) {
-    userPane.innerHTML = '<div class="empty">아직 메일이 없습니다</div>';
-  } else {
-    userPane.innerHTML = [...st.threads.entries()].reverse().map(([name, mails]) => `
-      <details class="thread enter" open>
-        <summary class="th"><span>${esc(name)}</span><span class="cnt">메일 ${mails.length}통 · 한 스레드</span></summary>
-        ${mails.map(m => `
-          <div class="mail">
-            <div class="mh"><span class="av ${m.who === "me" ? "me" : m.who === "sys" ? "sys" : "agent"}">${m.who === "me" ? "나" : "U"}</span>
-              <span class="from">${esc(m.from)}</span></div>
-            <div class="subj">${esc(m.subj)}</div>
-            <div class="body">${esc(m.body)}</div>
-            ${m.timeline ? `<div class="timeline">${esc(m.timeline)}</div>` : ""}
-            ${m.tag ? `<span class="mtag ${m.tag.cls}">${esc(m.tag.txt)}</span>` : ""}
-          </div>`).join("")}
-      </details>`).join("");
-  }
-  // Admin
-  const flowsArr = [...st.flows.entries()].reverse();
-  const attn = flowsArr.filter(([,f]) => f.attn);
-  const rest = flowsArr.filter(([,f]) => !f.attn);
-  const fcard = ([id, f]) => `
-    <div class="fcard ${f.attn ? "attn" : ""} enter">
-      <div class="fh"><span class="ft">${esc(f.title)}</span>
-        <span class="badge b-${f.status.replace(/\s/g,"")}">${esc(f.status)}</span></div>
-      <div class="fl">Flow ${id} · 단계 ${f.steps.join("\n").split("\n").length}</div>
-      <div class="fsteps">${esc(f.steps.join("\n"))}</div>
-    </div>`;
-  adminPane.innerHTML = `
-    <div class="stats">
-      <div class="stat"><div class="sv">${st.flows.size}</div><div class="sl">전체 Flow</div></div>
-      <div class="stat"><div class="sv amber">${st.rh.toFixed(1)}h</div><div class="sl">Reclaimed Hours</div></div>
-      <div class="stat"><div class="sv">${st.q.p} / ${st.q.a}</div><div class="sl">큐 대기 / 진행</div></div>
-      <div class="stat"><div class="sv">${st.quar}</div><div class="sl">검토함(격리)</div></div>
-      <div class="stat"><div class="sv">${PLUGIN_COUNT}</div><div class="sl">업무 플러그인</div></div>
-    </div>
-    ${attn.length ? `<div class="sechead">⚠ 확인 필요 — 대표 승인 대기</div>` + attn.map(fcard).join("") : ""}
-    ${rest.length ? `<div class="sechead">FLOWS — 전 부문 Unified View</div>` + rest.map(fcard).join("") : '<div class="empty">아직 Flow가 없습니다</div>'}`;
-}
-
-function step(d) {
-  cur = Math.max(0, Math.min(STEPS.length, cur + d));
-  render();
-  if (cur === STEPS.length) stopAuto();
-}
-function stopAuto() {
-  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; document.getElementById("btnAuto").textContent = "▶ 자동 재생"; }
-}
-document.getElementById("btnNext").onclick = () => { stopAuto(); step(1); };
-document.getElementById("btnPrev").onclick = () => { stopAuto(); step(-1); };
-document.getElementById("btnAuto").onclick = function () {
-  if (autoTimer) return stopAuto();
-  if (cur === STEPS.length) cur = 0;
-  this.textContent = "⏸ 정지";
-  step(1);
-  autoTimer = setInterval(() => step(1), 4200);
+// 장면별 시간 지정 액션 — type(타이핑) / show(등장) / hide
+const ACTIONS = {
+  1: [ { at: 1600, type: { el: "typeAddr", text: "민서.ed7a@unplugin.me", speed: 55 } } ],
+  2: [
+    { at: 1200, type: { el: "composeTo", text: "민서.ed7a@unplugin.me", speed: 38 } },
+    { at: 2600, type: { el: "composeBody", text: "늘 먹던 걸로 주문해줘\n금액: 20,000원\n\n> [쇼핑몰] 장바구니에 담아두신 상품이…", speed: 34 } },
+    { at: 6400, cls: { el: "sendBtn", add: "pulse" } },
+    { at: 7300, cls: { el: "composeWin", add: "sent" } },
+    { at: 7900, show: "classChip" },
+  ],
+  4: [ { at: 900, count: { el: "rhCount", to: 2.0, dur: 1600, fmt: v => "+" + v.toFixed(1) + "h" } } ],
+  5: [
+    { at: 3300, show: "holdChip" },
+    { at: 5200, show: "replyBubble" },
+    { at: 5600, type: { el: "replyText", text: "승인", speed: 160 } },
+    { at: 7600, show: "doneChip" },
+  ],
+  7: [
+    { at: 900,  count: { el: "cFlow", to: 6, dur: 1400, fmt: v => Math.round(v) } },
+    { at: 1050, count: { el: "cRh", to: 5.5, dur: 1600, fmt: v => v.toFixed(1) + "h" } },
+    { at: 1200, count: { el: "cPlug", to: 103, dur: 1800, fmt: v => Math.round(v) } },
+    { at: 1350, count: { el: "cQuar", to: 1, dur: 1000, fmt: v => Math.round(v) } },
+  ],
 };
-document.addEventListener("keydown", e => {
-  if (e.key === "ArrowRight") { stopAuto(); step(1); }
-  if (e.key === "ArrowLeft") { stopAuto(); step(-1); }
+
+let cur = -1, playing = true, sceneStart = 0, sceneElapsed = 0;
+let timers = [], rafId = null;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const names = document.getElementById("names");
+NAMES.forEach((n, i) => {
+  const b = document.createElement("button");
+  b.textContent = n;
+  b.onclick = () => goto(i, true);
+  names.appendChild(b);
 });
-render();
+const nameBtns = [...names.children];
+
+function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+
+function resetScene(i) {
+  const sc = scenes[i];
+  // 타이핑·카운터·토글 초기화
+  (ACTIONS[i] || []).forEach(a => {
+    if (a.type) { const el = document.getElementById(a.type.el); el.textContent = ""; el.classList.add("typing"); }
+    if (a.show) {
+      const el = document.getElementById(a.show);
+      if (el.dataset.t0 === undefined) el.dataset.t0 = el.style.transform || "";
+      el.style.opacity = 0; el.style.transform = el.dataset.t0;
+    }
+    if (a.cls) document.getElementById(a.cls.el).classList.remove(a.cls.add);
+    if (a.count) document.getElementById(a.count.el).textContent = a.count.fmt(0);
+  });
+  // CSS 애니메이션 재시작
+  sc.classList.remove("on");
+  void sc.offsetWidth;
+}
+
+function runActions(i) {
+  (ACTIONS[i] || []).forEach(a => {
+    const at = reduce ? 0 : a.at;
+    timers.push(setTimeout(() => {
+      if (a.type) typeText(a.type);
+      if (a.show) { const el = document.getElementById(a.show); el.style.opacity = 1; el.style.transform = "none"; }
+      if (a.cls) document.getElementById(a.cls.el).classList.add(a.cls.add);
+      if (a.count) countUp(a.count);
+    }, at));
+  });
+}
+
+function typeText({ el, text, speed }) {
+  const node = document.getElementById(el);
+  node.textContent = "";
+  if (reduce) { node.textContent = text; node.classList.remove("typing"); return; }
+  let i = 0;
+  const iv = setInterval(() => {
+    node.textContent = text.slice(0, ++i);
+    if (i >= text.length) { clearInterval(iv); setTimeout(() => node.classList.remove("typing"), 700); }
+  }, speed);
+  timers.push(iv); // clearTimeout은 interval ID에도 유효 — 장면 전환 시 함께 정리
+}
+
+function countUp({ el, to, dur, fmt }) {
+  const node = document.getElementById(el);
+  if (reduce) { node.textContent = fmt(to); return; }
+  const t0 = performance.now();
+  (function tick(t) {
+    const p = Math.min(1, (t - t0) / dur);
+    node.textContent = fmt(to * (1 - Math.pow(1 - p, 3)));
+    if (p < 1) requestAnimationFrame(tick);
+  })(t0);
+}
+
+function goto(i, forcePlay) {
+  clearTimers();
+  if (cur >= 0) scenes[cur].classList.remove("on");
+  cur = i;
+  resetScene(i);
+  scenes[i].classList.add("on");
+  nameBtns.forEach((b, j) => b.classList.toggle("cur", j === i));
+  sceneStart = performance.now(); sceneElapsed = 0;
+  runActions(i);
+  if (forcePlay && !playing) setPlaying(true);
+  scheduleAdvance();
+}
+
+function scheduleAdvance() {
+  if (!playing) return;
+  const remain = DUR[cur] - sceneElapsed;
+  timers.push(setTimeout(() => {
+    if (cur < scenes.length - 1) goto(cur + 1);
+    else setPlaying(false); // 마지막 장면에서 정지 (다시 보기 버튼)
+  }, Math.max(60, remain)));
+}
+
+function setPlaying(p) {
+  playing = p;
+  document.getElementById("ppBtn").textContent = p ? "⏸" : "▶";
+  if (p) { sceneStart = performance.now() - sceneElapsed; scheduleAdvance(); }
+  else { sceneElapsed = performance.now() - sceneStart; clearTimers(); }
+}
+
+document.getElementById("ppBtn").onclick = () => setPlaying(!playing);
+document.addEventListener("keydown", e => {
+  if (e.key === " ") { e.preventDefault(); setPlaying(!playing); }
+  if (e.key === "ArrowRight" && cur < scenes.length - 1) goto(cur + 1, false);
+  if (e.key === "ArrowLeft" && cur > 0) goto(cur - 1, false);
+});
+
+// 진행 바 + 시간
+(function raf(t) {
+  if (cur >= 0) {
+    const el = playing ? performance.now() - sceneStart : sceneElapsed;
+    const done = DUR.slice(0, cur).reduce((a, b) => a + b, 0) + Math.min(el, DUR[cur]);
+    document.getElementById("pbar").style.width = (done / TOTAL * 100) + "%";
+    const s = Math.floor(done / 1000);
+    document.getElementById("tlabel").textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  }
+  requestAnimationFrame(raf);
+})();
+
+if (reduce) playing = false;
+goto(0, false);
+if (!playing) document.getElementById("ppBtn").textContent = "▶";
 </script>
 </body>
 </html>
