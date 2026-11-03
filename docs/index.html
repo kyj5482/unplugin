@@ -328,11 +328,15 @@
 
   /* ───────── 반응형 ───────── */
   @media (max-width: 880px) {
-    /* 섹션이 화면보다 길어지므로: 스냅 완화 + 고정 높이 해제 */
-    main { scroll-snap-type: y proximity; }
-    section { padding: 92px 6vw 56px; min-height:auto; }
-    #s1, #s8 { min-height:100vh; min-height:100svh; }
+    /* 모바일도 PC처럼 한 섹션 = 한 화면 스냅. 화면보다 긴 섹션(요금제 등)은
+       snap area가 스냅포트보다 크면 내부 자유 스크롤이 허용되므로(mandatory 유지)
+       끝까지 읽은 뒤 다음 섹션 시작점에 스냅된다. */
+    section { padding: 88px 6vw 48px; }
     .cols, .steps, .tiers { grid-template-columns:1fr; }
+    .cols { gap:26px; }
+    /* 스택 시 읽는 순서 보정: 글(제목·설명)이 먼저, 차트·카드가 다음.
+       s5 패널의 inline order:0(PC에선 차트가 왼쪽)을 뒤집는다 */
+    .cols > .panel, .cols > .tcard, .cols > .mailcard { order:2 !important; }
     .rail { display:none; }
     .scroll-hint { display:none; }
     .proof { gap:12px; }
@@ -343,7 +347,7 @@
     .tier:hover { transform:none; }
   }
   @media (max-width: 560px) {
-    section { padding: 80px 20px 44px; }
+    section { padding: 76px 20px 40px; }
     /* 긴 한글 제목의 가로 넘침 방지 — 최소 크기를 화면 폭 기준으로 */
     h1 { font-size:clamp(1.85rem, 8vw, 2.4rem); }
     h2 { font-size:clamp(1.42rem, 6.6vw, 1.9rem); }
@@ -353,11 +357,14 @@
     header .logo { font-size:1rem; }
     header > div { gap:7px !important; }
     header .nav-cta { font-size:.74rem; padding:7px 11px; }
-    .hero-pill { font-size:.74rem; padding:6px 14px; margin-bottom:20px; }
-    .hero-cta { margin-top:28px; }
+    .hero-pill { font-size:.74rem; padding:6px 14px; margin-bottom:18px; }
+    .hero-cta { margin-top:24px; }
     .hero-cta .btn { width:100%; justify-content:center; }
     .btn { padding:14px 22px; font-size:.92rem; }
-    .proof { margin-top:36px; }
+    /* 첫 화면이 폰 한 화면에 들어오도록: 카드는 완료 사례 1장만 */
+    .proof { margin-top:28px; }
+    .pcard:nth-child(1) { display:none; }
+    .pcard { padding:15px 16px 14px; }
     .stat .num { font-size:2.6rem; }
     .panel { padding:22px 18px 20px; }
     .brow { grid-template-columns:82px 1fr 42px; gap:8px; padding:9px 0; }
