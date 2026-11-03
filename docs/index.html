@@ -345,6 +345,11 @@
     .pcard:nth-child(3) { display:none; }
     .aurora { filter:blur(60px); }  /* 모바일 GPU 부담 완화 */
     .tier:hover { transform:none; }
+    /* 스냅 이동은 순간적 — 리빌이 길면 빈 화면이 로딩처럼 보인다.
+       모바일은 이동량·시간·지연을 절반 이하로 줄인다 */
+    .rv { transform:translateY(12px); transition-duration:.4s, .4s; }
+    .in .rv.d1 { transition-delay:.03s; } .in .rv.d2 { transition-delay:.07s; }
+    .in .rv.d3 { transition-delay:.11s; } .in .rv.d4 { transition-delay:.15s; }
   }
   @media (max-width: 560px) {
     section { padding: 76px 20px 40px; }
@@ -436,8 +441,8 @@ addEventListener("DOMContentLoaded", () => {
     <div class="aurora au1"></div><div class="aurora au2"></div><div class="horizon"></div><div class="grain"></div>
     <div class="wrap">
       <div class="hero-pill rv">당신의 AI 컨시어지 — <b>지금 베타</b></div>
-      <h1 class="rv d1">디지털에 쓰던 시간을,<br><span class="serif">삶의 시간</span>으로</h1>
-      <p class="lead rv d2">주문·예약·비교·정리 — 반복되는 화면 속 일은 에이전트에게 맡기세요.<br>당신은 화면 밖에서 만들고, 걷고, 맛보고, 느끼면 됩니다.</p>
+      <h1 class="rv d1">디지털에 쓰던 시간을, <br><span class="serif">삶의 시간</span>으로</h1>
+      <p class="lead rv d2">주문·예약·비교·정리 — 반복되는 화면 속 일은 에이전트에게 맡기세요. <br>당신은 화면 밖에서 만들고, 걷고, 맛보고, 느끼면 됩니다.</p>
       <div class="hero-cta rv d3">
         <a class="btn btn-accent" href="test.html">1분 만에 내 타입 알아보기 <span class="arr">→</span></a>
         <a class="btn btn-glass" href="demo.html">▶ 라이브 데모 — 서비스가 일하는 모습</a>
@@ -470,7 +475,7 @@ addEventListener("DOMContentLoaded", () => {
     <div class="wrap cols">
       <div>
         <div class="eyebrow rv">The Problem</div>
-        <h2 class="rv d1">보고 싶어서 본 시간이<br>아니었습니다</h2>
+        <h2 class="rv d1">보고 싶어서 본 시간이 <br>아니었습니다</h2>
         <p class="lead rv d2">주문하고, 비교하고, 예약하고, 정리하느라 — 매주 당신의 시간이 화면 속으로 새어 나갑니다.</p>
         <div class="stat rv d3"><span class="num">9.2</span><span class="unit">시간 / 매주 새는 잡무 시간</span></div>
         <p class="fineprint rv d3">Unplugin 베타 설계 추정치 · 실측 데이터로 교체 예정</p>
@@ -520,7 +525,7 @@ addEventListener("DOMContentLoaded", () => {
     <div class="wrap" style="text-align:center;">
       <div class="eyebrow rv" style="justify-content:center;">Stress-first</div>
       <h2 class="rv d1">미루던 골칫거리부터, <span class="serif">돈이 들어올 때까지</span></h2>
-      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">환불·분쟁·해지처럼 시작하면 오래 걸리고 감정이 소모되는 일 —<br>이런 건 대기열 맨 앞에서 처리하고, 접수가 아니라 <b>입금 확인까지</b> 추적합니다.</p>
+      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">환불·분쟁·해지처럼 시작하면 오래 걸리고 감정이 소모되는 일 — <br>이런 건 대기열 맨 앞에서 처리하고, 접수가 아니라 <b>입금 확인까지</b> 추적합니다.</p>
       <div class="journey" role="img" aria-label="환불 분쟁 처리 예시: 포워딩 → 업체와 협상 → 환불 합의 → 입금 확인까지 추적 후 완료">
         <div class="jt me rv d1"><span class="av me">나</span>
           <div class="jb"><div class="jw">나 · 09:12</div>
@@ -538,7 +543,7 @@ addEventListener("DOMContentLoaded", () => {
             <div class="jm"><b>입금 확인 — 이제 완료입니다.</b> 주고받은 메일 5통과 증빙을 기록으로 남겼어요. 묵은 숙제 하나가 사라졌네요.</div>
             <span class="jtag g">✓ 입금 확인 · 증빙</span><span class="jtag o">멘탈 케어 완료</span></div></div>
       </div>
-      <p class="lead rv d4" style="margin:22px auto 0;">사람 확인이 꼭 필요한 곳(앱스토어·본인 인증)만 클릭 가이드로 넘기고,<br>나머지는 AI 에이전트 직원들이 끝까지 진행합니다.</p>
+      <p class="lead rv d4" style="margin:22px auto 0;">사람 확인이 꼭 필요한 곳(앱스토어·본인 인증)만 클릭 가이드로 넘기고, <br>나머지는 AI 에이전트 직원들이 끝까지 진행합니다.</p>
     </div>
   </section>
 
@@ -548,8 +553,8 @@ addEventListener("DOMContentLoaded", () => {
     <div class="wrap cols">
       <div>
         <div class="eyebrow rv">Unplug Type</div>
-        <h2 class="rv d1" style="color:var(--w-ink);">나는 어떤<br><span class="serif">언플러그 타입</span>일까?</h2>
-        <p class="lead rv d2">시간이 새는 곳 × 맡기는 방식 × 오프라인 취향 × 혼자/함께.<br>네 가지 축이 만드는 16가지 타입 — 테스트가 끝나면 <b style="color:var(--w-ink);">나와 비슷한 사람들이 어떤 시간을 되찾았는지</b> 보여드립니다.</p>
+        <h2 class="rv d1" style="color:var(--w-ink);">나는 어떤 <br><span class="serif">언플러그 타입</span>일까?</h2>
+        <p class="lead rv d2">시간이 새는 곳 × 맡기는 방식 × 오프라인 취향 × 혼자/함께. <br>네 가지 축이 만드는 16가지 타입 — 테스트가 끝나면 <b style="color:var(--w-ink);">나와 비슷한 사람들이 어떤 시간을 되찾았는지</b> 보여드립니다.</p>
         <div class="typegrid rv d3">
           <span class="tpill"><b>SFRA</b>숲길 산책자</span>
           <span class="tpill"><b>TCMP</b>쿠킹 스터디장</span>
@@ -588,11 +593,11 @@ addEventListener("DOMContentLoaded", () => {
           <div class="brow"><span class="bl">위임한 시간</span><span class="btrack"><span class="bfill" style="--w:100%"></span></span><span class="bv">4.0h</span></div>
           <div class="brow hl"><span class="bl">화면 밖에서 쓴 시간</span><span class="btrack"><span class="bfill alt" style="--w:78%"></span></span><span class="bv">3.1h</span></div>
         </div>
-        <div class="conv"><span class="pct">78%</span><span class="pd">위임한 시간이 실제 오프라인으로 이어진 비율 — 이 숫자 하나만 올립니다.<br>대신 해준 시간이 아니라, 되찾은 시간만 셉니다.</span></div>
+        <div class="conv"><span class="pct">78%</span><span class="pd">위임한 시간이 실제 오프라인으로 이어진 비율 — 이 숫자 하나만 올립니다. <br>대신 해준 시간이 아니라, 되찾은 시간만 셉니다.</span></div>
       </div>
       <div>
         <div class="eyebrow rv">Reclaimed Hours</div>
-        <h2 class="rv d1">대신 해준 시간이 아니라,<br><span class="serif">되찾은 시간</span>을 셉니다</h2>
+        <h2 class="rv d1">대신 해준 시간이 아니라, <br><span class="serif">되찾은 시간</span>을 셉니다</h2>
         <p class="lead rv d2">위임만 하고 끝이 아닙니다. 그 시간이 실제로 화면 밖에서 쓰였는지가 우리의 유일한 성과 지표입니다. 체류시간을 줄이는 것이 우리의 성공입니다.</p>
       </div>
     </div>
@@ -603,7 +608,7 @@ addEventListener("DOMContentLoaded", () => {
     <div class="wrap cols">
       <div>
         <div class="eyebrow rv">Your Agent's Inbox</div>
-        <h2 class="rv d1">앱도, 로그인도 없이.<br><span class="serif">이메일 한 통</span>이면 됩니다</h2>
+        <h2 class="rv d1">앱도, 로그인도 없이. <br><span class="serif">이메일 한 통</span>이면 됩니다</h2>
         <p class="lead rv d2">가입하면 <span class="addr">minseo.k7x2@unplugin.me</span> 같은 나만의 주소가 생깁니다. 당신만 소유하는 격리된 창구라 안전하고 — 무엇이 가능한지 몰라도 괜찮습니다. 포워딩하면 에이전트가 100여 종의 업무 중 알아서 분류하고, 처음 보는 일이면 준비해서 알려드립니다.</p>
         <div class="feat">
           <div class="f rv d2">
@@ -677,7 +682,7 @@ addEventListener("DOMContentLoaded", () => {
     <div class="aurora au1" style="left:50%; top:auto; bottom:-320px; transform:translateX(-50%);"></div><div class="grain"></div>
     <div class="wrap">
       <div class="eyebrow rv" style="justify-content:center;">Begin</div>
-      <h2 class="rv d1">오늘 저녁, 화면 대신<br><span class="serif">무엇을 하고 싶으세요?</span></h2>
+      <h2 class="rv d1">오늘 저녁, 화면 대신 <br><span class="serif">무엇을 하고 싶으세요?</span></h2>
       <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">1분 테스트로 시작하세요. 당신의 타입이 첫 번째로 맡길 일을 알려드립니다.</p>
       <div class="rv d3" style="margin-top:36px;">
         <a class="btn btn-accent" href="test.html">언플러그 타입 테스트 시작 <span class="arr">→</span></a>
@@ -696,12 +701,15 @@ const pbar = document.getElementById('pbar');
 const sections = [...document.querySelectorAll('section')];
 const dots = [...rail.querySelectorAll('a')];
 
-// 섹션 진입: 리빌(+바 그래프 채움) + 헤더/레일 테마 + 활성 도트
-// 모바일에서는 섹션이 화면보다 길어 고정 임계값(0.45)으로는 교차율에 도달하지
-// 못해 리빌이 영영 발동하지 않는다 → 섹션 높이에 비례해 임계값을 낮춘다.
-function onEnter(e) {
+// 리빌과 테마 갱신을 분리한다.
+// ① 리빌(.in): 섹션이 "도착하기 전"에 미리 발동 — 루트를 상하 20% 확장해
+//    인접 섹션이 접근하는 순간 트리거하고 1회성으로 해제한다. 스냅으로 휙
+//    넘어왔을 때 빈 화면(로딩처럼 보이는 지연)이 생기지 않는다.
+// ② 헤더 테마·활성 도트: 섹션이 화면을 점유했을 때 — 섹션이 화면보다 길어도
+//    발동하도록 높이에 비례한 동적 임계값을 쓴다.
+
+function onOccupy(e) {
   if (!e.isIntersecting) return;
-  e.target.classList.add('in');
   const dark = e.target.dataset.theme === 'dark';
   hdr.classList.toggle('on-dark', dark);
   rail.classList.toggle('on-dark', dark);
@@ -709,25 +717,32 @@ function onEnter(e) {
   dots.forEach((d, j) => d.classList.toggle('on', j === i));
 }
 
-let observers = [];
-function initReveal() {
-  observers.forEach(o => o.disconnect());
-  observers = [];
+let themeObservers = [];
+function initTheme() {
+  themeObservers.forEach(o => o.disconnect());
+  themeObservers = [];
   const vh = main.clientHeight || window.innerHeight || 1;
   sections.forEach(s => {
     const t = Math.max(0.08, Math.min(0.45, (vh * 0.4) / Math.max(s.offsetHeight, 1)));
-    const io = new IntersectionObserver(es => es.forEach(onEnter),
+    const io = new IntersectionObserver(es => es.forEach(onOccupy),
                                         { root: main, threshold: t });
     io.observe(s);
-    observers.push(io);
+    themeObservers.push(io);
   });
 }
 
 if ('IntersectionObserver' in window) {
-  initReveal();
-  // 회전·주소창 변화로 섹션 높이가 바뀌면 임계값 재계산 (리빌된 .in은 유지)
+  const pre = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in');
+    pre.unobserve(e.target);  // 리빌은 1회 — 재계산·재발동 불필요
+  }), { root: main, rootMargin: '20% 0px 20% 0px', threshold: 0 });
+  sections.forEach(s => pre.observe(s));
+
+  initTheme();
+  // 회전·주소창 변화로 섹션 높이가 바뀌면 테마 임계값만 재계산
   let rsz;
-  addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(initReveal, 250); });
+  addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(initTheme, 250); });
 } else {
   sections.forEach(s => s.classList.add('in'));
 }
