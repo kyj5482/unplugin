@@ -21,7 +21,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 1.5,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "gift-shopping",
@@ -41,7 +43,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.5,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "kids-supplies-reorder",
@@ -60,7 +64,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.5,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "pet-supplies-reorder",
@@ -79,7 +85,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.4,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "flower-cake-order",
@@ -98,7 +106,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "return-exchange",
@@ -117,7 +127,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.4,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 120,
+      "emotion_load": 5
     },
     {
       "id": "restock-watch",
@@ -136,7 +148,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "coupon-points-apply",
@@ -155,7 +169,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.4,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "appliance-purchase",
@@ -174,7 +190,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "grocery-fresh-sub",
@@ -192,7 +210,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.4,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "restaurant-booking",
@@ -213,7 +233,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.5,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "salon-booking",
@@ -232,7 +254,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "ticket-booking",
@@ -251,7 +275,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.4,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "activity-class-booking",
@@ -269,7 +295,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "camping-booking",
@@ -287,7 +315,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "sports-facility-booking",
@@ -306,7 +336,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "photo-studio-booking",
@@ -325,7 +357,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "pet-service-booking",
@@ -343,7 +377,9 @@
       "executor": "call",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "waiting-queue",
@@ -361,7 +397,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "insurance-compare",
@@ -380,7 +418,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.5,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 90,
+      "emotion_load": 4
     },
     {
       "id": "telecom-dispute",
@@ -399,7 +439,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 120,
+      "emotion_load": 5
     },
     {
       "id": "bill-watch",
@@ -418,7 +460,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 90,
+      "emotion_load": 4
     },
     {
       "id": "telecom-plan-optimize",
@@ -437,7 +481,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 90,
+      "emotion_load": 4
     },
     {
       "id": "insurance-claim",
@@ -456,7 +502,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 90,
+      "emotion_load": 4
     },
     {
       "id": "card-benefit-optimize",
@@ -475,7 +523,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 120,
+      "emotion_load": 4
     },
     {
       "id": "tax-filing-support",
@@ -494,7 +544,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 90,
+      "emotion_load": 4
     },
     {
       "id": "hidden-refund-recovery",
@@ -513,7 +565,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 120,
+      "emotion_load": 5
     },
     {
       "id": "auto-transfer-setup",
@@ -531,7 +585,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 90,
+      "emotion_load": 4
     },
     {
       "id": "inbox-cleanup",
@@ -551,7 +607,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.5,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 120,
+      "emotion_load": 4
     },
     {
       "id": "subscription-audit",
@@ -570,7 +628,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 45,
+      "emotion_load": 3
     },
     {
       "id": "membership-cancel",
@@ -588,7 +648,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 120,
+      "emotion_load": 4
     },
     {
       "id": "free-trial-watch",
@@ -606,7 +668,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 120,
+      "emotion_load": 4
     },
     {
       "id": "points-expiry-watch",
@@ -624,7 +688,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 45,
+      "emotion_load": 3
     },
     {
       "id": "dormant-account-cleanup",
@@ -642,7 +708,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 45,
+      "emotion_load": 3
     },
     {
       "id": "app-refund-request",
@@ -660,7 +728,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 120,
+      "emotion_load": 5
     },
     {
       "id": "account-security-check",
@@ -678,7 +748,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 45,
+      "emotion_load": 3
     },
     {
       "id": "utility-pay",
@@ -699,7 +771,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 90,
+      "emotion_load": 3
     },
     {
       "id": "gov24-certificates",
@@ -718,7 +792,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 90,
+      "emotion_load": 3
     },
     {
       "id": "civil-complaint-file",
@@ -737,7 +813,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 120,
+      "emotion_load": 5
     },
     {
       "id": "fine-payment",
@@ -756,7 +834,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.1,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 90,
+      "emotion_load": 3
     },
     {
       "id": "move-in-admin",
@@ -774,7 +854,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 90,
+      "emotion_load": 3
     },
     {
       "id": "passport-id-renewal",
@@ -792,7 +874,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 90,
+      "emotion_load": 3
     },
     {
       "id": "welfare-apply",
@@ -811,7 +895,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 90,
+      "emotion_load": 3
     },
     {
       "id": "resident-parking",
@@ -829,7 +915,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 90,
+      "emotion_load": 3
     },
     {
       "id": "local-tax-pay",
@@ -848,7 +936,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.1,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 90,
+      "emotion_load": 3
     },
     {
       "id": "school-digest",
@@ -867,7 +957,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.5,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 45,
+      "emotion_load": 2
     },
     {
       "id": "school-form-submit",
@@ -885,7 +977,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 45,
+      "emotion_load": 2
     },
     {
       "id": "school-lunch-watch",
@@ -903,7 +997,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 45,
+      "emotion_load": 2
     },
     {
       "id": "after-school-apply",
@@ -921,7 +1017,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 45,
+      "emotion_load": 2
     },
     {
       "id": "academy-research",
@@ -940,7 +1038,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 45,
+      "emotion_load": 2
     },
     {
       "id": "kids-camp-booking",
@@ -958,7 +1058,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 45,
+      "emotion_load": 2
     },
     {
       "id": "daycare-waitlist",
@@ -977,7 +1079,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 45,
+      "emotion_load": 2
     },
     {
       "id": "edu-content-manage",
@@ -996,7 +1100,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 120,
+      "emotion_load": 5
     },
     {
       "id": "exam-schedule-track",
@@ -1015,7 +1121,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 45,
+      "emotion_load": 2
     },
     {
       "id": "apt-notice-digest",
@@ -1034,7 +1142,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "home-repair-arrange",
@@ -1053,7 +1163,9 @@
       "executor": "call",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 120,
+      "emotion_load": 4
     },
     {
       "id": "cleaning-service-booking",
@@ -1071,7 +1183,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "laundry-pickup",
@@ -1089,7 +1203,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "appliance-as-booking",
@@ -1107,7 +1223,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 120,
+      "emotion_load": 4
     },
     {
       "id": "internet-move-install",
@@ -1125,7 +1243,9 @@
       "executor": "call",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "moving-quotes",
@@ -1143,7 +1263,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "bulky-waste-disposal",
@@ -1161,7 +1283,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.1,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "interior-quotes",
@@ -1179,7 +1303,9 @@
       "executor": "call",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "rental-device-manage",
@@ -1198,7 +1324,9 @@
       "executor": "call",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 120,
+      "emotion_load": 4
     },
     {
       "id": "hospital-booking",
@@ -1218,7 +1346,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "health-checkup-booking",
@@ -1236,7 +1366,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "vaccination-booking",
@@ -1254,7 +1386,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "supplement-reorder",
@@ -1272,7 +1406,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "telemedicine-arrange",
@@ -1290,7 +1426,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "fitness-enroll",
@@ -1309,7 +1447,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "health-record-organize",
@@ -1327,7 +1467,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "parent-care-arrange",
@@ -1345,7 +1487,9 @@
       "executor": "call",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 40,
+      "emotion_load": 2
     },
     {
       "id": "flight-booking",
@@ -1363,7 +1507,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "hotel-booking",
@@ -1382,7 +1528,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "train-bus-booking",
@@ -1403,7 +1551,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "travel-itinerary-plan",
@@ -1421,7 +1571,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "rental-car-booking",
@@ -1439,7 +1591,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.1,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "car-maintenance-booking",
@@ -1457,7 +1611,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "visa-travel-docs",
@@ -1475,7 +1631,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "travel-addons",
@@ -1494,7 +1652,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.1,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "airport-services",
@@ -1512,7 +1672,9 @@
       "executor": "browser",
       "payment": true,
       "est_hours_per_week": 0.1,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 2
     },
     {
       "id": "price-compare",
@@ -1532,7 +1694,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 1.0,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 50,
+      "emotion_load": 2
     },
     {
       "id": "product-research",
@@ -1551,7 +1715,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.8,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 50,
+      "emotion_load": 2
     },
     {
       "id": "deal-watch",
@@ -1569,7 +1735,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.5,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 50,
+      "emotion_load": 2
     },
     {
       "id": "real-estate-scan",
@@ -1588,7 +1756,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.4,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 50,
+      "emotion_load": 2
     },
     {
       "id": "news-brief",
@@ -1606,7 +1776,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.5,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 50,
+      "emotion_load": 2
     },
     {
       "id": "local-research",
@@ -1624,7 +1796,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 50,
+      "emotion_load": 2
     },
     {
       "id": "weekend-outing-research",
@@ -1643,7 +1817,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.4,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 50,
+      "emotion_load": 2
     },
     {
       "id": "warranty-manual-lookup",
@@ -1661,7 +1837,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 50,
+      "emotion_load": 2
     },
     {
       "id": "mail-brief",
@@ -1679,7 +1857,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.5,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "email-draft",
@@ -1697,7 +1877,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "schedule-coordination",
@@ -1715,7 +1897,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "cs-contact",
@@ -1733,7 +1917,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "congrats-condolence",
@@ -1752,7 +1938,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "form-filling",
@@ -1770,7 +1958,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "translation-summary",
@@ -1788,7 +1978,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "rsvp-manage",
@@ -1806,7 +1998,9 @@
       "executor": "auto",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "available"
+      "status": "available",
+      "baseline_minutes": 30,
+      "emotion_load": 2
     },
     {
       "id": "used-sell-listing",
@@ -1825,7 +2019,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 3
     },
     {
       "id": "used-buy-search",
@@ -1843,7 +2039,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.3,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 3
     },
     {
       "id": "trade-coordination",
@@ -1861,7 +2059,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.2,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 60,
+      "emotion_load": 3
     },
     {
       "id": "book-media-tradein",
@@ -1879,7 +2079,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 3
     },
     {
       "id": "resell-market",
@@ -1897,7 +2099,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "planned"
+      "status": "planned",
+      "baseline_minutes": 60,
+      "emotion_load": 3
     },
     {
       "id": "donate-dispose",
@@ -1915,7 +2119,9 @@
       "executor": "browser",
       "payment": false,
       "est_hours_per_week": 0.1,
-      "status": "beta"
+      "status": "beta",
+      "baseline_minutes": 60,
+      "emotion_load": 3
     }
   ]
 }

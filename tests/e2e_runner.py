@@ -12,6 +12,7 @@ from pathlib import Path
 
 BASE = "/tmp/up-e2e"
 os.environ["UNPLUGIN_DATA"] = f"{BASE}/data"
+os.environ["UNPLUGIN_LEGACY_DELEGATION"] = "1"  # 동결된 대행 경로 통합 검증 (피벗 2026-11-04)
 os.environ["UNPLUGIN_FLOWS"] = f"{BASE}/flows"
 os.environ["UNPLUGIN_REPORTS"] = f"{BASE}/reports"
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))

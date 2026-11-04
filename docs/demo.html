@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>프로덕트 데모 — Unplugin</title>
-<meta name="description" content="Unplugin이 실제로 일하는 70초 — 모션그래픽 제품 데모.">
+<meta name="description" content="일은 Muze가, 시간은 당신이 — AI가 벌어준 시간이 삶이 되는 74초 제품 필름.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   :root {
@@ -55,9 +55,7 @@
   .stage.quick .scene { transition-duration:.3s; }
   .stage.quick .scene.on .a { animation-duration:.45s; animation-delay:calc(var(--d,0s)/4); }
   .stage.quick .scene.on .kt .line span { animation-duration:.45s; animation-delay:calc(var(--d,0s)/4); }
-  .stage.quick .scene.on .nd .c, .stage.quick .scene.on .nd .t { animation-delay:calc(var(--d,0s)/4); }
-  .stage.quick .stepper .rail i { transition-duration:1.2s; }
-  .stage.quick .limit .fill { transition-duration:.7s; transition-delay:.15s; }
+  .stage.quick .sunrise .sun { transition-duration:.9s; transition-delay:.1s; }
 
   /* 등장 애니메이션 프리미티브 — .scene.on 일 때만 재생, --d 로 지연 */
   .a { opacity:0; }
@@ -123,56 +121,17 @@
   .tlbox { margin-top:12px; padding:11px 14px; border-radius:12px; font-size:.76rem; line-height:1.85;
     background:rgba(12,23,17,.55); color:var(--w-ink3); font-family:ui-monospace,SFMono-Regular,monospace; white-space:pre-line; }
 
-  /* 미니 바 차트 (완료 장면 — 되찾은 시간 강조) */
-  .rbar { width:min(560px,92vw); text-align:left; }
-  .rrow { display:flex; justify-content:space-between; align-items:baseline; font-size:.82rem;
-    color:var(--w-ink2); margin:10px 0 6px; }
-  .rrow b { color:var(--w-ink); font-weight:800; font-variant-numeric:tabular-nums; }
-  .rrow.hl span { color:var(--w-ink); font-weight:800; }
-  .rrow.hl b { color:var(--amber); font-size:1rem; }
-  .rtrack { height:11px; border-radius:999px; background:rgba(255,255,255,.09); overflow:hidden; }
-  .rtrack.hl { height:15px; }
-  .rtrack i { display:block; height:100%; width:0; border-radius:999px; }
-  .rtrack i.g { background:linear-gradient(90deg,#3E8A5F,#5CA87C); }
-  .rtrack i.o { background:linear-gradient(90deg,#E5AC6C,#C97840); }
-  .scene.on .rtrack i { animation:rgrow 1.2s var(--ease) both; animation-delay:var(--d,0s); }
-  @keyframes rgrow { from { width:0; } to { width:var(--w); } }
+  /* 보고 한 줄 하이라이트 (Muze 실행 장면) */
+  .repline { display:inline-block; color:var(--amber); background:rgba(216,154,91,.12);
+    border:1px solid rgba(216,154,91,.3); border-radius:8px; padding:5px 12px; font-weight:800; font-size:.88rem; }
 
-  /* 스테퍼 */
-  .stepper { width:min(640px,92vw); }
-  .stepper .lane { position:relative; display:flex; justify-content:space-between; margin:34px 0 10px; }
-  .stepper .rail { position:absolute; left:7%; right:7%; top:17px; height:3px; background:rgba(255,255,255,.1); border-radius:99px; }
-  .stepper .rail i { display:block; height:100%; width:0; border-radius:99px;
-    background:linear-gradient(90deg,var(--green-soft),var(--amber)); transition:width 4.6s linear; }
-  .scene.on .stepper .rail i { width:100%; }
-  .nd { position:relative; z-index:1; width:25%; text-align:center; }
-  .nd .c { width:37px; height:37px; margin:0 auto; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    background:rgba(255,255,255,.07); border:1.5px solid var(--hair-d); font-size:.95rem; transition:all .4s var(--ease); }
-  .nd .t { margin-top:9px; font-size:.78rem; font-weight:700; color:var(--w-ink3); transition:color .4s; }
-  .nd .s { font-size:.68rem; color:var(--w-ink3); opacity:.75; }
-  .scene.on .nd { animation:ndon .45s var(--spring) both; animation-delay:var(--d); }
-  @keyframes ndon {
-    from { } to { }
-  }
-  .scene.on .nd .c { animation:ndc .45s var(--spring) both; animation-delay:var(--d); }
-  .scene.on .nd .t { animation:ndt .45s var(--ease) both; animation-delay:var(--d); }
-  @keyframes ndc { to { background:rgba(92,168,124,.2); border-color:var(--green-soft); box-shadow:0 0 18px rgba(92,168,124,.35); } }
-  @keyframes ndt { to { color:var(--w-ink); } }
-
-  /* 한도 게이지 */
-  .limit { width:min(520px,90vw); text-align:left; }
-  .limit .lt { display:flex; justify-content:space-between; font-size:.82rem; font-weight:700; color:var(--w-ink2); margin-bottom:8px; }
-  .limit .track { position:relative; height:16px; border-radius:999px; background:rgba(255,255,255,.09); overflow:visible; }
-  .limit .fill { position:absolute; inset:0 auto 0 0; width:0; border-radius:999px;
-    background:linear-gradient(90deg,var(--green-soft),var(--amber),#D97B6A); transition:width 2.4s var(--ease) .6s; }
-  .scene.on .limit .fill { width:100%; }
-  .limit .mark { position:absolute; left:60%; top:-7px; bottom:-7px; width:2.5px; background:var(--w-ink); border-radius:2px; }
-  .limit .mark::after { content:"한도 30,000"; position:absolute; top:-24px; left:50%; transform:translateX(-50%);
-    font-size:.7rem; font-weight:700; color:var(--w-ink2); white-space:nowrap; }
-
-  /* 승인 회신 버블 */
-  .bubble { display:inline-block; background:rgba(255,255,255,.1); border:1px solid var(--hair-d);
-    border-radius:16px 16px 4px 16px; padding:12px 22px; font-weight:800; font-size:1.05rem; }
+  /* 일출 비주얼 (오프라인 장면) — 수평선 위로 해가 떠오른다 */
+  .sunrise { position:relative; width:min(440px,82vw); height:140px; overflow:hidden;
+    border-bottom:2px solid var(--hair-d); }
+  .sunrise .sun { position:absolute; left:50%; bottom:-30px; width:86px; height:86px; margin-left:-43px;
+    border-radius:50%; background:radial-gradient(circle at 35% 35%, #F0C27B, #C97840);
+    box-shadow:0 0 70px rgba(216,154,91,.55); transform:translateY(96px); transition:transform 2.6s var(--ease) .5s; }
+  .scene.on .sunrise .sun { transform:translateY(0); }
 
   /* Admin 피날레 */
   .dash { width:min(680px,94vw); text-align:left; }
@@ -266,8 +225,8 @@
 
   @media (prefers-reduced-motion:reduce) {
     .aurora { animation:none; }
-    .a, .kt .line span, .nd .c, .nd .t { animation:none !important; opacity:1 !important; transform:none !important; }
-    .stepper .rail i, .limit .fill { transition:none; width:100% !important; }
+    .a, .kt .line span { animation:none !important; opacity:1 !important; transform:none !important; }
+    .sunrise .sun { transition:none; transform:none; }
     html.pt-enter body, body.pt-leave { animation:none; }
   }
 </style>
@@ -301,152 +260,140 @@ addEventListener("DOMContentLoaded", () => {
 
 <div class="stage" id="stage">
 
-  <!-- 0 타이틀 -->
-  <section class="scene" data-dur="4600">
+  <!-- 0 인트로 — 훅 -->
+  <section class="scene" data-dur="6200">
     <div class="kt">
-      <span class="line"><span style="--d:.1s">당신의 디지털 잡무가</span></span>
-      <span class="line"><span style="--d:.3s"><em>삶의 시간</em>이 되기까지, 70초</span></span>
+      <span class="line"><span style="--d:.1s">AI가 당신 대신 일하는 시대 —</span></span>
+      <span class="line"><span style="--d:.3s">그 시간은 <em>어디로</em> 갔나요?</span></span>
     </div>
-    <p class="scsub a" style="--d:.8s">지금 보시는 장면은 연출이 아니라,<br>실제 서비스가 일을 처리하는 과정을 그대로 옮긴 것입니다.</p>
+    <p class="scsub a" style="--d:.9s">Unplugin은 일을 대신하지 않습니다.<br>AI가 벌어준 시간을 재고, 삶으로 되돌리는 74초.</p>
   </section>
 
-  <!-- 1 온보딩 -->
-  <section class="scene" data-dur="8200">
+  <!-- 1 팁 카드 -->
+  <section class="scene" data-dur="10600">
     <div class="stack">
-      <div class="eyebrow a">01 — ONBOARD</div>
-      <div class="kt"><span class="line"><span style="--d:.1s">1분 테스트, 그리고 <em>나만의 주소</em></span></span></div>
+      <div class="eyebrow a">01 — TIP</div>
+      <div class="kt"><span class="line"><span style="--d:.1s">귀찮은 일엔, <em>팁 카드</em>가 옵니다</span></span></div>
       <div class="mailcard a pop" style="--d:.7s">
-        <div class="mh"><span class="dot">U</span><span class="who">UNPLUGIN 에이전트</span></div>
-        <div class="ms">환영합니다, 민서님 — 타입: TFRA 맨발 러너</div>
-        <div class="mb">전용 주소가 발급되었어요:</div>
-        <div class="mb" style="margin-top:6px;"><b id="typeAddr" style="color:var(--amber); background:rgba(216,154,91,.12); border:1px solid rgba(216,154,91,.3); border-radius:7px; padding:2px 10px;" class="typing"></b></div>
-        <div class="mb" style="margin-top:10px;">처리할 메일이 생기면 이 주소로 포워딩만 하세요.<br>나머지는 저희가 합니다.</div>
+        <div class="mh"><span class="dot" style="background:radial-gradient(circle at 32% 30%, #C97A6A, #5A2E26);">!</span><span class="who">지수의 할 일</span></div>
+        <div class="ms">결항된 항공권, 환불받아야 하는데…</div>
+        <div class="mb">콜센터 대기 40분, 약관 찾기, 실랑이.
+생각만 해도 미뤄지는 일.</div>
       </div>
-      <span class="chip ok a pop" style="--d:3.4s">🔐 고객별 1:1 격리 주소 · 앱 설치 없음</span>
+      <div class="mailcard a pop" style="--d:2.6s">
+        <div class="mh"><span class="dot">U</span><span class="who">UNPLUGIN 팁 카드</span></div>
+        <div class="ms">이 일, Muze에게 시키세요</div>
+        <div class="mb">아래 문장을 복사해 보내면 끝 —
+예상 절약 <b style="color:var(--amber);">2시간 10분</b> · 아낄 감정 <b style="color:var(--amber);">●●●●●</b></div>
+      </div>
+      <span class="chip ok a pop" style="--d:5.2s">💡 103가지 일의 "시키는 법"을 알고 있습니다</span>
     </div>
   </section>
 
-  <!-- 2 포워딩 + 자동 분류 -->
-  <section class="scene" data-dur="11000">
+  <!-- 2 Muze 실행 — 보고 한 줄 -->
+  <section class="scene" data-dur="11600">
     <div class="stack">
-      <div class="eyebrow a">02 — FORWARD</div>
-      <div class="kt"><span class="line"><span style="--d:.1s">가능한지 몰라도, <em>그냥 포워딩</em></span></span></div>
-      <div class="win a pop" style="--d:.6s" id="composeWin">
-        <div class="bar"><i></i><i></i><i></i><span class="wt">새 메일</span></div>
-        <div class="row"><b>받는이</b><span id="composeTo" class="typing"></span></div>
-        <div class="row"><b>제목</b><span>Fwd: 생수 정기주문</span></div>
-        <div class="body" id="composeBody"></div>
+      <div class="eyebrow a">02 — MUZE</div>
+      <div class="kt"><span class="line"><span style="--d:.1s">실행은 Muze, 마지막에 <em>한 줄</em>만</span></span></div>
+      <div class="win a pop" style="--d:.6s" id="muzeWin">
+        <div class="bar"><i></i><i></i><i></i><span class="wt">Muze에 보내기</span></div>
+        <div class="row"><b>받는이</b><span id="muzeTo" class="typing"></span></div>
+        <div class="row"><b>요청</b><span>항공권 환불</span></div>
+        <div class="body" id="muzeBody" style="min-height:74px;"></div>
+        <div style="padding:0 18px 14px;"><b id="reportLine" class="repline typing"></b></div>
         <span class="sendbtn" id="sendBtn">보내기 ↗</span>
       </div>
-      <span class="chip ok big" id="classChip" style="opacity:0; transform:scale(.6); transition:all .5s var(--spring);">⚡ 자동 분류 — '생필품 정기 주문' 플러그인 · 103종 중 매칭 · 바로 진행</span>
+      <span class="chip ok big" id="muzeChip" style="opacity:0; transform:scale(.6); transition:all .5s var(--spring);">🙌 일은 Muze가 합니다 — Unplugin은 아무것도 대신하지 않습니다</span>
     </div>
   </section>
 
-  <!-- 3 처리 타임라인 -->
-  <section class="scene" data-dur="9200">
+  <!-- 3 완료 보고 → 자동 적립 -->
+  <section class="scene" data-dur="9400">
     <div class="stack">
-      <div class="eyebrow a">03 — RUN</div>
-      <div class="kt"><span class="line"><span style="--d:.1s">접수부터 완료까지, <em>스스로</em></span></span></div>
-      <div class="stepper a" style="--d:.5s">
-        <div class="lane">
-          <div class="rail"><i></i></div>
-          <div class="nd" style="--d:.8s"><div class="c">📥</div><div class="t">접수</div><div class="s">concierge</div></div>
-          <div class="nd" style="--d:2.1s"><div class="c">🎟️</div><div class="t">슬롯 배정</div><div class="s">queue</div></div>
-          <div class="nd" style="--d:3.6s"><div class="c">🧾</div><div class="t">결제 직전 요약</div><div class="s">20,000원 · 한도 이내</div></div>
-          <div class="nd" style="--d:5.2s"><div class="c">✅</div><div class="t">완료 + 증빙</div><div class="s">executor</div></div>
-        </div>
-      </div>
-      <span class="chip warn a pop" style="--d:6.2s">🛡️ 한도를 넘는 결제는 이 선을 절대 혼자 넘지 않습니다</span>
-    </div>
-  </section>
-
-  <!-- 4 완료 메일 -->
-  <section class="scene" data-dur="8600">
-    <div class="stack">
-      <div class="eyebrow a">04 — RECLAIM</div>
-      <div class="kt"><span class="line"><span style="--d:.1s">되찾은 시간: <em id="rhCount">+0.0h</em></span></span></div>
+      <div class="eyebrow a">03 — AUTO EARN</div>
+      <div class="kt"><span class="line"><span style="--d:.1s"><em id="earnCount">+0시간 0분</em> 자동 적립</span></span></div>
       <div class="mailcard a pop" style="--d:.7s">
-        <div class="mh"><span class="dot">U</span><span class="who">UNPLUGIN 에이전트 · 같은 스레드</span></div>
-        <div class="ms">"생수 정기주문" 완료 ✅</div>
-        <div class="mb">주문 완료 — 주문번호 #20261103-184 (증빙 스크린샷 첨부)
-이번 일로 약 2시간이 비었어요. 토요일 아침, 러닝 코스를 준비해둘게요.</div>
-        <div class="tlbox">— 지금까지의 진행 —
-  · 10:02  concierge — 접수 · 자동 분류
-  · 10:03  queue — 슬롯 배정
-  · 10:04  it — 결제 직전 내역 요약 (한도 이내)
-  · 10:06  executor — 주문 완료 · 증빙 확보</div>
+        <div class="mh"><span class="dot">M</span><span class="who">MUZE → jisoo.k7x2@unplugin.me</span></div>
+        <div class="ms">[완료 보고] 항공권 환불 — 124,000원 환불 확정</div>
+        <div class="mb">수수료 면제 조항(약관 9조) 근거로 전액 환불 승인.
+11/7 카드 취소 예정입니다.</div>
+        <div class="tlbox">— 자동 인식 —
+  · 유형: 항공권 환불 (직접 하면 평균 2시간 10분)
+  · 감정 부하: ●●●●● 최고 등급 — 전부 회피
+  · 시간 배당 잔고에 적립 완료</div>
       </div>
-      <div class="rbar a" style="--d:2.2s" role="img" aria-label="위임한 시간 2.5시간, 화면 밖에서 쓴 시간 2.0시간">
-        <div class="rrow"><span>위임한 시간</span><b>2.5h</b></div>
-        <div class="rtrack"><i class="g" style="--w:100%; --d:2.5s"></i></div>
-        <div class="rrow hl"><span>화면 밖에서 쓴 시간</span><b>2.0h</b></div>
-        <div class="rtrack hl"><i class="o" style="--w:80%; --d:2.9s"></i></div>
-      </div>
-      <span class="chip ok a pop" style="--d:4.2s">📬 메일 스레드 하나 = 일 하나 — 전 과정이 메일함에 남습니다</span>
+      <span class="chip ok a" id="zeroChip" style="opacity:0; transform:scale(.6); transition:all .5s var(--spring);">✍️ 지수가 직접 기록한 것: 0</span>
     </div>
   </section>
 
-  <!-- 5 승인 게이트 -->
-  <section class="scene" data-dur="11400">
+  <!-- 4 시간 배당 잔고 -->
+  <section class="scene" data-dur="9000">
     <div class="stack">
-      <div class="eyebrow a">05 — APPROVE</div>
-      <div class="kt"><span class="line"><span style="--d:.1s">큰돈 앞에선, <em>반드시 멈춥니다</em></span></span></div>
-      <div class="limit a" style="--d:.6s">
-        <div class="lt"><span>보험료 전환 — 결제 요청</span><span>₩50,000</span></div>
-        <div class="track"><span class="fill"></span><span class="mark"></span></div>
-      </div>
-      <span class="chip warn big" id="holdChip" style="opacity:0; transform:scale(.6); transition:all .5s var(--spring);">⏸ 한도 초과 — 승인 대기 · 결제 정지</span>
-      <div class="bubble" id="replyBubble" style="opacity:0; transform:translateY(16px); transition:all .5s var(--spring);"><span id="replyText" class="typing"></span></div>
-      <span class="chip ok big" id="doneChip" style="opacity:0; transform:scale(.6); transition:all .5s var(--spring);">✅ 승인 확인 — 전환 완료 · 연 86,000원 절감 (증빙 첨부)</span>
-    </div>
-  </section>
-
-  <!-- 6 보안 + 신규 -->
-  <section class="scene" data-dur="9200">
-    <div class="stack">
-      <div class="eyebrow a">06 — TRUST</div>
-      <div class="kt"><span class="line"><span style="--d:.1s">모르는 건 <em>실행하지 않습니다</em></span></span></div>
-      <div class="duo">
-        <div class="mailcard a pop" style="--d:.7s; width:min(330px,88vw);">
-          <div class="mh"><span class="dot" style="background:radial-gradient(circle at 32% 30%, #C97A6A, #5A2E26);">!</span><span class="who">보안</span></div>
-          <div class="ms">미등록 발신 "긴급 입금 요청"</div>
-          <div class="mb">검토함 격리 · 자동 실행 0건.
-사칭(인증 실패)·본문 속 명령(인젝션)도 같은 방식으로 차단됩니다.</div>
-          <div style="margin-top:10px;"><span class="chip sec">🔒 격리됨</span></div>
-        </div>
-        <div class="mailcard a pop" style="--d:1.5s; width:min(330px,88vw);">
-          <div class="mh"><span class="dot">U</span><span class="who">신규 업무</span></div>
-          <div class="ms">"클래스 환불 분쟁" — 처음 보는 유형</div>
-          <div class="mb">103종 카탈로그에 없는 요청은 함부로 하지 않고,
-준비해서(1~3일) 알려드립니다. 그동안 요금 미차감.
-이 요청은 다음 플러그인이 됩니다.</div>
-          <div style="margin-top:10px;"><span class="chip warn">🌱 플러그인 백로그 +1</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 7 Admin 피날레 -->
-  <section class="scene" data-dur="12000">
-    <div class="stack">
-      <div class="eyebrow a">07 — OPERATE</div>
-      <div class="kt"><span class="line"><span style="--d:.1s">그리고 대표는, <em>화면 한 장</em></span></span></div>
+      <div class="eyebrow a">04 — BALANCE</div>
+      <div class="kt"><span class="line"><span style="--d:.1s">쌓이는 건 포인트가 아니라, <em>시간</em></span></span></div>
       <div class="dash a" style="--d:.6s">
         <div class="tiles">
-          <div class="tile"><div class="v" id="cFlow">0</div><div class="l">전체 Flow</div></div>
-          <div class="tile"><div class="v amber" id="cRh">0.0h</div><div class="l">Reclaimed Hours</div></div>
-          <div class="tile"><div class="v" id="cPlug">0</div><div class="l">업무 플러그인</div></div>
-          <div class="tile"><div class="v" id="cQuar">0</div><div class="l">검토함(격리)</div></div>
+          <div class="tile"><div class="v amber" id="cBal" style="font-size:1.45rem;">0시간 0분</div><div class="l">시간 배당 잔고 (11월)</div></div>
+          <div class="tile"><div class="v" id="cEmo">0회</div><div class="l">아낀 감정 소모</div></div>
+          <div class="tile"><div class="v" id="cTip">0건</div><div class="l">실행한 팁</div></div>
         </div>
         <div style="margin-top:14px;">
-          <div class="rowline a" style="--d:2.2s"><span>생수 정기주문 — 민서</span><span class="badge">완료 · +2.0h</span></div>
-          <div class="rowline a" style="--d:2.6s"><span>보험료 전환 — 민서</span><span class="badge">완료 · +1.5h</span></div>
-          <div class="rowline a" style="--d:3.0s"><span>신규: 클래스 환불 분쟁</span><span class="badge w">백로그 · 검토</span></div>
+          <div class="rowline a" style="--d:2.0s"><span>항공권 환불 — Muze</span><span class="badge">+2시간 10분</span></div>
+          <div class="rowline a" style="--d:2.4s"><span>통신사 위약금 문의 — Muze</span><span class="badge">+1시간 30분</span></div>
+          <div class="rowline a" style="--d:2.8s"><span>숙소 예약 변경 — Muze</span><span class="badge">+50분</span></div>
+          <div class="rowline a" style="--d:3.2s"><span>그 외 실행한 팁 2건</span><span class="badge w">+3시간 10분</span></div>
         </div>
       </div>
-      <div class="ctas a" style="--d:3.8s">
+      <span class="chip warn a pop" style="--d:4.4s">⏳ 잔고가 찼습니다 — 다음 무브먼트가 도착합니다</span>
+    </div>
+  </section>
+
+  <!-- 5 넥스트 무브먼트 -->
+  <section class="scene" data-dur="9800">
+    <div class="stack">
+      <div class="eyebrow a">05 — NEXT MOVE</div>
+      <div class="kt"><span class="line"><span style="--d:.1s">이 7시간 40분, <em>어디에 쓸까요?</em></span></span></div>
+      <div class="duo">
+        <div class="mailcard a pop" style="--d:.7s; width:min(300px,88vw);">
+          <div class="mh"><span class="dot">🤝</span><span class="who">관계</span></div>
+          <div class="ms">동네 러닝 모임</div>
+          <div class="mb">토 7:00 한강 공원 — 지수 타입의 6명이 이미 달리고 있어요.</div>
+        </div>
+        <div class="mailcard a pop" style="--d:1.5s; width:min(300px,88vw);">
+          <div class="mh"><span class="dot">🏺</span><span class="who">배움</span></div>
+          <div class="ms">도자기 원데이 클래스</div>
+          <div class="mb">일 14:00 · 2시간 — 지금 잔고로 충분합니다.</div>
+        </div>
+        <div class="mailcard a pop" style="--d:2.3s; width:min(300px,88vw);">
+          <div class="mh"><span class="dot">🍊</span><span class="who">오감</span></div>
+          <div class="ms">토요일 아침 시장 산책</div>
+          <div class="mb">제철 과일 냄새부터 — 화면에는 없는 감각.</div>
+        </div>
+      </div>
+      <span class="chip ok a pop" style="--d:3.6s">🌱 쌓아두는 잔고가 아니라, 쓰라고 버는 시간</span>
+    </div>
+  </section>
+
+  <!-- 6 오프라인 — 메시지 -->
+  <section class="scene" data-dur="7400">
+    <div class="stack">
+      <div class="sunrise a" style="--d:.2s" role="img" aria-label="수평선 위로 떠오르는 해"><div class="sun"></div></div>
+      <div class="kt"><span class="line"><span style="--d:.5s">토요일 아침, 지수는 <em>화면 밖</em>에 있다</span></span></div>
+      <p class="scsub a" style="--d:1.2s">AI는 나를 나태하게 만드는 게 아니라,<br>사람으로서 성장할 시간을 벌어줍니다.</p>
+    </div>
+  </section>
+
+  <!-- 7 엔딩 -->
+  <section class="scene" data-dur="10000">
+    <div class="stack">
+      <div class="kt">
+        <span class="line"><span style="--d:.1s">un<em>plugin</em></span></span>
+      </div>
+      <p class="scsub a" style="--d:.6s">AI가 벌어준 시간의, 코치</p>
+      <span class="chip ok big a pop" style="--d:1.4s">✍️ 수동 기록 0 · 설정은 한 줄</span>
+      <div class="ctas a" style="--d:2.2s">
         <a class="btn btn-accent" href="test.html">내 타입으로 시작하기 →</a>
-        <a class="btn btn-glass" href="https://github.com/kyj5482/unplugin">코드로 확인 (GitHub)</a>
+        <a class="btn btn-glass" href="index.html">Unplugin 소개 보기</a>
         <button class="btn btn-glass" onclick="goto(0,true)">↺ 다시 보기</button>
       </div>
     </div>
@@ -467,30 +414,29 @@ addEventListener("DOMContentLoaded", () => {
 const scenes = [...document.querySelectorAll(".scene")];
 const DUR = scenes.map(s => +s.dataset.dur);
 const TOTAL = DUR.reduce((a, b) => a + b, 0);
-const NAMES = ["인트로", "온보딩", "포워딩", "처리", "완료", "승인", "보안·신규", "Admin"];
+const NAMES = ["인트로", "팁 카드", "Muze 실행", "자동 적립", "잔고", "무브먼트", "오프라인", "엔딩"];
 
-// 장면별 시간 지정 액션 — type(타이핑) / show(등장) / hide
+// 분 단위 → "N시간 M분" (카운트업 공용 포맷)
+const HM = v => { const m = Math.round(v); return Math.floor(m / 60) + "시간 " + (m % 60) + "분"; };
+
+// 장면별 시간 지정 액션 — type(타이핑) / show(등장) / cls(클래스) / count(카운트업)
 const ACTIONS = {
-  1: [ { at: 1600, type: { el: "typeAddr", text: "minseo.ed7a@unplugin.me", speed: 55 } } ],
   2: [
-    { at: 1200, type: { el: "composeTo", text: "minseo.ed7a@unplugin.me", speed: 38 } },
-    { at: 2600, type: { el: "composeBody", text: "늘 먹던 걸로 주문해줘\n금액: 20,000원\n\n> [쇼핑몰] 장바구니에 담아두신 상품이…", speed: 34 } },
-    { at: 6400, cls: { el: "sendBtn", add: "pulse" } },
-    { at: 7300, cls: { el: "composeWin", add: "sent" } },
-    { at: 7900, show: "classChip" },
+    { at: 1100, type: { el: "muzeTo", text: "Muze", speed: 90 } },
+    { at: 2100, type: { el: "muzeBody", text: "하늘항공 11/21 결항 건 환불 신청해줘.\n수수료 면제 조항(약관 9조) 근거로 전액 환불 요구,\n입금 확인까지 끝내줘.", speed: 26 } },
+    { at: 5400, type: { el: "reportLine", text: "끝나면 jisoo.k7x2@unplugin.me 로 완료 보고 메일 보내줘", speed: 30 } },
+    { at: 8000, cls: { el: "sendBtn", add: "pulse" } },
+    { at: 8900, cls: { el: "muzeWin", add: "sent" } },
+    { at: 9500, show: "muzeChip" },
   ],
-  4: [ { at: 900, count: { el: "rhCount", to: 2.0, dur: 1600, fmt: v => "+" + v.toFixed(1) + "h" } } ],
-  5: [
-    { at: 3300, show: "holdChip" },
-    { at: 5200, show: "replyBubble" },
-    { at: 5600, type: { el: "replyText", text: "승인", speed: 160 } },
-    { at: 7600, show: "doneChip" },
+  3: [
+    { at: 2500, count: { el: "earnCount", to: 130, dur: 1700, fmt: v => "+" + HM(v) } },
+    { at: 4800, show: "zeroChip" },
   ],
-  7: [
-    { at: 900,  count: { el: "cFlow", to: 6, dur: 1400, fmt: v => Math.round(v) } },
-    { at: 1050, count: { el: "cRh", to: 5.5, dur: 1600, fmt: v => v.toFixed(1) + "h" } },
-    { at: 1200, count: { el: "cPlug", to: 103, dur: 1800, fmt: v => Math.round(v) } },
-    { at: 1350, count: { el: "cQuar", to: 1, dur: 1000, fmt: v => Math.round(v) } },
+  4: [
+    { at: 900,  count: { el: "cBal", to: 460, dur: 1700, fmt: HM } },
+    { at: 1050, count: { el: "cEmo", to: 23, dur: 1400, fmt: v => Math.round(v) + "회" } },
+    { at: 1200, count: { el: "cTip", to: 5, dur: 1100, fmt: v => Math.round(v) + "건" } },
   ],
 };
 

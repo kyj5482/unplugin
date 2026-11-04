@@ -1,5 +1,10 @@
 # E2E 테스트케이스 — 위임 실행 (DEL)
 
+> **동결 (피벗 2026-11-04)**: 대행 실행 계층은 동결 — 아래 TC들은 시뮬 PASS
+> 상태로 보존하며 신규 투자는 없다. 실서비스 기본 모드는 팁 회신 + 보고 적립
+> (tests/e2e/dividend.md). 레거시 검증은 UNPLUGIN_LEGACY_DELEGATION=1 로 실행.
+> 근거: ops/pivot-2026-11-04.md
+
 ## TC-DEL-001: 반복 장보기 위임 성공 (정상 경로)
 - 상태: PASS
 - 검증 기록: core/selftest_delegation.py (2026-11-03) — 장보기 시뮬: 예산 내 카트·영수증 증빙·Flow 기록. 실사이트(맥북 실브라우저/egolite) 실증 시 재검증

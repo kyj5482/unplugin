@@ -80,15 +80,34 @@ def playbook(pid: str) -> dict | None:
     return _BY_ID.get(pid)
 
 
+# 복합구 트리거가 하나도 안 맞을 때의 단일 키워드 폴백 — "환불이 2주째 안
+# 들어와요"처럼 평범한 표현도 스트레스 유형으로 잡는다 (키워드 → 플레이북 id).
+_KEYWORD_FALLBACK = [
+    ("보증금", "deposit-recovery"), ("환급금", "deposit-recovery"),
+    ("위약금", "reservation-refund"), ("취소 수수료", "reservation-refund"),
+    ("해지", "membership-cancel"), ("무상수리", "warranty-claim"),
+    ("하자", "warranty-claim"), ("과오납", "telecom-dispute"),
+    ("미입금", "refund-dispute"), ("분쟁", "refund-dispute"),
+    ("환불", "refund-dispute"),
+]
+
+
 def detect(text: str) -> dict | None:
-    """텍스트에서 스트레스 플레이북 매칭 — 트리거 최다 일치 승."""
+    """텍스트에서 스트레스 플레이북 매칭 — 트리거 최다 일치 승.
+    복합구 매칭이 없으면 단일 키워드 폴백(_KEYWORD_FALLBACK 순서 우선)."""
     low = (text or "").lower()
     best, best_score = None, 0
     for pb in PLAYBOOKS:
         score = sum(1 for t in pb["triggers"] if t.lower() in low)
         if score > best_score:
             best, best_score = pb, score
-    return best
+    if best is not None:
+        return best
+    by_id = {pb["id"]: pb for pb in PLAYBOOKS}
+    for kw, pid in _KEYWORD_FALLBACK:
+        if kw in low:
+            return by_id.get(pid)
+    return None
 
 
 def is_stress_kind(kind: str) -> bool:

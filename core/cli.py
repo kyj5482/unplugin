@@ -100,6 +100,37 @@ def cmd_kpi(_args) -> int:
     return 0
 
 
+def cmd_tips(args) -> int:
+    """위임 팁 카드 — "이 일은 에이전트에 이렇게 시키면 N분 절약" (피벗 2026-11-04)."""
+    from . import tips as tips_mod
+    customer = common.load_profiles().get(args.customer) if args.customer else None
+    if args.customer and customer is None:
+        print(f"고객 '{args.customer}' 프로필이 없어요.")
+        return 1
+    card = tips_mod.make_tip(args.text, customer)
+    mark = " (유형 미매칭 — 범용 팁)" if not card["matched"] else (
+        " (스트레스 유형 — 고급 팁)" if card["stress"] else "")
+    print(f"업무: {card['task']}{mark}")
+    print(f"예상 절약: 약 {card['saved_minutes_est']}분 · 감정 부하 {card['emotion_load']}/5")
+    print(f"\n에이전트(Muze 등)에 이렇게 시키세요:\n  {card['muze_prompt']}")
+    if customer:
+        p = tips_mod.send_card(args.customer, card)
+        print(f"\n팁 카드 메일 발송 → {p}")
+    return 0
+
+
+def cmd_dividend(args) -> int:
+    """시간 배당 잔고 — 보고 메일로만 자동 적립, 수동 입력 없음."""
+    from . import dividend
+    ids = [args.customer] if args.customer else dividend.all_customers()
+    if not ids:
+        print("아직 적립된 잔고가 없어요 — 팁 카드의 [보고] 한 줄이 적립의 시작입니다.")
+        return 0
+    for cid in ids:
+        print(dividend.summary(cid))
+    return 0
+
+
 def cmd_serve(args) -> int:
     from . import service
     return service.run(interval=args.interval, once=args.once)
@@ -300,6 +331,15 @@ def build_parser() -> argparse.ArgumentParser:
     ms.set_defaults(fn=cmd_mail_send)
 
     sub.add_parser("kpi", help="주간 KPI 리포트 생성").set_defaults(fn=cmd_kpi)
+
+    tp = sub.add_parser("tips", help="위임 팁 카드 — 에이전트에 시키는 법 + 예상 절약 (피벗)")
+    tp.add_argument("text", help="업무 내용 (예: \"공방 클래스 환불 분쟁 해결\")")
+    tp.add_argument("--customer", default="", help="고객 id — 지정 시 팁 카드 메일 발송")
+    tp.set_defaults(fn=cmd_tips)
+
+    dv = sub.add_parser("dividend", help="시간 배당 잔고 — 자동 적립 현황 (피벗)")
+    dv.add_argument("--customer", default="", help="고객 id (생략 시 전체)")
+    dv.set_defaults(fn=cmd_dividend)
     sub.add_parser("status", help="프로필·큐·outbox·최근 Flow 요약"
                    ).set_defaults(fn=cmd_status)
 

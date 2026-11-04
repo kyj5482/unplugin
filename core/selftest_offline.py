@@ -14,6 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 _TMP = Path(tempfile.mkdtemp(prefix="unplugin-selftest-off-"))
 os.environ["UNPLUGIN_DATA"] = str(_TMP / "data")
+os.environ["UNPLUGIN_LEGACY_DELEGATION"] = "1"  # 동결된 대행 경로 검증 (피벗 2026-11-04)
 os.environ["UNPLUGIN_FLOWS"] = str(_TMP / "flows")
 os.environ["UNPLUGIN_REPORTS"] = str(_TMP / "reports")
 sys.path.insert(0, str(ROOT))

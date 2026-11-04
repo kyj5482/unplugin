@@ -52,6 +52,8 @@ def run(n: int, fresh: bool = False) -> int:
     env["UNPLUGIN_DATA"] = str(RUNTIME / "data")
     env["UNPLUGIN_FLOWS"] = str(RUNTIME / "flows")
     env["UNPLUGIN_REPORTS"] = str(RUNTIME / "reports")
+    # 데모 100통은 동결된 대행 경로의 재생이다 (피벗 전 시나리오)
+    env["UNPLUGIN_LEGACY_DELEGATION"] = "1"
     return subprocess.call([sys.executable, "-m", "core", "demo-exec", str(n)],
                            env=env, cwd=str(common.ROOT))
 

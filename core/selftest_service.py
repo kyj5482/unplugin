@@ -19,6 +19,7 @@ from pathlib import Path
 DATA = Path("/tmp/svc-data")
 FLOWS = Path("/tmp/svc-flows")
 os.environ["UNPLUGIN_DATA"] = str(DATA)
+os.environ["UNPLUGIN_LEGACY_DELEGATION"] = "1"  # 동결된 대행 경로 검증 (피벗 2026-11-04)
 os.environ["UNPLUGIN_FLOWS"] = str(FLOWS)
 
 ROOT = Path(__file__).resolve().parent.parent

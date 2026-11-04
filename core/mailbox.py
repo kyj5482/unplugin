@@ -14,11 +14,17 @@ queue.py 와 동시 개발 중이므로 큐 아이템은 common 스키마로 직
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 from pathlib import Path
 
 from . import classify, common, flow, notify, policy, stress
+
+# 피벗(2026-11-04, ops/pivot-2026-11-04.md): 포워딩 업무는 대행 접수 대신
+# 팁 카드 회신 + 완료 보고 자동 적립이 기본값이다. 동결된 대행 경로의
+# 검증(레거시 셀프테스트·e2e_runner·demo 재생)만 이 스위치로 재현한다.
+LEGACY_DELEGATION = os.environ.get("UNPLUGIN_LEGACY_DELEGATION") == "1"
 
 # 상대방(업체) 회신에만 적용하는 좁은 인젝션 패턴 — "입금 완료" 같은
 # 정상 통보를 격리하지 않도록 명령형 패턴만 본다
@@ -173,6 +179,12 @@ def _delegate(path: Path, mail: dict, customer: dict) -> dict:
             thread=fid)
 
     if instruction:
+        # 피벗(2026-11-04) 기본값: 대행 접수 대신 위임 팁 카드 회신 (core/tips.py).
+        # 아래 대행 경로(금지 목록~플러그인 접수)는 동결 — 레거시 검증에서만 실행된다.
+        if not LEGACY_DELEGATION:
+            from . import tips
+            return tips.reply_with_tip(path, mail, customer, fid, title, task_text)
+
         # 위임 금지 목록(UC-A3): 고객이 "직접 하고 싶다"고 한 일은 바로 실행하지 않고 확인
         try:
             from . import onboarding
@@ -449,6 +461,19 @@ def _process_one(path: Path) -> dict:
         handled = _thread_reply(path, mail, customer)
         if handled is not None:
             return handled
+
+    # ③-2 에이전트 완료 보고 → 시간 배당 자동 적립 (피벗 2026-11-04, 측정 v0)
+    #     사용자가 Muze에 시킨 "끝나면 [보고] 메일" 한 줄의 수신 지점 — 위임이 아니다
+    if not LEGACY_DELEGATION and (is_owner or is_trusted):
+        from . import dividend
+        if dividend.is_report(mail):
+            r = dividend.accrue(customer["id"], mail)
+            _move_to(path, common.CUSTOMERS / customer["id"] / "archive")
+            return {"mail": path.name, "action": "report_accrued",
+                    "detail": (f"완료 보고 자동 적립 — +{r['saved_minutes']}분 "
+                               f"(감정 {r['emotion_load']}) / "
+                               f"누적 {r['total_saved_minutes']}분"
+                               + (" / 무브먼트 제안 발송" if r["suggested"] else ""))}
 
     # ④ 규칙 매칭
     for rule in common.load_rules(customer["id"]):
