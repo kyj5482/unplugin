@@ -339,6 +339,10 @@
   @keyframes ptEnter {
     from { opacity:0; transform: perspective(1200px) translate3d(-9%,0,-150px) rotateY(12deg); }
   }
+  /* PC 클래식 스크롤바(main)가 회전하는 카드에 같이 찍히지 않게 —
+     overflow를 바꾸면 폭이 변해 리플로가 생기므로, 공간은 두고 색만 투명 처리.
+     (macOS 오버레이 스크롤바는 원래 상시 표시가 아니라 영향 없음) */
+  body.pt-leave main, html.pt-enter main { scrollbar-color: transparent transparent; }
 
   /* ───────── 반응형 ───────── */
   @media (max-width: 880px) {

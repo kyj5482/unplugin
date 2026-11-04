@@ -20,6 +20,7 @@
 | 4 | 23:58 | it | 모바일 동일 적용: 전환은 transform/opacity만 쓰는 GPU 합성이라 별도 분기 불필요(모바일은 기존에 블러 장식이 이미 제거됨). `prefers-reduced-motion`은 연출 생략·즉시 이동 | docs/index.html, docs/demo.html |
 | 5 | 23:58 | it | 검증: 인라인 스크립트 4개 `node --check` 통과. 링크 매칭 단위 검증 — demo.html(캐시버스터 포함) 인터셉트 ○, 해시(#s1)·test.html·외부(GitHub) 링크는 비간섭 ○. 헤드리스 브라우저는 이 환경에서 설치 불가 → 실기 체감은 대표 확인 필요 | — |
 | 6 | 23:59 | it | 커밋·푸시 → GitHub Pages 반영 확인 | 커밋 로그 |
+| 7 | 11-04 | it | 대표 피드백: "PC에서는 오른쪽 스크롤까지 같이 보인다" — 회전하는 카드에 소개 페이지 `main`의 클래식 스크롤바가 같이 찍힘. overflow 변경은 폭 리플로를 유발하므로, 전환 중에만 `scrollbar-color: transparent transparent`로 공간은 유지한 채 색만 숨김(Chrome 121+·Firefox, macOS 오버레이 스크롤바는 무관). 푸시·라이브 확인 | docs/index.html |
 
 ## 핸드오프
 
