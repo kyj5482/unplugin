@@ -21,6 +21,7 @@
 | 5 | 23:58 | it | 검증: 인라인 스크립트 4개 `node --check` 통과. 링크 매칭 단위 검증 — demo.html(캐시버스터 포함) 인터셉트 ○, 해시(#s1)·test.html·외부(GitHub) 링크는 비간섭 ○. 헤드리스 브라우저는 이 환경에서 설치 불가 → 실기 체감은 대표 확인 필요 | — |
 | 6 | 23:59 | it | 커밋·푸시 → GitHub Pages 반영 확인 | 커밋 로그 |
 | 7 | 11-04 | it | 대표 피드백: "PC에서는 오른쪽 스크롤까지 같이 보인다" — 회전하는 카드에 소개 페이지 `main`의 클래식 스크롤바가 같이 찍힘. overflow 변경은 폭 리플로를 유발하므로, 전환 중에만 `scrollbar-color: transparent transparent`로 공간은 유지한 채 색만 숨김(Chrome 121+·Firefox, macOS 오버레이 스크롤바는 무관). 푸시·라이브 확인 | docs/index.html |
+| 8 | 11-04 | it | 대표 지시: "첫 페이지에 스크롤이 생성되지 않도록 — 우측 레일이 이미 위치를 표시하므로 이중 표시" → 소개 페이지 `main` 스크롤바 상시 숨김(`scrollbar-width:none` + `::-webkit-scrollbar`, 스크롤 동작은 유지). 7의 전환용 임시 투명 처리는 상시 숨김으로 대체·제거. 푸시·라이브 확인 | docs/index.html |
 
 ## 핸드오프
 
