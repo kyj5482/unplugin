@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unplugin — AI가 벌어준 시간, 당신의 삶으로</title>
-<meta name="description" content="Unplugin은 일을 대신하지 않습니다. Muze 같은 AI 에이전트가 벌어준 시간과 아낀 감정을 자동으로 측정하고, 관계·배움·오감으로 되돌리는 시간 배당 코치.">
+<meta name="description" content="Unplugin은 일을 대신하지 않습니다. Muze·ChatGPT 등 어떤 비서 에이전트든 — 벌어준 시간과 아낀 감정을 자동으로 측정하고, 관계·배움·오감으로 되돌리는 시간 배당 코치.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   :root {
@@ -111,6 +111,16 @@
   [data-theme="dark"] .lead { color: var(--w-ink2); }
   .fineprint { font-size:.78rem; color:var(--ink3); margin-top:14px; }
   [data-theme="dark"] .fineprint { color: var(--w-ink3); }
+
+  /* ───────── 에이전트 이름 수직 롤 (Muze는 예시 — 멀티 에이전트 지원) ───────── */
+  .roll { display:inline-block; position:relative; overflow:hidden; height:1.68em;
+    vertical-align:bottom; text-align:left; transition: width .45s var(--ease); }
+  .roll-track { display:block; transition: transform .55s var(--ease); }
+  .roll-i { display:block; height:1.68em; white-space:nowrap; width:max-content;
+    font-weight:800; color:var(--amber-deep); }
+  [data-theme="dark"] .roll-i { color:var(--amber); }
+  /* JS 전 / reduced-motion: 첫 항목(Muze)만 보이고 폭도 Muze 기준 — 레이아웃 덜컹임 없음 */
+  .roll:not(.go) .roll-i + .roll-i { display:none; }
 
   /* ───────── 버튼 ───────── */
   .btn { display:inline-flex; align-items:center; gap:10px; padding:15px 30px; border-radius:14px;
@@ -505,7 +515,7 @@ addEventListener("DOMContentLoaded", () => {
     <div class="wrap">
       <div class="hero-pill rv">시간 배당 코치 — <b>지금 베타 · 무료</b></div>
       <h1 class="rv d1">AI가 벌어준 시간, <br><span class="serif">당신의 삶</span>으로</h1>
-      <p class="lead rv d2">Unplugin은 일을 대신하지 않습니다. Muze 같은 에이전트가 벌어준 시간과 아낀 감정을 자동으로 측정하고, 관계·배움·오감으로 되돌립니다.</p>
+      <p class="lead rv d2">Unplugin은 일을 대신하지 않습니다. <span class="roll" aria-label="Muze 등 여러 비서 에이전트"><span class="roll-track" aria-hidden="true"><span class="roll-i">Muze</span><span class="roll-i">Dots</span><span class="roll-i">ChatGPT</span><span class="roll-i">Claude</span><span class="roll-i">Gemini</span></span></span> 같은 에이전트가 벌어준 시간과 아낀 감정을 자동으로 측정하고, 관계·배움·오감으로 되돌립니다.</p>
       <div class="hero-cta rv d3">
         <a class="btn btn-accent" href="test.html">1분 만에 내 타입 알아보기 <span class="arr">→</span></a>
         <a class="btn btn-glass" href="demo.html">▶ 1분 데모 — 잔고가 쌓이는 모습</a>
@@ -514,7 +524,7 @@ addEventListener("DOMContentLoaded", () => {
         <div class="pcard">
           <div class="ph"><span class="dot"></span><span class="who">자동 적립</span></div>
           <div class="msg">메일 정리 · <b>+45분</b></div>
-          <div class="meta">Muze 완료 보고 수신 · 방금</div>
+          <div class="meta">ChatGPT 완료 보고 수신 · 방금</div>
           <span class="tag done">✓ 수동 기록 0</span>
         </div>
         <div class="pcard">
@@ -562,12 +572,12 @@ addEventListener("DOMContentLoaded", () => {
     <div class="wrap" style="text-align:center;">
       <div class="eyebrow rv" style="justify-content:center;">How it works</div>
       <h2 class="rv d1">설정은 <span class="serif">한 줄</span>, 측정은 자동</h2>
-      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">연동도, 권한도, 설치도 없습니다. Muze에 시킬 때 보고 한 줄만 붙이세요 — 나머지는 Unplugin이 받아 적습니다.</p>
+      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">연동도, 권한도, 설치도 없습니다. <span class="roll" aria-label="Muze 등 여러 비서 에이전트"><span class="roll-track" aria-hidden="true"><span class="roll-i">Muze</span><span class="roll-i">Dots</span><span class="roll-i">ChatGPT</span><span class="roll-i">Claude</span><span class="roll-i">Gemini</span></span></span>에 시킬 때 보고 한 줄만 붙이세요 — 나머지는 Unplugin이 받아 적습니다.</p>
       <div class="journey" role="img" aria-label="작동 예시: Muze에 요청하며 보고 한 줄 추가 → Muze가 전용 주소로 완료 보고 → 자동 적립 → 잔고와 무브먼트 제안">
         <div class="jt me rv d1"><span class="av me">나</span>
           <div class="jb"><div class="jw">나 → MUZE · 10:02</div>
             <div class="jm">항공권 취소 수수료 환불받아줘. <b>— 끝나면 jisoo.k7x2@unplugin.me 로 완료 보고 보내줘</b></div>
-            <span class="jtag o">이 한 줄이 설정의 전부</span></div></div>
+            <span class="jtag o">이 한 줄이 설정의 전부</span><span class="jtag g">어떤 에이전트든 같은 한 줄</span></div></div>
         <div class="jt rv d2"><span class="av me">M</span>
           <div class="jb"><div class="jw">MUZE → 내 UNPLUGIN 주소 · 14:40</div>
             <div class="jm">완료 보고: 항공권 환불 — <b>89,000원 환불 접수</b>했습니다.</div></div></div>
@@ -583,6 +593,7 @@ addEventListener("DOMContentLoaded", () => {
       <div class="rv d4" style="margin-top:22px;">
         <a class="btn btn-dark" href="demo.html">▶ 적립이 쌓이는 모습 — 1분 데모</a>
       </div>
+      <p class="fineprint rv d4" style="margin-top:14px;">지원: Muze · Dots · ChatGPT · Claude · Gemini — 보고 메일을 보낼 수 있는 에이전트라면 무엇이든, 계속 추가됩니다</p>
     </div>
   </section>
 
@@ -591,7 +602,7 @@ addEventListener("DOMContentLoaded", () => {
     <div class="wrap" style="text-align:center;">
       <div class="eyebrow rv" style="justify-content:center;">Delegation Tips</div>
       <h2 class="rv d1">무엇을 시킬지 모르겠다면, <span class="serif">팁부터</span></h2>
-      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">"이 일은 Muze에 이렇게 시키면 약 2시간 절약" — 보고 한 줄까지 들어간 프롬프트를 그대로 복사해 쓰세요. 실행되면 자동으로 적립됩니다.</p>
+      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">"이 일은 내 에이전트에 이렇게 시키면 약 2시간 절약" — 보고 한 줄까지 들어간 프롬프트를 그대로 복사해, 쓰던 에이전트 아무 데나 붙여넣으세요. 실행되면 자동으로 적립됩니다.</p>
       <div class="journey" role="img" aria-label="팁 엔진 예시: 환불 분쟁 팁 카드와 프롬프트 수신 → Muze에 붙여넣기 → 완료 보고 수신과 자동 적립">
         <div class="jt rv d1"><span class="av ag">U</span>
           <div class="jb"><div class="jw">UNPLUGIN 팁 · 월요일</div>
@@ -696,7 +707,7 @@ addEventListener("DOMContentLoaded", () => {
         <div class="mrow">
           <span class="av me">M</span>
           <div class="mb">
-            <div class="from">Muze <span>→ jisoo.k7x2@unplugin.me</span></div>
+            <div class="from"><span class="roll" aria-label="Muze 등 여러 비서 에이전트"><span class="roll-track" aria-hidden="true"><span class="roll-i">Muze</span><span class="roll-i">Dots</span><span class="roll-i">ChatGPT</span><span class="roll-i">Claude</span><span class="roll-i">Gemini</span></span></span> <span>→ jisoo.k7x2@unplugin.me</span></div>
             <div class="txt">완료 보고: [○○보험] 보험료 이의신청 — <b>34,000원 환급 접수</b></div>
           </div>
         </div>
@@ -811,6 +822,38 @@ if ('IntersectionObserver' in window) {
   addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(initTheme, 250); });
 } else {
   sections.forEach(s => s.classList.add('in'));
+}
+
+// ───── 에이전트 이름 수직 롤 — Muze는 예시일 뿐, 어떤 에이전트든 같은 한 줄 ─────
+// reduced-motion·JS 실패 시엔 CSS가 첫 항목(Muze)만 보여준다(.roll:not(.go)).
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  document.querySelectorAll('.roll').forEach(r => {
+    const track = r.firstElementChild;
+    const items = [...track.children];
+    if (items.length < 2) return;
+    track.appendChild(items[0].cloneNode(true));   // 한 바퀴 끝 → Muze로 끊김 없이 복귀
+    r.classList.add('go');
+    const av = r.closest('.mrow') && r.closest('.mrow').querySelector('.av');  // 메일 목업은 아바타 이니셜 동기화
+    const setTo = el => {
+      r.style.width = el.offsetWidth + 'px';       // 이름 폭 차이는 width 트랜지션으로 흡수
+      if (av) av.textContent = el.textContent.trim()[0];
+    };
+    setTo(items[0]);
+    let i = 0;
+    setInterval(() => {
+      if (document.hidden) return;
+      i++;
+      track.style.transform = 'translateY(' + (-i * items[0].offsetHeight) + 'px)';
+      setTo(items[i % items.length]);
+      if (i === items.length) setTimeout(() => {   // 복제본 도착 후 무트랜지션 스냅백
+        track.style.transition = 'none';
+        track.style.transform = 'translateY(0)';
+        void track.offsetHeight;
+        track.style.transition = '';
+        i = 0;
+      }, 580);
+    }, 2600);
+  });
 }
 
 // 상단 진행 바

@@ -156,6 +156,15 @@
   @keyframes punch { from { transform:scale(1.045); } to { transform:scale(1); } }
   .scene.cut { transition-duration:.15s; }   /* 드롭 장면 — 페이드 없이 끊어 친다 */
 
+  /* 에이전트 이름 롤러 — 1마디마다 수직 플립. 인덱스는 rAF가 filmTime에서 계산(장면 로컬 마디)
+     → 시킹·일시정지와 정합. inline-grid 겹침으로 폭 = 최장 이름 고정(레이아웃 덜컹임 없음) */
+  .roll { display:inline-grid; justify-items:center; overflow:hidden; vertical-align:bottom;
+    color:var(--amber); font-weight:800; }
+  .roll i { grid-area:1/1; font-style:normal; opacity:0; transform:translateY(115%);
+    transition:transform .38s var(--ease), opacity .3s; }
+  .roll i.cur { opacity:1; transform:none; }
+  .roll i.out { opacity:0; transform:translateY(-115%); }
+
   /* Admin 피날레 */
   .dash { width:min(680px,94vw); text-align:left; }
   .dash .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; }
@@ -264,6 +273,8 @@
     /* 비트 펄스·플래시·펀치·암전 제거 — 정보성 비네트만 제외 */
     .beatglow { display:none; }
     .flashfx, .punchfx, .vigfx, .blackfx { animation:none !important; opacity:0 !important; transform:none !important; }
+    /* 롤러 고정 — rAF 갱신이 꺼지므로 기본 cur(Muze)만 표시 */
+    .roll i { transition:none; }
     html.pt-enter body, body.pt-leave { animation:none; }
   }
 </style>
@@ -319,7 +330,7 @@ addEventListener("DOMContentLoaded", () => {
       </div>
       <div class="mailcard a pop" data-cue="1:2">
         <div class="mh"><span class="dot">U</span><span class="who">UNPLUGIN 팁 카드</span></div>
-        <div class="ms">이 일, Muze에게 시키세요</div>
+        <div class="ms">이 일, <span class="roll" aria-label="Muze, Dots, ChatGPT, Claude, Gemini"><i class="cur">Muze</i><i>Dots</i><i>ChatGPT</i><i>Claude</i><i>Gemini</i></span>에게 시키세요</div>
         <div class="mb">아래 문장을 복사해 보내면 끝 —
 예상 절약 <b style="color:var(--amber);">2시간 10분</b> · 아낄 감정 <b style="color:var(--amber);">●●●●●</b></div>
       </div>
@@ -327,20 +338,20 @@ addEventListener("DOMContentLoaded", () => {
     </div>
   </section>
 
-  <!-- 2 Muze 실행 (7마디) — 타이핑 16분음표, 5:3 전송=임팩트, 6마디째 비네트→6:2.5 암전(무음 갭) -->
+  <!-- 2 에이전트 실행 (7마디) — Muze는 예시 하나. 타이핑 16분음표, 5:3 전송=임팩트, 6:2.5 암전(무음 갭) -->
   <section class="scene">
     <div class="stack">
-      <div class="eyebrow a" data-cue="0:0">02 — MUZE</div>
-      <div class="kt"><span class="line"><span data-cue="0:0.5">실행은 Muze, 마지막에 <em>한 줄</em>만</span></span></div>
+      <div class="eyebrow a" data-cue="0:0">02 — AGENT</div>
+      <div class="kt"><span class="line"><span data-cue="0:0.5">실행은 <em>에이전트</em>, 마지막에 한 줄만</span></span></div>
       <div class="win a pop" data-cue="0:2" id="muzeWin">
-        <div class="bar"><i></i><i></i><i></i><span class="wt">Muze에 보내기</span></div>
+        <div class="bar"><i></i><i></i><i></i><span class="wt">에이전트에 보내기 — 오늘은 Muze</span></div>
         <div class="row"><b>받는이</b><span id="muzeTo" class="typing"></span></div>
         <div class="row"><b>요청</b><span>항공권 환불</span></div>
         <div class="body" id="muzeBody" style="min-height:74px;"></div>
         <div style="padding:0 18px 14px;"><b id="reportLine" class="repline typing"></b></div>
         <span class="sendbtn" id="sendBtn">보내기 ↗</span>
       </div>
-      <span class="chip ok big" id="muzeChip" style="opacity:0; transform:scale(.6); transition:all .5s var(--spring);">🙌 일은 Muze가 합니다 — Unplugin은 아무것도 대신하지 않습니다</span>
+      <span class="chip ok big" id="muzeChip" style="opacity:0; transform:scale(.6); transition:all .5s var(--spring);">🙌 일은 에이전트가 — Muze든 누구든, 보고 한 줄은 똑같습니다</span>
     </div>
     <div class="fxv vigfx" data-cue="6:0"></div>
     <div class="fxv blackfx" data-cue="6:2.5"></div>
@@ -431,6 +442,7 @@ addEventListener("DOMContentLoaded", () => {
       </div>
       <p class="scsub a" data-cue="0:2">AI가 벌어준 시간의, 코치</p>
       <span class="chip ok big a pop" data-cue="1:1">✍️ 수동 기록 0 · 설정은 한 줄</span>
+      <p class="scsub a" data-cue="1:3" style="margin-top:10px; font-size:.85rem;">Muze · Dots · ChatGPT · Claude · Gemini — 어떤 비서와도 함께</p>
       <div class="ctas a" data-cue="2:0">
         <a class="btn btn-accent" href="test.html">내 타입으로 시작하기 →</a>
         <a class="btn btn-glass" href="index.html">Unplugin 소개 보기</a>
@@ -675,12 +687,20 @@ const DUR = MUSIC.durs();            // 장면 길이 = 큐시트 마디 수 × 
 const TOTAL = DUR.reduce((a, b) => a + b, 0);
 const SCORE = MUSIC.buildScore();    // 악보 이벤트 + 킥(pulse)/백비트(back) 구간
 const ACTIONS = MUSIC.actions();     // JS 구동 모션 큐 — 악보와 같은 그리드에서 파생
-const NAMES = ["인트로", "팁 카드", "Muze 실행", "자동 적립", "잔고", "무브먼트", "오프라인", "엔딩"];
+const NAMES = ["인트로", "팁 카드", "에이전트 실행", "자동 적립", "잔고", "무브먼트", "오프라인", "엔딩"];
 
 // data-cue="bar:beat"(장면 로컬) → --d 변환 — CSS 등장 지연도 전부 비트 그리드에서 파생
 scenes.forEach(sc => sc.querySelectorAll("[data-cue]").forEach(el => {
   const [b, qt] = el.dataset.cue.split(":").map(Number);
   el.style.setProperty("--d", ((b * MUSIC.BAR + qt * MUSIC.BEAT) / 1000).toFixed(4) + "s");
+}));
+
+// 에이전트 이름 롤러 — 플립 주기 = 1마디(장면 로컬), rAF가 filmTime으로 구동 (시킹·일시정지 정합)
+const BOUNDS = MUSIC.bounds();
+const rollers = [...document.querySelectorAll(".roll")].map(el => ({
+  items: [...el.children],
+  sc: scenes.findIndex(s => s.contains(el)),
+  last: 0,
 }));
 
 let cur = -1, playing = true, sceneStart = 0, sceneElapsed = 0;
@@ -894,6 +914,17 @@ const rootStyle = document.documentElement.style;
       }
       rootStyle.setProperty("--pk", pk.toFixed(3));
       rootStyle.setProperty("--bk", bk.toFixed(3));
+      // 롤러 플립 — 장면 로컬 경과의 마디 인덱스. 이전 이름은 위로(out), 새 이름은 아래에서(cur)
+      rollers.forEach(r => {
+        const lt = done - BOUNDS[r.sc];
+        const ri = lt <= 0 ? 0 : Math.floor(lt / MUSIC.BAR) % r.items.length;
+        if (ri === r.last) return;
+        r.items.forEach((it, i) => {
+          it.classList.toggle("cur", i === ri);
+          it.classList.toggle("out", i === r.last);   // out 해제된 항목은 투명 상태로 아래 복귀
+        });
+        r.last = ri;
+      });
     }
   }
   requestAnimationFrame(raf);
