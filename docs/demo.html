@@ -455,87 +455,157 @@ const ACTIONS = {
 
 // ──[MUSIC-PURE-BEGIN] 생성 음악 악보 — DOM·AudioContext 무관 순수 함수 (node 테스트 가능) ─────
 // 음악 시계는 필름 시계(filmNow)에 종속된다. 악보는 filmTime(ms) 절대 시각의 이벤트 배열.
-// 아크: a단조의 질문(인트로) → 펄스·아르페지오(팁·Muze) → C장조 리프트(적립) →
-//       풍성한 화성(잔고) → 상행(무브먼트) → 스웰 피크(일출) → Cmaj7 해소(엔딩)
+// 런치 필름 스코어 — 112 BPM 드라이브. 아크: 임팩트+긴장 펄스(인트로) → 비트 진입(팁) →
+// 풀 그루브+16분(Muze) → 서스펜스 갭 → THE DROP(적립 29100ms) → 앤섬(잔고·무브먼트) →
+// 드럼 아웃 스웰(일출) → 비트 복귀 → 마무리 히트+로고 스팅(엔딩, 페이드아웃 없음)
+// 퍼커션 그리드도 전부 filmTime 절대 시각 — 시킹 후에도 그리드가 밀리지 않는다.
 const MUSIC = (() => {
   const N = m => 440 * Math.pow(2, (m - 69) / 12);   // MIDI → Hz
 
   function buildScore(durs) {
     const B = [0]; durs.forEach(d => B.push(B[B.length - 1] + d));   // 장면 경계 누적(ms)
+    const BPM = 112, BEAT = 60000 / BPM, BAR = BEAT * 4, S16 = BEAT / 4;
     const ev = [];
+    // 지속·선율 음색
     const pad  = (t, d, ms, g = .5, a) => ev.push({ t, d, v: "pad",  f: ms.map(N), g, a });
     const key  = (t, m, g = .4, d = 1500) => ev.push({ t, d, v: "key",  f: [N(m)], g });
     const arp  = (t, m, g = .22) => ev.push({ t, d: 450, v: "arp",  f: [N(m)], g });
     const bass = (t, m, d = 2800, g = .5) => ev.push({ t, d, v: "bass", f: [N(m)], g });
     const bell = (t, m, g = .5) => ev.push({ t, d: 900, v: "bell", f: [N(m)], g });
+    const lead = (t, m, g = .5, d = 380) => ev.push({ t, d, v: "lead", f: [N(m)], g });
+    const bl   = (t, m, g = .55, d = 210) => ev.push({ t, d, v: "bassl", f: [N(m)], g });
     const fx   = (t, v, d, g = .4) => ev.push({ t, d, v, f: [], g });
+    // 리듬 음색 (전부 합성)
+    const kick = (t, g = .8) => ev.push({ t, d: 320, v: "kick", f: [], g });
+    const hat  = (t, g = .18, o = 0) => ev.push({ t, d: o ? 240 : 90, v: "hat", f: [], g, o });
+    const clap = (t, g = .45) => ev.push({ t, d: 260, v: "clap", f: [], g });
+    const snr  = (t, g = .4) => ev.push({ t, d: 180, v: "snare", f: [], g });
+    const imp  = (t, g = 1) => ev.push({ t, d: 900, v: "imp", f: [], g });
+    const riser = (t, d, g = .6) => ev.push({ t, d, v: "riser", f: [], g });
 
-    // ① 인트로 0–6.2s — a단조, 성긴 단음의 질문
+    // 그루브 1마디: 4온더플로어 킥 + 햇(lvl3=16분, lvl2=오프비트 8분) + 백비트 클랩
+    //            + 싱커페이션·옥타브 점프 신스 베이스 리프
+    function grooveBar(t0, r, lvl) {
+      for (let k = 0; k < 4; k++) kick(t0 + k * BEAT, lvl >= 3 ? .88 : .75);
+      if (lvl >= 2) { clap(t0 + BEAT); clap(t0 + 3 * BEAT); }
+      if (lvl >= 3) {
+        for (let h = 0; h < 16; h++) hat(t0 + h * S16, h % 4 === 2 ? .24 : (h % 2 ? .13 : .1));
+        hat(t0 + 3.5 * BEAT, .26, 1);   // 오픈햇
+      } else {
+        for (let h = 1; h < 8; h += 2) hat(t0 + h * 2 * S16, .18);
+      }
+      [[0, 0], [.75, 0], [1.5, 12], [2.25, 0], [2.75, 12], [3.5, 7]]
+        .forEach(([bo, so]) => bl(t0 + bo * BEAT, r + so, lvl >= 3 ? .6 : .48));
+    }
+    const groove = (a, bars, roots, lvl) => {
+      for (let b = 0; b < bars; b++) grooveBar(a + b * BAR, roots[b % roots.length], lvl);
+    };
+
+    // ① 인트로 — 1초 안의 임팩트 + 숨죽인 하프타임 펄스, 라이저로 비트 예고 (Am)
     let t = B[0];
-    pad(t + 300, 3000, [57, 60, 64], .4); bass(t + 300, 45, 2900, .4);
-    key(t + 1400, 64, .3); key(t + 2700, 69, .26); key(t + 3900, 67, .24);
-    pad(t + 3400, 2700, [57, 60, 65], .4); bass(t + 3400, 41, 2700, .4);
+    imp(t + 80, 1);
+    pad(t + 120, 3000, [45, 57, 60, 64], .5, .2);
+    for (let n = 0; n < 5; n++) { kick(t + 80 + n * 2 * BEAT, .6); bl(t + 80 + n * 2 * BEAT, 45, .4, 320); }
+    for (let n = 1; n < 10; n++) hat(t + 80 + n * BEAT, .12);
+    key(t + 1400, 64, .34); key(t + 2700, 69, .3); key(t + 3900, 67, .28);
+    pad(t + 3400, 2600, [41, 57, 60, 65], .45, .8);
+    riser(t + 4650, 1500, .55);
+    for (let n = 0; n < 8; n++) snr(t + 5100 + n * S16, .16 + n * .03);   // 스네어 빌드
 
-    // ② 팁 카드 — 부드러운 펄스 시작 (Am → C → Fmaj7)
+    // ② 팁 카드 — 비트 진입: 4온더플로어 시작 (Am Am C F), 5마디째 필→라이저
     t = B[1];
-    [[0, 45, [57, 60, 64], 3100], [3200, 48, [55, 60, 64], 3100], [6400, 41, [57, 60, 65], 3900]]
-      .forEach(([o, r, c, d]) => {
-        pad(t + 200 + o, d, c, .42); bass(t + 200 + o, r, d, .42);
-        for (let p = 0; p < Math.floor(d / 820); p++) bass(t + 220 + o + p * 820, r + 12, 600, .2);
-      });
-    key(t + 2700, 76, .34); key(t + 4900, 74, .3); key(t + 5400, 72, .3);
-    key(t + 7400, 69, .28); key(t + 8800, 67, .26);
+    const a1 = t + 20;
+    imp(a1, .9);
+    groove(a1, 4, [45, 45, 48, 41], 2);
+    [[0, [45, 57, 60, 64]], [1, [45, 57, 60, 64]], [2, [48, 55, 60, 64]], [3, [41, 53, 57, 60]]]
+      .forEach(([b, c]) => pad(a1 + b * BAR, BAR, c, .5, .25));
+    key(a1 + 5 * BEAT, 76, .4); key(a1 + 9 * BEAT, 74, .36); key(a1 + 10 * BEAT, 72, .36);
+    key(a1 + 13 * BEAT, 69, .34);
+    const f1 = a1 + 4 * BAR;                                   // 필 마디
+    kick(f1, .8); kick(f1 + BEAT, .8); kick(f1 + 2 * BEAT, .8);
+    for (let n = 0; n < 7; n++) snr(f1 + 2 * BEAT + n * S16, .18 + n * .04);
+    riser(f1 + 100, 1880, .6);
 
-    // ③ Muze 실행 — 타이핑과 맞물리는 아르페지오, 전송 직전 whoosh(8.75s)
+    // ③ Muze 실행 — 풀 그루브 + 16분 아르페지오, 전송 라이저→임팩트 → 서스펜스 갭
     t = B[2];
-    [[200, 45, [57, 60, 64], [57, 64, 69, 72]], [3100, 48, [55, 60, 64], [60, 64, 67, 72]],
-     [6000, 43, [55, 59, 62], [55, 62, 67, 71]]].forEach(([o, r, c, ap]) => {
-      pad(t + o, 2900, c, .4); bass(t + o, r, 2800, .4);
-      for (let p = 0; p < 9; p++) arp(t + o + 260 + p * 290, ap[p % 4], .18);
-    });
-    fx(t + 8750, "whoosh", 480, .5);
-    pad(t + 9000, 2400, [57, 60, 64], .3); bass(t + 9000, 45, 2300, .3);   // 전송 후 — 기대감
+    const a2 = t + 20;
+    imp(a2, .95);
+    groove(a2, 4, [45, 48, 43, 45], 3);
+    [[0, [45, 57, 60, 64]], [1, [48, 55, 60, 64]], [2, [43, 55, 59, 62]], [3, [45, 57, 60, 64]]]
+      .forEach(([b, c]) => pad(a2 + b * BAR, BAR, c, .48, .2));
+    const AP = [69, 72, 76, 79];
+    for (let b = 1; b < 4; b++) for (let h = 0; h < 16; h++)
+      arp(a2 + b * BAR + h * S16, AP[(h + b) % 4], .13);
+    riser(t + 7750, 1080, .6);                                 // 전송 빌드(24550→)
+    fx(t + 8750, "whoosh", 480, .6);
+    imp(t + 8920, .85);                                        // 전송 임팩트(25720)
+    // 서스펜스: 비트 걷어내고 드롭으로 — 저음 펄스 + 가속 스네어 + 롱 라이저
+    for (let n = 0; n < 5; n++) bl(t + 9100 + n * BEAT, 45, .35, 300);
+    for (let n = 0; n < 8; n++) snr(t + 9640 + n * S16 * 2, .15 + n * .04);
+    riser(t + 9900, 2380, .7);                                 // 26700 → 29080, 드롭 직전 갭까지
 
-    // ④ 자동 적립 — 메일 딩(0.7s) + 장조 리프트 + 카운트업(2.5s~) 스파클
+    // ④ 자동 적립 — THE DROP: 딩동 벨(29100)과 동시에 풀 드럼 + 브라이트 리드 (C C F G)
     t = B[3];
-    bell(t + 700, 76, .5); bell(t + 880, 79, .5);
-    pad(t + 1000, 3300, [60, 64, 67], .5, .6); bass(t + 1000, 48, 3200, .5); key(t + 1900, 67, .34);
-    [84, 88, 91, 86, 88, 91].forEach((m, i) => arp(t + 2550 + i * 300, m, .2));
-    pad(t + 4400, 2400, [53, 57, 60], .46); bass(t + 4400, 41, 2300, .46); key(t + 4900, 76, .34);
-    pad(t + 6900, 2300, [55, 59, 62], .46); bass(t + 6900, 43, 2200, .46); key(t + 7400, 74, .3);
+    const a3 = t + 700;                                        // 29100 — 메일 팝·벨 정렬
+    bell(a3, 76, .6); bell(a3 + 180, 79, .6);
+    imp(a3, 1.1);
+    groove(a3, 4, [48, 48, 41, 43], 3);
+    [[0, [48, 55, 60, 64, 67]], [1, [48, 55, 60, 64, 67]], [2, [41, 53, 57, 60, 65]], [3, [43, 55, 59, 62, 67]]]
+      .forEach(([b, c]) => pad(a3 + b * BAR, BAR, c, .62, .15));
+    const HOOK = [[0, 72], [.5, 76], [1, 79], [1.75, 76], [2.5, 72], [3, 74], [3.5, 76],
+                  [4.5, 79], [5, 81], [5.5, 79], [6, 76], [6.75, 74], [7.5, 72]];
+    for (let r = 0; r < 2; r++) HOOK.forEach(([bo, m]) => lead(a3 + r * 2 * BAR + bo * BEAT, m, .5));
+    [60, 62, 64, 67, 69, 72, 74, 76, 79, 81, 84, 88]
+      .forEach((m, i) => arp(t + 2500 + i * S16, m, .3));      // 카운트업 상승 런
 
-    // ⑤ 잔고 — 화성 풍성 (Cmaj7 → Am7 → Fmaj7 → G), 자신감
+    // ⑤ 잔고 — 드라이브 유지, 앤섬 파워 보이싱 (C Am F G)
     t = B[4];
-    [[0, 48, [55, 60, 64, 71]], [2250, 45, [57, 60, 64, 67]], [4500, 41, [57, 60, 65, 69]],
-     [6750, 43, [55, 59, 62, 67]]].forEach(([o, r, c]) => {
-      pad(t + 200 + o, 2300, c, .5); bass(t + 200 + o, r, 2200, .46);
-      for (let p = 0; p < 2; p++) bass(t + 240 + o + p * 1100, r + 12, 550, .18);
-    });
-    [[400, 72], [1300, 76], [2600, 74], [3500, 67], [4900, 69], [5800, 72], [7100, 71], [7900, 74]]
-      .forEach(([o, m]) => key(t + o, m, .3));
+    const a4 = t + 20;
+    groove(a4, 4, [48, 45, 41, 43], 3);
+    [[0, [48, 55, 60, 64, 71]], [1, [45, 57, 60, 64, 67]], [2, [41, 53, 57, 60, 65]], [3, [43, 55, 59, 62, 67]]]
+      .forEach(([b, c]) => pad(a4 + b * BAR, BAR, c, .6, .2));
+    [[.5, 72], [1, 76], [1.75, 79], [4.5, 76], [5, 72], [6.75, 74],
+     [8.5, 79], [9, 81], [9.75, 84], [12.5, 79], [13, 76], [14, 74]]
+      .forEach(([bo, m]) => lead(a4 + bo * BEAT, m, .42));
 
-    // ⑥ 무브먼트 — 카드 팝 3회(0.7/1.5/2.3s)에 맞춘 상행 3음 C5·E5·G5
+    // ⑥ 무브먼트 — 그루브 위 카드 팝 3연타(0.7/1.5/2.3s) 액센트 + 상행 리드 (F C G Am)
     t = B[5];
-    key(t + 700, 72, .5); key(t + 1500, 76, .5); key(t + 2300, 79, .55);
-    pad(t + 200, 2600, [53, 57, 60], .46); bass(t + 200, 41, 2500, .44);
-    pad(t + 3000, 2700, [55, 60, 64], .5); bass(t + 3000, 48, 2600, .46);
-    pad(t + 5800, 2300, [55, 59, 62], .5); bass(t + 5800, 43, 2200, .46);
-    pad(t + 8100, 1500, [57, 60, 64, 67], .44); bass(t + 8100, 45, 1400, .4);
-    key(t + 4200, 76, .3); key(t + 6300, 74, .3); key(t + 7300, 76, .3);
+    const a5 = t + 20;
+    groove(a5, 4, [41, 48, 43, 45], 3);
+    [[0, [41, 53, 57, 60]], [1, [48, 55, 60, 64]], [2, [43, 55, 59, 62]], [3, [45, 57, 60, 64]]]
+      .forEach(([b, c]) => pad(a5 + b * BAR, BAR, c, .55, .2));
+    clap(t + 700, .55); lead(t + 700, 72, .6, 500);
+    clap(t + 1500, .55); lead(t + 1500, 76, .6, 500);
+    imp(t + 2300, .75); lead(t + 2300, 79, .65, 700);
+    key(t + 4200, 76, .34); key(t + 6300, 74, .32); key(t + 7300, 76, .34);
+    pad(t + 8600, 1150, [41, 53, 57], .4, .5);                 // 일출로 가는 풀백
 
-    // ⑦ 일출 — 공기 스웰 + 느린 어택 패드, 감정 피크
+    // ⑦ 일출 — 드럼 아웃, 와이드 스웰 피크 → 말미 킥 3발 + 라이저로 비트 복귀 예고
     t = B[6];
-    fx(t + 100, "air", 6600, .3);
-    pad(t + 200, 3600, [53, 57, 60, 64], .55, 2.0); bass(t + 200, 41, 3500, .5);
-    pad(t + 3700, 3500, [60, 64, 67, 72, 76], .6, 1.6); bass(t + 3700, 36, 3400, .5);
-    key(t + 1500, 76, .4, 2000); key(t + 4000, 79, .45, 2200);
+    fx(t + 100, "air", 6400, .45);
+    pad(t + 200, 3600, [41, 53, 57, 60, 64], .6, 1.8); bass(t + 200, 41, 3500, .55);
+    pad(t + 3700, 3300, [48, 60, 64, 67, 72, 76], .68, 1.4); bass(t + 3700, 36, 3200, .55);
+    lead(t + 1500, 76, .4, 1600); lead(t + 4000, 79, .45, 1800);
+    kick(t + 5900, .6); kick(t + 5900 + BEAT, .7); kick(t + 5900 + 2 * BEAT, .8);
+    riser(t + 5800, 1580, .6);
 
-    // ⑧ 엔딩 — Cmaj7 해소, 하행 단음, 페이드아웃
+    // ⑧ 엔딩 — 파이널 그루브 2마디 → 마무리 히트 + 로고 스팅 (페이드아웃 없음, 링아웃)
     t = B[7];
-    pad(t + 400, 4800, [55, 60, 64, 71], .5, 1.4); bass(t + 400, 36, 4600, .44);
-    key(t + 700, 72, .4); key(t + 2200, 67, .34); key(t + 3800, 64, .3); key(t + 5400, 60, .26);
-    bell(t + 1450, 84, .3);   // "수동 기록 0" 칩(1.4s)
-    pad(t + 5800, 3300, [48, 55, 60, 64], .32, 1.6); bass(t + 5800, 36, 3200, .3);
+    const a7 = t + 20;
+    imp(a7, 1);
+    groove(a7, 2, [48, 43], 3);
+    [[0, [48, 55, 60, 64, 67]], [1, [43, 55, 59, 62, 67]]]
+      .forEach(([b, c]) => pad(a7 + b * BAR, BAR, c, .6, .15));
+    lead(a7 + .5 * BEAT, 72, .5); lead(a7 + BEAT, 76, .5); lead(a7 + 1.75 * BEAT, 79, .55);
+    lead(a7 + 4.5 * BEAT, 76, .45); lead(a7 + 5 * BEAT, 74, .45);
+    bell(t + 1450, 84, .35);                                   // "수동 기록 0" 칩(1.4s)
+    const s0 = a7 + 2 * BAR;                                   // 로고 스팅 "un · plug · in"
+    kick(s0, .85);
+    lead(s0, 72, .6, 240); lead(s0 + BEAT / 2, 79, .6, 240);
+    imp(s0 + BEAT, .95);
+    lead(s0 + BEAT, 84, .7, 1200); bell(s0 + BEAT, 84, .55);
+    pad(s0 + BEAT, 3400, [48, 55, 60, 64, 67, 72], .6, .02);
+    bass(s0 + BEAT, 36, 3300, .5);
 
     return ev.sort((a, b) => a.t - b.t);
   }
@@ -552,10 +622,10 @@ const MUSIC = (() => {
     while (idx < events.length && events[idx].t < until) due.push(events[idx++]);
     return [due, idx];
   }
-  // t0에 지속 중이던 패드·베이스·공기 — 시킹 착지 시 경과 지점부터 복원
+  // t0에 지속 중이던 패드·베이스·공기·라이저 — 시킹 착지 시 경과 지점부터 복원
   function sustainAt(events, t0) {
     return events
-      .filter(e => (e.v === "pad" || e.v === "bass" || e.v === "air")
+      .filter(e => (e.v === "pad" || e.v === "bass" || e.v === "air" || e.v === "riser")
                    && e.t < t0 && e.t + e.d > t0 + 250)
       .map(e => ({ ev: e, off: t0 - e.t }));
   }
@@ -770,26 +840,41 @@ const audio = (() => {
   const AC = window.AudioContext || window.webkitAudioContext;
   const supported = !!AC;
   const LOOK = 300, TICK = 100;
-  let ctx = null, master, delayIn, noiseBuf = null;
+  let ctx = null, master, duck, delayIn, noiseBuf = null;
   let enabled = false, events = [], idx = 0, live = [], lastFilm = 0, tickId = null;
 
   function initGraph() {
     ctx = new AC();
-    const comp = ctx.createDynamicsCompressor();   // 클리핑 안전판
-    comp.threshold.value = -16; comp.knee.value = 20; comp.ratio.value = 5;
-    comp.attack.value = .005; comp.release.value = .25;
+    // 마스터 체인: master → 소프트 새추레이션 → 글루 컴프레서 → 출력
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -14; comp.knee.value = 8; comp.ratio.value = 7;
+    comp.attack.value = .004; comp.release.value = .16;
     comp.connect(ctx.destination);
-    master = ctx.createGain(); master.gain.value = .22;   // ≈ -13dB
-    master.connect(comp);
+    const shaper = ctx.createWaveShaper();         // tanh 소프트 새추레이션 — 펀치는 살리고 클리핑 방지
+    const curve = new Float32Array(512);
+    for (let i = 0; i < 512; i++) { const x = i / 255.5 - 1; curve[i] = Math.tanh(1.8 * x) / Math.tanh(1.8); }
+    shaper.curve = curve; shaper.oversample = "2x";
+    shaper.connect(comp);
+    master = ctx.createGain(); master.gain.value = .42;   // 체감 ≈ -7.5dB
+    master.connect(shaper);
+    // 사이드체인 덕 버스 — 킥/임팩트마다 패드·베이스 게인을 눌러 펌핑
+    duck = ctx.createGain(); duck.gain.value = 1;
+    duck.connect(master);
     // 가벼운 피드백 딜레이 — 공간감 (컨볼루션 없이)
     delayIn = ctx.createGain();
-    const dl = ctx.createDelay(1); dl.delayTime.value = .27;
-    const fb = ctx.createGain(); fb.gain.value = .3;
-    const fl = ctx.createBiquadFilter(); fl.type = "lowpass"; fl.frequency.value = 1700;
+    const dl = ctx.createDelay(1); dl.delayTime.value = .268;   // 112BPM 점8분 근사
+    const fb = ctx.createGain(); fb.gain.value = .28;
+    const fl = ctx.createBiquadFilter(); fl.type = "lowpass"; fl.frequency.value = 1900;
     delayIn.connect(dl); dl.connect(fl); fl.connect(fb); fb.connect(dl);
-    const wet = ctx.createGain(); wet.gain.value = .7;
+    const wet = ctx.createGain(); wet.gain.value = .6;
     dl.connect(wet); wet.connect(master);
     events = MUSIC.buildScore(DUR);
+  }
+  function duckAt(when) {   // 킥·임팩트 사이드체인 펌핑
+    const g = duck.gain;
+    g.cancelScheduledValues(when);
+    g.setValueAtTime(.5, when);
+    g.linearRampToValueAtTime(1, when + .34);
   }
   function noise() {
     if (!noiseBuf) {
@@ -800,25 +885,26 @@ const audio = (() => {
     const s = ctx.createBufferSource(); s.buffer = noiseBuf; s.loop = true;
     return s;
   }
-  function chain(gn, send) {
-    gn.connect(master);
+  function chain(gn, send, bus) {
+    gn.connect(bus || master);
     if (send) { const s = ctx.createGain(); s.gain.value = send; gn.connect(s); s.connect(delayIn); }
   }
   function reg(gn, srcs, end) { live.push({ g: gn, o: srcs, end }); }
-  function killAll() {   // 시킹·끄기 — 울리던 소리는 짧게 릴리즈
+  function killAll() {   // 시킹·끄기 — 울리던 소리는 짧게 릴리즈, 덕킹도 원복
     const t = ctx.currentTime;
     live.forEach(n => { try {
       n.g.gain.cancelScheduledValues(t); n.g.gain.setTargetAtTime(0, t, .06);
       n.o.forEach(o => o.stop(t + .4));
     } catch (_) {} });
     live = [];
+    duck.gain.cancelScheduledValues(t); duck.gain.setValueAtTime(1, t);
   }
   function osc(type, f) { const o = ctx.createOscillator(); o.type = type; o.frequency.value = f; return o; }
 
   // ── 음색 — 오실레이터 + 게인 엔벨로프 ──
-  function padV(f, when, d, g, a) {        // 따뜻한 패드: 트라이앵글 + 미세 디튠 사인, 로우패스
+  function padV(f, when, d, g, a) {        // 패드: 트라이앵글 + 미세 디튠 사인, 로우패스 — 덕 버스(펌핑)
     const fl = ctx.createBiquadFilter(); fl.type = "lowpass"; fl.frequency.value = 1300;
-    const gn = ctx.createGain(); fl.connect(gn); chain(gn, .08);
+    const gn = ctx.createGain(); fl.connect(gn); chain(gn, .08, duck);
     const o1 = osc("triangle", f), o2 = osc("sine", f * 1.004);
     o1.connect(fl); o2.connect(fl);
     gn.gain.setValueAtTime(0, when);
@@ -850,9 +936,9 @@ const audio = (() => {
     const end = when + 1;
     o.start(when); o.stop(end); reg(gn, [o], end);
   }
-  function bassV(f, when, d, g, quick) {
+  function bassV(f, when, d, g, quick) {   // 지속 서브 — 덕 버스
     const fl = ctx.createBiquadFilter(); fl.type = "lowpass"; fl.frequency.value = 420;
-    const gn = ctx.createGain(); fl.connect(gn); chain(gn, 0);
+    const gn = ctx.createGain(); fl.connect(gn); chain(gn, 0, duck);
     const o = osc("sine", f); o.connect(fl);
     gn.gain.setValueAtTime(0, when);
     gn.gain.linearRampToValueAtTime(g * .3, when + (quick ? .12 : .04));
@@ -877,7 +963,8 @@ const audio = (() => {
   function fxV(ev, when, d, g) {           // whoosh(전송) / air(일출 공기 스웰) — 합성 노이즈
     const src = noise();
     const fl = ctx.createBiquadFilter();
-    const gn = ctx.createGain(); src.connect(fl); fl.connect(gn); chain(gn, 0);
+    const gn = ctx.createGain(); src.connect(fl); fl.connect(gn);
+    chain(gn, 0, ev.v === "air" ? duck : master);
     if (ev.v === "whoosh") {
       fl.type = "bandpass"; fl.Q.value = .9;
       fl.frequency.setValueAtTime(350, when);
@@ -895,15 +982,126 @@ const audio = (() => {
     src.start(when); src.stop(end); reg(gn, [src], end);
   }
 
+  // ── 리듬 음색 — 전부 합성 (외부 샘플 없음) ──
+  function kickV(when, g) {                // 사인 피치 드롭 킥 — 펀치 + 사이드체인 트리거
+    const gn = ctx.createGain(); gn.connect(master);
+    const o = osc("sine", 118); o.connect(gn);
+    o.frequency.setValueAtTime(118, when);
+    o.frequency.exponentialRampToValueAtTime(42, when + .09);
+    gn.gain.setValueAtTime(0, when);
+    gn.gain.linearRampToValueAtTime(g * .85, when + .003);
+    gn.gain.setTargetAtTime(0, when + .03, .085);
+    const end = when + .5; o.start(when); o.stop(end); reg(gn, [o], end);
+    duckAt(when);
+  }
+  function hatV(when, g, open) {           // 하이패스 노이즈 버스트
+    const src = noise();
+    const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 7600;
+    const gn = ctx.createGain(); src.connect(hp); hp.connect(gn); gn.connect(master);
+    gn.gain.setValueAtTime(0, when);
+    gn.gain.linearRampToValueAtTime(g * .5, when + .002);
+    gn.gain.setTargetAtTime(0, when + .005, open ? .09 : .018);
+    const end = when + (open ? .5 : .15); src.start(when); src.stop(end); reg(gn, [src], end);
+  }
+  function clapV(when, g) {                // 밴드패스 노이즈 3연 버스트
+    const src = noise();
+    const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1150; bp.Q.value = 1.1;
+    const gn = ctx.createGain(); src.connect(bp); bp.connect(gn); gn.connect(master);
+    gn.gain.setValueAtTime(0, when);
+    [0, .014, .028].forEach(o2 => {
+      gn.gain.linearRampToValueAtTime(g * .5, when + o2 + .003);
+      gn.gain.linearRampToValueAtTime(g * .16, when + o2 + .012);
+    });
+    gn.gain.setTargetAtTime(0, when + .042, .07);
+    const end = when + .45; src.start(when); src.stop(end); reg(gn, [src], end);
+  }
+  function snrV(when, g) {                 // 스네어: 밴드패스 노이즈 + 톤
+    const src = noise();
+    const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1900; bp.Q.value = .9;
+    const gn = ctx.createGain(); src.connect(bp); bp.connect(gn); gn.connect(master);
+    const o = osc("sine", 192), og = ctx.createGain(); og.gain.value = .5; o.connect(og); og.connect(gn);
+    gn.gain.setValueAtTime(0, when);
+    gn.gain.linearRampToValueAtTime(g * .5, when + .002);
+    gn.gain.setTargetAtTime(0, when + .008, .055);
+    const end = when + .35; src.start(when); o.start(when); src.stop(end); o.stop(end);
+    reg(gn, [src, o], end);
+  }
+  function impV(when, g) {                 // 임팩트: 저역 붐 + 타격 노이즈 — 덕킹 트리거
+    const gb = ctx.createGain(); gb.connect(master);
+    const ob = osc("sine", 70); ob.connect(gb);
+    ob.frequency.setValueAtTime(70, when);
+    ob.frequency.exponentialRampToValueAtTime(32, when + .35);
+    gb.gain.setValueAtTime(0, when);
+    gb.gain.linearRampToValueAtTime(g * .8, when + .006);
+    gb.gain.setTargetAtTime(0, when + .08, .3);
+    const eb = when + 1.4; ob.start(when); ob.stop(eb); reg(gb, [ob], eb);
+    const src = noise();
+    const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1300;
+    const gnn = ctx.createGain(); src.connect(lp); lp.connect(gnn); gnn.connect(master);
+    gnn.gain.setValueAtTime(0, when);
+    gnn.gain.linearRampToValueAtTime(g * .42, when + .004);
+    gnn.gain.setTargetAtTime(0, when + .02, .12);
+    const en = when + .7; src.start(when); src.stop(en); reg(gnn, [src], en);
+    duckAt(when);
+  }
+  function riserV(when, d, g) {            // 라이저: 밴드패스 노이즈 상승 스윕, 끝에서 컷
+    const src = noise();
+    const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.Q.value = .8;
+    const gn = ctx.createGain(); src.connect(bp); bp.connect(gn); gn.connect(master);
+    bp.frequency.setValueAtTime(350, when);
+    bp.frequency.exponentialRampToValueAtTime(4200, when + d);
+    gn.gain.setValueAtTime(0, when);
+    gn.gain.linearRampToValueAtTime(g * .3, when + d);
+    gn.gain.setTargetAtTime(0, when + d, .04);
+    const end = when + d + .4; src.start(when); src.stop(end); reg(gn, [src], end);
+  }
+  function leadV(f, when, d, g) {          // 브라이트 리드: 디튠 톱니 2합 + 필터 엔벨로프
+    const fl = ctx.createBiquadFilter(); fl.type = "lowpass"; fl.Q.value = 1.1;
+    const gn = ctx.createGain(); fl.connect(gn); chain(gn, .2);
+    const o1 = osc("sawtooth", f), o2 = osc("sawtooth", f * 1.006);
+    o1.connect(fl); o2.connect(fl);
+    fl.frequency.setValueAtTime(900, when);
+    fl.frequency.linearRampToValueAtTime(3600, when + .015);
+    fl.frequency.setTargetAtTime(1100, when + .05, .14);
+    gn.gain.setValueAtTime(0, when);
+    gn.gain.linearRampToValueAtTime(g * .22, when + .006);
+    gn.gain.setTargetAtTime(0, when + Math.max(.03, d - .08), .12);
+    const end = when + d + .6;
+    o1.start(when); o2.start(when); o1.stop(end); o2.stop(end);
+    reg(gn, [o1, o2], end);
+  }
+  function basslV(f, when, d, g) {         // 신스 베이스: 톱니 + 로우패스 필터 엔벨로프 — 덕 버스
+    const fl = ctx.createBiquadFilter(); fl.type = "lowpass"; fl.Q.value = 2;
+    const gn = ctx.createGain(); fl.connect(gn); chain(gn, 0, duck);
+    const o = osc("sawtooth", f); o.connect(fl);
+    fl.frequency.setValueAtTime(140, when);
+    fl.frequency.linearRampToValueAtTime(900, when + .02);
+    fl.frequency.setTargetAtTime(160, when + .04, .09);
+    gn.gain.setValueAtTime(0, when);
+    gn.gain.linearRampToValueAtTime(g * .5, when + .005);
+    gn.gain.setTargetAtTime(0, when + Math.max(.04, d - .05), .09);
+    const end = when + d + .4; o.start(when); o.stop(end); reg(gn, [o], end);
+  }
+
   function play(ev, when, offMs = 0) {
     const d = Math.max(.1, (ev.d - offMs) / 1000), quick = offMs > 0;
-    if (ev.v === "whoosh" || ev.v === "air") return fxV(ev, when, d, ev.g);
+    switch (ev.v) {
+      case "whoosh": case "air": return fxV(ev, when, d, ev.g);
+      case "kick":  return kickV(when, ev.g);
+      case "hat":   return hatV(when, ev.g, ev.o);
+      case "clap":  return clapV(when, ev.g);
+      case "snare": return snrV(when, ev.g);
+      case "imp":   return impV(when, ev.g);
+      case "riser": return riserV(when, d, ev.g);
+    }
     ev.f.forEach(f => {
       if (ev.v === "pad") padV(f, when, d, ev.g, quick ? .3 : (ev.a || 1.1));
       else if (ev.v === "key") keyV(f, when, d, ev.g);
       else if (ev.v === "arp") arpV(f, when, ev.g);
       else if (ev.v === "bass") bassV(f, when, d, ev.g, quick);
       else if (ev.v === "bell") bellV(f, when, ev.g);
+      else if (ev.v === "lead") leadV(f, when, d, ev.g);
+      else if (ev.v === "bassl") basslV(f, when, d, ev.g);
     });
   }
 
