@@ -249,6 +249,20 @@
   @keyframes ptLeave {
     to { opacity:0; transform: perspective(1200px) translate3d(9%,0,-150px) rotateY(-12deg); }
   }
+  /* 입장 중엔 블러 조명을 꺼 프레임을 확보(특히 모바일 GPU) — 끝나면 페이드인 */
+  .aurora { transition:opacity .6s var(--ease); }
+  html.pt-enter .aurora { opacity:0; }
+  /* 모바일: 좁은 화면에선 기본 포즈가 안 읽힌다 — 포즈 확대, 템포 압축 */
+  @media (max-width:880px) {
+    html.pt-enter body { animation-duration:.5s; }
+    body.pt-leave { animation-duration:.4s; }
+    @keyframes ptEnter {
+      from { opacity:0; transform: perspective(900px) translate3d(16%,0,-110px) rotateY(-16deg); }
+    }
+    @keyframes ptLeave {
+      to { opacity:0; transform: perspective(900px) translate3d(16%,0,-110px) rotateY(-16deg); }
+    }
+  }
 
   @media (prefers-reduced-motion:reduce) {
     .aurora { animation:none; }
@@ -675,7 +689,7 @@ updatePP();
 
 // ───── 데모 → 소개 복귀 3D 전환 ─────
 // 빠지는 연출(.52s) 동안 index.html을 fetch로 미리 받아 도착 끊김을 없앤다.
-const PT_MS = 520, PT_CAP = 1200;
+const PT_MS = matchMedia("(max-width: 880px)").matches ? 400 : 520, PT_CAP = 1200;
 const ptWarmed = new Set();
 let ptBusy = false;
 
@@ -694,6 +708,11 @@ document.addEventListener("pointerover", e => {
   const u = ptTarget(e.target.closest("a[href]"));
   if (u) ptWarm(u.href);
 });
+// 모바일엔 호버가 없다 — 로드 후 유휴 시점에 소개 문서를 미리 받아둔다
+addEventListener("load", () => setTimeout(() => {
+  const u = ptTarget(document.querySelector('a.back[href*="index.html"]'));
+  if (u) ptWarm(u.href);
+}, 1200));
 document.addEventListener("click", e => {
   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
   const u = ptTarget(e.target.closest("a[href]"));
