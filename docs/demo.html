@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>프로덕트 데모 — Unplugin</title>
-<meta name="description" content="일은 Muze가, 시간은 당신이 — AI가 벌어준 시간이 삶이 되는 74초 제품 필름.">
+<meta name="description" content="일은 Muze가, 시간은 당신이 — AI가 벌어준 시간이 삶이 되는 75초 제품 필름. 사운드와 모션을 한 비트 그리드에서 설계.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   :root {
@@ -33,6 +33,13 @@
   .au2 { width:560px; height:560px; right:-200px; bottom:-220px;
     background:radial-gradient(circle, rgba(201,120,64,.3), transparent 65%); animation:drift 22s ease-in-out infinite alternate-reverse; }
   @keyframes drift { from { transform:translate(0,0); } to { transform:translate(60px,44px); } }
+  /* 비트 펄스 — rAF가 filmTime에서 계산하는 --pk(킥)/--bk(백비트)에 미세 반응. 절제가 원칙 */
+  .beatglow { position:fixed; left:50%; bottom:-130px; width:720px; height:280px; transform:translateX(-50%);
+    border-radius:50%; filter:blur(70px); pointer-events:none;
+    background:radial-gradient(ellipse, rgba(216,154,91,.5), transparent 70%);
+    opacity:calc(.5 * var(--pk, 0)); }
+  .prog .bar i { box-shadow:0 0 calc(12px * var(--pk, 0)) rgba(216,154,91,.75); }
+  .eyebrow { text-shadow:0 0 calc(14px * var(--bk, 0)) rgba(216,154,91,.85); }
   .grain { position:fixed; inset:0; pointer-events:none; opacity:.05;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
@@ -125,13 +132,29 @@
   .repline { display:inline-block; color:var(--amber); background:rgba(216,154,91,.12);
     border:1px solid rgba(216,154,91,.3); border-radius:8px; padding:5px 12px; font-weight:800; font-size:.88rem; }
 
-  /* 일출 비주얼 (오프라인 장면) — 수평선 위로 해가 떠오른다 */
+  /* 일출 비주얼 (오프라인 장면) — 수평선 위로 해가 떠오른다 (4비트 상승, 1비트 지연) */
   .sunrise { position:relative; width:min(440px,82vw); height:140px; overflow:hidden;
     border-bottom:2px solid var(--hair-d); }
   .sunrise .sun { position:absolute; left:50%; bottom:-30px; width:86px; height:86px; margin-left:-43px;
     border-radius:50%; background:radial-gradient(circle at 35% 35%, #F0C27B, #C97840);
-    box-shadow:0 0 70px rgba(216,154,91,.55); transform:translateY(96px); transition:transform 2.6s var(--ease) .5s; }
+    box-shadow:0 0 70px rgba(216,154,91,.55); transform:translateY(96px);
+    transition:transform 2.1429s var(--ease) .5357s; }
   .scene.on .sunrise .sun { transform:translateY(0); }
+
+  /* 큐 연출 오버레이 — 지속시간은 비트 파생 상수(1비트=.5357s). 큐 시각은 data-cue가 공급 */
+  .fxv { position:absolute; inset:0; pointer-events:none; opacity:0; }
+  .vigfx { background:radial-gradient(ellipse at 50% 46%, transparent 40%, rgba(5,10,7,.9) 94%); }
+  .scene.on .vigfx { animation:vigin 1.0714s var(--ease) both; animation-delay:var(--d,0s); } /* 2비트 조임 */
+  @keyframes vigin { to { opacity:1; } }
+  .blackfx { background:#050a07; }
+  .scene.on .blackfx { animation:blackin .2679s linear both; animation-delay:var(--d,0s); }   /* 반비트 암전 */
+  @keyframes blackin { to { opacity:1; } }
+  .flashfx { background:radial-gradient(circle at 50% 42%, rgba(246,244,236,.95), rgba(216,154,91,.5) 55%, transparent 80%); }
+  .scene.on .flashfx { animation:flashout .5357s var(--ease) both; }                          /* 드롭 1비트 플래시 */
+  @keyframes flashout { from { opacity:.9; } to { opacity:0; } }
+  .scene.on .punchfx { animation:punch .5357s var(--spring) both; }                           /* 드롭 스케일 펀치 */
+  @keyframes punch { from { transform:scale(1.045); } to { transform:scale(1); } }
+  .scene.cut { transition-duration:.15s; }   /* 드롭 장면 — 페이드 없이 끊어 친다 */
 
   /* Admin 피날레 */
   .dash { width:min(680px,94vw); text-align:left; }
@@ -238,6 +261,9 @@
     .aurora { animation:none; }
     .a, .kt .line span { animation:none !important; opacity:1 !important; transform:none !important; }
     .sunrise .sun { transition:none; transform:none; }
+    /* 비트 펄스·플래시·펀치·암전 제거 — 정보성 비네트만 제외 */
+    .beatglow { display:none; }
+    .flashfx, .punchfx, .vigfx, .blackfx { animation:none !important; opacity:0 !important; transform:none !important; }
     html.pt-enter body, body.pt-leave { animation:none; }
   }
 </style>
@@ -262,7 +288,7 @@ addEventListener("DOMContentLoaded", () => {
 </script>
 </head>
 <body>
-<div class="aurora au1"></div><div class="aurora au2"></div><div class="grain"></div>
+<div class="aurora au1"></div><div class="aurora au2"></div><div class="beatglow"></div><div class="grain"></div>
 
 <header>
   <a class="logo" href="index.html">un<i>plugin</i><small>PRODUCT DEMO</small></a>
@@ -271,42 +297,42 @@ addEventListener("DOMContentLoaded", () => {
 
 <div class="stage" id="stage">
 
-  <!-- 0 인트로 — 훅 -->
-  <section class="scene" data-dur="6200">
+  <!-- 0 인트로 (3마디) — 모든 등장 큐는 data-cue="bar:beat" (장면 로컬, 음악과 동일 그리드) -->
+  <section class="scene">
     <div class="kt">
-      <span class="line"><span style="--d:.1s">AI가 당신 대신 일하는 시대 —</span></span>
-      <span class="line"><span style="--d:.3s">그 시간은 <em>어디로</em> 갔나요?</span></span>
+      <span class="line"><span data-cue="0:0">AI가 당신 대신 일하는 시대 —</span></span>
+      <span class="line"><span data-cue="0:0.5">그 시간은 <em>어디로</em> 갔나요?</span></span>
     </div>
-    <p class="scsub a" style="--d:.9s">Unplugin은 일을 대신하지 않습니다.<br>AI가 벌어준 시간을 재고, 삶으로 되돌리는 74초.</p>
+    <p class="scsub a" data-cue="1:0">Unplugin은 일을 대신하지 않습니다.<br>AI가 벌어준 시간을 재고, 삶으로 되돌리는 75초.</p>
   </section>
 
-  <!-- 1 팁 카드 -->
-  <section class="scene" data-dur="10600">
+  <!-- 1 팁 카드 (5마디) — 카드 0:2/1:2, 칩 3:2: 멜로디 키와 한 큐 -->
+  <section class="scene">
     <div class="stack">
-      <div class="eyebrow a">01 — TIP</div>
-      <div class="kt"><span class="line"><span style="--d:.1s">귀찮은 일엔, <em>팁 카드</em>가 옵니다</span></span></div>
-      <div class="mailcard a pop" style="--d:.7s">
+      <div class="eyebrow a" data-cue="0:0">01 — TIP</div>
+      <div class="kt"><span class="line"><span data-cue="0:0.5">귀찮은 일엔, <em>팁 카드</em>가 옵니다</span></span></div>
+      <div class="mailcard a pop" data-cue="0:2">
         <div class="mh"><span class="dot" style="background:radial-gradient(circle at 32% 30%, #C97A6A, #5A2E26);">!</span><span class="who">지수의 할 일</span></div>
         <div class="ms">결항된 항공권, 환불받아야 하는데…</div>
         <div class="mb">콜센터 대기 40분, 약관 찾기, 실랑이.
 생각만 해도 미뤄지는 일.</div>
       </div>
-      <div class="mailcard a pop" style="--d:2.6s">
+      <div class="mailcard a pop" data-cue="1:2">
         <div class="mh"><span class="dot">U</span><span class="who">UNPLUGIN 팁 카드</span></div>
         <div class="ms">이 일, Muze에게 시키세요</div>
         <div class="mb">아래 문장을 복사해 보내면 끝 —
 예상 절약 <b style="color:var(--amber);">2시간 10분</b> · 아낄 감정 <b style="color:var(--amber);">●●●●●</b></div>
       </div>
-      <span class="chip ok a pop" style="--d:5.2s">💡 103가지 일의 "시키는 법"을 알고 있습니다</span>
+      <span class="chip ok a pop" data-cue="3:2">💡 103가지 일의 "시키는 법"을 알고 있습니다</span>
     </div>
   </section>
 
-  <!-- 2 Muze 실행 — 보고 한 줄 -->
-  <section class="scene" data-dur="11600">
+  <!-- 2 Muze 실행 (7마디) — 타이핑 16분음표, 5:3 전송=임팩트, 6마디째 비네트→6:2.5 암전(무음 갭) -->
+  <section class="scene">
     <div class="stack">
-      <div class="eyebrow a">02 — MUZE</div>
-      <div class="kt"><span class="line"><span style="--d:.1s">실행은 Muze, 마지막에 <em>한 줄</em>만</span></span></div>
-      <div class="win a pop" style="--d:.6s" id="muzeWin">
+      <div class="eyebrow a" data-cue="0:0">02 — MUZE</div>
+      <div class="kt"><span class="line"><span data-cue="0:0.5">실행은 Muze, 마지막에 <em>한 줄</em>만</span></span></div>
+      <div class="win a pop" data-cue="0:2" id="muzeWin">
         <div class="bar"><i></i><i></i><i></i><span class="wt">Muze에 보내기</span></div>
         <div class="row"><b>받는이</b><span id="muzeTo" class="typing"></span></div>
         <div class="row"><b>요청</b><span>항공권 환불</span></div>
@@ -316,14 +342,16 @@ addEventListener("DOMContentLoaded", () => {
       </div>
       <span class="chip ok big" id="muzeChip" style="opacity:0; transform:scale(.6); transition:all .5s var(--spring);">🙌 일은 Muze가 합니다 — Unplugin은 아무것도 대신하지 않습니다</span>
     </div>
+    <div class="fxv vigfx" data-cue="6:0"></div>
+    <div class="fxv blackfx" data-cue="6:2.5"></div>
   </section>
 
-  <!-- 3 완료 보고 → 자동 적립 -->
-  <section class="scene" data-dur="9400">
-    <div class="stack">
-      <div class="eyebrow a">03 — AUTO EARN</div>
-      <div class="kt"><span class="line"><span style="--d:.1s"><em id="earnCount">+0시간 0분</em> 자동 적립</span></span></div>
-      <div class="mailcard a pop" style="--d:.7s">
+  <!-- 3 완료 보고 = THE DROP (4마디) — 0:0에 메일 팝·딩동 벨·임팩트·플래시·펀치 한 큐 -->
+  <section class="scene cut">
+    <div class="stack punchfx">
+      <div class="eyebrow a" data-cue="0:0">03 — AUTO EARN</div>
+      <div class="kt"><span class="line"><span data-cue="0:0"><em id="earnCount">+0시간 0분</em> 자동 적립</span></span></div>
+      <div class="mailcard a pop" data-cue="0:0">
         <div class="mh"><span class="dot">M</span><span class="who">MUZE → jisoo.k7x2@unplugin.me</span></div>
         <div class="ms">[완료 보고] 항공권 환불 — 124,000원 환불 확정</div>
         <div class="mb">수수료 면제 조항(약관 9조) 근거로 전액 환불 승인.
@@ -335,74 +363,75 @@ addEventListener("DOMContentLoaded", () => {
       </div>
       <span class="chip ok a" id="zeroChip" style="opacity:0; transform:scale(.6); transition:all .5s var(--spring);">✍️ 지수가 직접 기록한 것: 0</span>
     </div>
+    <div class="fxv flashfx"></div>
   </section>
 
-  <!-- 4 시간 배당 잔고 -->
-  <section class="scene" data-dur="9000">
+  <!-- 4 시간 배당 잔고 (4마디) — 카운트 1:0(상승 런), 행 4개는 백비트 클랩(1:1/1:3/2:1/2:3) -->
+  <section class="scene">
     <div class="stack">
-      <div class="eyebrow a">04 — BALANCE</div>
-      <div class="kt"><span class="line"><span style="--d:.1s">쌓이는 건 포인트가 아니라, <em>시간</em></span></span></div>
-      <div class="dash a" style="--d:.6s">
+      <div class="eyebrow a" data-cue="0:0">04 — BALANCE</div>
+      <div class="kt"><span class="line"><span data-cue="0:0.5">쌓이는 건 포인트가 아니라, <em>시간</em></span></span></div>
+      <div class="dash a" data-cue="0:2">
         <div class="tiles">
           <div class="tile"><div class="v amber" id="cBal" style="font-size:1.45rem;">0시간 0분</div><div class="l">시간 배당 잔고 (11월)</div></div>
           <div class="tile"><div class="v" id="cEmo">0회</div><div class="l">아낀 감정 소모</div></div>
           <div class="tile"><div class="v" id="cTip">0건</div><div class="l">실행한 팁</div></div>
         </div>
         <div style="margin-top:14px;">
-          <div class="rowline a" style="--d:2.0s"><span>항공권 환불 — Muze</span><span class="badge">+2시간 10분</span></div>
-          <div class="rowline a" style="--d:2.4s"><span>통신사 위약금 문의 — Muze</span><span class="badge">+1시간 30분</span></div>
-          <div class="rowline a" style="--d:2.8s"><span>숙소 예약 변경 — Muze</span><span class="badge">+50분</span></div>
-          <div class="rowline a" style="--d:3.2s"><span>그 외 실행한 팁 2건</span><span class="badge w">+3시간 10분</span></div>
+          <div class="rowline a" data-cue="1:1"><span>항공권 환불 — Muze</span><span class="badge">+2시간 10분</span></div>
+          <div class="rowline a" data-cue="1:3"><span>통신사 위약금 문의 — Muze</span><span class="badge">+1시간 30분</span></div>
+          <div class="rowline a" data-cue="2:1"><span>숙소 예약 변경 — Muze</span><span class="badge">+50분</span></div>
+          <div class="rowline a" data-cue="2:3"><span>그 외 실행한 팁 2건</span><span class="badge w">+3시간 10분</span></div>
         </div>
       </div>
-      <span class="chip warn a pop" style="--d:4.4s">⏳ 잔고가 찼습니다 — 다음 무브먼트가 도착합니다</span>
+      <span class="chip warn a pop" data-cue="3:1">⏳ 잔고가 찼습니다 — 다음 무브먼트가 도착합니다</span>
     </div>
   </section>
 
-  <!-- 5 넥스트 무브먼트 -->
-  <section class="scene" data-dur="9800">
+  <!-- 5 넥스트 무브먼트 (4마디) — 카드 팝 3연타 = 연속 백비트 클랩(0:3/1:1/1:3)과 동일 큐 -->
+  <section class="scene">
     <div class="stack">
-      <div class="eyebrow a">05 — NEXT MOVE</div>
-      <div class="kt"><span class="line"><span style="--d:.1s">이 7시간 40분, <em>어디에 쓸까요?</em></span></span></div>
+      <div class="eyebrow a" data-cue="0:0">05 — NEXT MOVE</div>
+      <div class="kt"><span class="line"><span data-cue="0:0.5">이 7시간 40분, <em>어디에 쓸까요?</em></span></span></div>
       <div class="duo">
-        <div class="mailcard a pop" style="--d:.7s; width:min(300px,88vw);">
+        <div class="mailcard a pop" data-cue="0:3" style="width:min(300px,88vw);">
           <div class="mh"><span class="dot">🤝</span><span class="who">관계</span></div>
           <div class="ms">동네 러닝 모임</div>
           <div class="mb">토 7:00 한강 공원 — 지수 타입의 6명이 이미 달리고 있어요.</div>
         </div>
-        <div class="mailcard a pop" style="--d:1.5s; width:min(300px,88vw);">
+        <div class="mailcard a pop" data-cue="1:1" style="width:min(300px,88vw);">
           <div class="mh"><span class="dot">🏺</span><span class="who">배움</span></div>
           <div class="ms">도자기 원데이 클래스</div>
           <div class="mb">일 14:00 · 2시간 — 지금 잔고로 충분합니다.</div>
         </div>
-        <div class="mailcard a pop" style="--d:2.3s; width:min(300px,88vw);">
+        <div class="mailcard a pop" data-cue="1:3" style="width:min(300px,88vw);">
           <div class="mh"><span class="dot">🍊</span><span class="who">오감</span></div>
           <div class="ms">토요일 아침 시장 산책</div>
           <div class="mb">제철 과일 냄새부터 — 화면에는 없는 감각.</div>
         </div>
       </div>
-      <span class="chip ok a pop" style="--d:3.6s">🌱 쌓아두는 잔고가 아니라, 쓰라고 버는 시간</span>
+      <span class="chip ok a pop" data-cue="2:3">🌱 쌓아두는 잔고가 아니라, 쓰라고 버는 시간</span>
     </div>
   </section>
 
-  <!-- 6 오프라인 — 메시지 -->
-  <section class="scene" data-dur="7400">
+  <!-- 6 오프라인 (3마디) — 드럼 아웃, 스웰 피크. 2:1~ 킥 램프와 함께 엔딩으로 -->
+  <section class="scene">
     <div class="stack">
-      <div class="sunrise a" style="--d:.2s" role="img" aria-label="수평선 위로 떠오르는 해"><div class="sun"></div></div>
-      <div class="kt"><span class="line"><span style="--d:.5s">토요일 아침, 지수는 <em>화면 밖</em>에 있다</span></span></div>
-      <p class="scsub a" style="--d:1.2s">AI는 나를 나태하게 만드는 게 아니라,<br>사람으로서 성장할 시간을 벌어줍니다.</p>
+      <div class="sunrise a" data-cue="0:0" role="img" aria-label="수평선 위로 떠오르는 해"><div class="sun"></div></div>
+      <div class="kt"><span class="line"><span data-cue="1:0">토요일 아침, 지수는 <em>화면 밖</em>에 있다</span></span></div>
+      <p class="scsub a" data-cue="1:2">AI는 나를 나태하게 만드는 게 아니라,<br>사람으로서 성장할 시간을 벌어줍니다.</p>
     </div>
   </section>
 
-  <!-- 7 엔딩 -->
-  <section class="scene" data-dur="10000">
+  <!-- 7 엔딩 (5마디) — 0:0 히트, 2:0 CTA = 로고 스팅, 링아웃 -->
+  <section class="scene">
     <div class="stack">
       <div class="kt">
-        <span class="line"><span style="--d:.1s">un<em>plugin</em></span></span>
+        <span class="line"><span data-cue="0:0">un<em>plugin</em></span></span>
       </div>
-      <p class="scsub a" style="--d:.6s">AI가 벌어준 시간의, 코치</p>
-      <span class="chip ok big a pop" style="--d:1.4s">✍️ 수동 기록 0 · 설정은 한 줄</span>
-      <div class="ctas a" style="--d:2.2s">
+      <p class="scsub a" data-cue="0:2">AI가 벌어준 시간의, 코치</p>
+      <span class="chip ok big a pop" data-cue="1:1">✍️ 수동 기록 0 · 설정은 한 줄</span>
+      <div class="ctas a" data-cue="2:0">
         <a class="btn btn-accent" href="test.html">내 타입으로 시작하기 →</a>
         <a class="btn btn-glass" href="index.html">Unplugin 소개 보기</a>
         <button class="btn btn-glass" onclick="goto(0,true)">↺ 다시 보기</button>
@@ -424,49 +453,51 @@ addEventListener("DOMContentLoaded", () => {
 
 <script>
 // ───────── 타임라인 엔진 ─────────
-const scenes = [...document.querySelectorAll(".scene")];
-const DUR = scenes.map(s => +s.dataset.dur);
-const TOTAL = DUR.reduce((a, b) => a + b, 0);
-const NAMES = ["인트로", "팁 카드", "Muze 실행", "자동 적립", "잔고", "무브먼트", "오프라인", "엔딩"];
-
-// 분 단위 → "N시간 M분" (카운트업 공용 포맷)
-const HM = v => { const m = Math.round(v); return Math.floor(m / 60) + "시간 " + (m % 60) + "분"; };
-
-// 장면별 시간 지정 액션 — type(타이핑) / show(등장) / cls(클래스) / count(카운트업)
-const ACTIONS = {
-  2: [
-    { at: 1100, type: { el: "muzeTo", text: "Muze", speed: 90 } },
-    { at: 2100, type: { el: "muzeBody", text: "하늘항공 11/21 결항 건 환불 신청해줘.\n수수료 면제 조항(약관 9조) 근거로 전액 환불 요구,\n입금 확인까지 끝내줘.", speed: 26 } },
-    { at: 5400, type: { el: "reportLine", text: "끝나면 jisoo.k7x2@unplugin.me 로 완료 보고 메일 보내줘", speed: 30 } },
-    { at: 8000, cls: { el: "sendBtn", add: "pulse" } },
-    { at: 8900, cls: { el: "muzeWin", add: "sent" } },
-    { at: 9500, show: "muzeChip" },
-  ],
-  3: [
-    { at: 2500, count: { el: "earnCount", to: 130, dur: 1700, fmt: v => "+" + HM(v) } },
-    { at: 4800, show: "zeroChip" },
-  ],
-  4: [
-    { at: 900,  count: { el: "cBal", to: 460, dur: 1700, fmt: HM } },
-    { at: 1050, count: { el: "cEmo", to: 23, dur: 1400, fmt: v => Math.round(v) + "회" } },
-    { at: 1200, count: { el: "cTip", to: 5, dur: 1100, fmt: v => Math.round(v) + "건" } },
-  ],
-};
-
-// ──[MUSIC-PURE-BEGIN] 생성 음악 악보 — DOM·AudioContext 무관 순수 함수 (node 테스트 가능) ─────
-// 음악 시계는 필름 시계(filmNow)에 종속된다. 악보는 filmTime(ms) 절대 시각의 이벤트 배열.
-// 런치 필름 스코어 — 112 BPM 드라이브. 아크: 임팩트+긴장 펄스(인트로) → 비트 진입(팁) →
-// 풀 그루브+16분(Muze) → 서스펜스 갭 → THE DROP(적립 29100ms) → 앤섬(잔고·무브먼트) →
-// 드럼 아웃 스웰(일출) → 비트 복귀 → 마무리 히트+로고 스팅(엔딩, 페이드아웃 없음)
-// 퍼커션 그리드도 전부 filmTime 절대 시각 — 시킹 후에도 그리드가 밀리지 않는다.
+// ──[MUSIC-PURE-BEGIN] 단일 큐시트 — DOM·AudioContext 무관 순수 블록 (node 테스트 가능) ─────
+// 후시 스코어링이 아니라 공동 설계: BPM 112 비트 그리드(비트 535.71ms, 마디 2142.86ms)가
+// 필름 전체의 좌표계다. 장면 길이(마디 수)·모션 큐(bar:beat)·악보가 전부 여기서 파생되고,
+// 손으로 맞춘 ms는 남지 않는다. 장면 전환은 항상 마디 경계. 모션 큐는 HTML의
+// data-cue="bar:beat"(장면 로컬)와 actions()가 들고, 둘 다 같은 q() 변환을 쓴다.
 const MUSIC = (() => {
   const N = m => 440 * Math.pow(2, (m - 69) / 12);   // MIDI → Hz
+  const BPM = 112, BEAT = 60000 / BPM, BAR = 4 * BEAT, S16 = BEAT / 4;
 
-  function buildScore(durs) {
-    const B = [0]; durs.forEach(d => B.push(B[B.length - 1] + d));   // 장면 경계 누적(ms)
-    const BPM = 112, BEAT = 60000 / BPM, BAR = BEAT * 4, S16 = BEAT / 4;
-    const ev = [];
-    // 지속·선율 음색
+  // ── 큐시트 척추: 장면 = 마디 수 (합 35마디 = 정확히 75.0초) ──
+  const SCENE_BARS = [3, 5, 7, 4, 4, 4, 3, 5];
+  const q = (b, qt) => b * BAR + qt * BEAT;          // 장면 로컬 bar:beat → ms
+  const durs = () => SCENE_BARS.map(b => b * BAR);
+  const bounds = () => { const B = [0]; SCENE_BARS.forEach(b => B.push(B[B.length - 1] + b * BAR)); return B; };
+
+  // 분 → "N시간 M분"
+  const HM = v => { const m = Math.round(v); return Math.floor(m / 60) + "시간 " + (m % 60) + "분"; };
+
+  // ── JS 구동 모션 큐 — 음악과 같은 그리드. 타이핑=16분음표/char, 카운트업=상승 런과 동일 큐·동일 길이 ──
+  function actions() {
+    return {
+      2: [
+        { at: q(0, 3), type: { el: "muzeTo", text: "Muze", speed: S16 } },
+        { at: q(1, 0), type: { el: "muzeBody", text: "하늘항공 11/21 결항 건,\n약관 9조로 전액 환불 신청.\n입금까지 확인해줘.", speed: S16 } },
+        { at: q(4, 0), type: { el: "reportLine", text: "끝나면 jisoo.k7x2@unplugin.me 로 완료 보고 메일!", speed: S16 / 2 } },
+        { at: q(5, 2), cls: { el: "sendBtn", add: "pulse" } },
+        { at: q(5, 3), cls: { el: "muzeWin", add: "sent" } },
+        { at: q(6, 0), show: "muzeChip" },
+      ],
+      3: [   // 드롭 장면: 카운트업은 1마디째(상승 아르페지오 런과 같은 큐), 길이 = 16분음표 12개
+        { at: q(1, 0), count: { el: "earnCount", to: 130, dur: 12 * S16, fmt: v => "+" + HM(v) } },
+        { at: q(2, 1), show: "zeroChip" },
+      ],
+      4: [
+        { at: q(1, 0), count: { el: "cBal", to: 460, dur: 12 * S16, fmt: HM } },
+        { at: q(1, 0), count: { el: "cEmo", to: 23, dur: 10 * S16, fmt: v => Math.round(v) + "회" } },
+        { at: q(1, 0), count: { el: "cTip", to: 5, dur: 8 * S16, fmt: v => Math.round(v) + "건" } },
+      ],
+    };
+  }
+
+  // ── 악보 — 큐시트에서 파생. 반환: { ev, pulse(킥 구간), back(백비트 구간) } ──
+  function buildScore() {
+    const B = bounds();
+    const ev = [], pulse = [], back = [];
     const pad  = (t, d, ms, g = .5, a) => ev.push({ t, d, v: "pad",  f: ms.map(N), g, a });
     const key  = (t, m, g = .4, d = 1500) => ev.push({ t, d, v: "key",  f: [N(m)], g });
     const arp  = (t, m, g = .22) => ev.push({ t, d: 450, v: "arp",  f: [N(m)], g });
@@ -475,7 +506,6 @@ const MUSIC = (() => {
     const lead = (t, m, g = .5, d = 380) => ev.push({ t, d, v: "lead", f: [N(m)], g });
     const bl   = (t, m, g = .55, d = 210) => ev.push({ t, d, v: "bassl", f: [N(m)], g });
     const fx   = (t, v, d, g = .4) => ev.push({ t, d, v, f: [], g });
-    // 리듬 음색 (전부 합성)
     const kick = (t, g = .8) => ev.push({ t, d: 320, v: "kick", f: [], g });
     const hat  = (t, g = .18, o = 0) => ev.push({ t, d: o ? 240 : 90, v: "hat", f: [], g, o });
     const clap = (t, g = .45) => ev.push({ t, d: 260, v: "clap", f: [], g });
@@ -483,14 +513,12 @@ const MUSIC = (() => {
     const imp  = (t, g = 1) => ev.push({ t, d: 900, v: "imp", f: [], g });
     const riser = (t, d, g = .6) => ev.push({ t, d, v: "riser", f: [], g });
 
-    // 그루브 1마디: 4온더플로어 킥 + 햇(lvl3=16분, lvl2=오프비트 8분) + 백비트 클랩
-    //            + 싱커페이션·옥타브 점프 신스 베이스 리프
-    function grooveBar(t0, r, lvl) {
+    function grooveBar(t0, r, lvl) {   // 4온더플로어 + 햇 + 백비트 클랩 + 싱커페이션 베이스 리프
       for (let k = 0; k < 4; k++) kick(t0 + k * BEAT, lvl >= 3 ? .88 : .75);
       if (lvl >= 2) { clap(t0 + BEAT); clap(t0 + 3 * BEAT); }
       if (lvl >= 3) {
         for (let h = 0; h < 16; h++) hat(t0 + h * S16, h % 4 === 2 ? .24 : (h % 2 ? .13 : .1));
-        hat(t0 + 3.5 * BEAT, .26, 1);   // 오픈햇
+        hat(t0 + 3.5 * BEAT, .26, 1);
       } else {
         for (let h = 1; h < 8; h += 2) hat(t0 + h * 2 * S16, .18);
       }
@@ -501,113 +529,120 @@ const MUSIC = (() => {
       for (let b = 0; b < bars; b++) grooveBar(a + b * BAR, roots[b % roots.length], lvl);
     };
 
-    // ① 인트로 — 1초 안의 임팩트 + 숨죽인 하프타임 펄스, 라이저로 비트 예고 (Am)
+    // ① 인트로 3마디 — 0:0 임팩트, 하프타임 펄스, 3마디째 라이저+스네어 빌드 (Am→F)
     let t = B[0];
-    imp(t + 80, 1);
-    pad(t + 120, 3000, [45, 57, 60, 64], .5, .2);
-    for (let n = 0; n < 5; n++) { kick(t + 80 + n * 2 * BEAT, .6); bl(t + 80 + n * 2 * BEAT, 45, .4, 320); }
-    for (let n = 1; n < 10; n++) hat(t + 80 + n * BEAT, .12);
-    key(t + 1400, 64, .34); key(t + 2700, 69, .3); key(t + 3900, 67, .28);
-    pad(t + 3400, 2600, [41, 57, 60, 65], .45, .8);
-    riser(t + 4650, 1500, .55);
-    for (let n = 0; n < 8; n++) snr(t + 5100 + n * S16, .16 + n * .03);   // 스네어 빌드
+    imp(t, 1);
+    pad(t, 2 * BAR, [45, 57, 60, 64], .5, .2);
+    [[0, 0], [0, 2], [1, 0], [1, 2], [2, 0]].forEach(([b, qt]) => {
+      kick(t + q(b, qt), .6); bl(t + q(b, qt), 45, .4, 320);
+    });
+    for (let n = 1; n < 8; n++) hat(t + n * BEAT, .12);
+    key(t + q(0, 2), 64, .34); key(t + q(1, 0), 69, .3); key(t + q(1, 2), 67, .28);
+    pad(t + q(1, 2), 1.5 * BAR, [41, 57, 60, 65], .45, .8);
+    riser(t + q(2, 0), BAR, .55);
+    for (let n = 0; n < 8; n++) snr(t + q(2, 0) + n * 2 * S16, .14 + n * .03);
 
-    // ② 팁 카드 — 비트 진입: 4온더플로어 시작 (Am Am C F), 5마디째 필→라이저
+    // ② 팁 5마디 — 0:0 비트 진입, 모션 큐(카드 0:2/1:2, 칩 3:2)에 멜로디 랜딩, 5마디째 필→라이저
     t = B[1];
-    const a1 = t + 20;
-    imp(a1, .9);
-    groove(a1, 4, [45, 45, 48, 41], 2);
+    imp(t, .9);
+    groove(t, 4, [45, 45, 48, 41], 2);
+    pulse.push([t, t + 5 * BAR]); back.push([t, t + 4 * BAR]);
     [[0, [45, 57, 60, 64]], [1, [45, 57, 60, 64]], [2, [48, 55, 60, 64]], [3, [41, 53, 57, 60]]]
-      .forEach(([b, c]) => pad(a1 + b * BAR, BAR, c, .5, .25));
-    key(a1 + 5 * BEAT, 76, .4); key(a1 + 9 * BEAT, 74, .36); key(a1 + 10 * BEAT, 72, .36);
-    key(a1 + 13 * BEAT, 69, .34);
-    const f1 = a1 + 4 * BAR;                                   // 필 마디
-    kick(f1, .8); kick(f1 + BEAT, .8); kick(f1 + 2 * BEAT, .8);
-    for (let n = 0; n < 7; n++) snr(f1 + 2 * BEAT + n * S16, .18 + n * .04);
-    riser(f1 + 100, 1880, .6);
+      .forEach(([b, c]) => pad(t + b * BAR, BAR, c, .5, .25));
+    key(t + q(0, 2), 72, .36);                       // 카드1 팝
+    key(t + q(1, 2), 76, .4);                        // 카드2(팁) 팝
+    key(t + q(2, 2), 74, .36);
+    key(t + q(3, 2), 72, .36);                       // 칩 랜딩
+    kick(t + q(4, 0), .8); kick(t + q(4, 1), .8); kick(t + q(4, 2), .8);
+    for (let n = 0; n < 8; n++) snr(t + q(4, 2) + n * S16, .18 + n * .04);
+    riser(t + q(4, 0), BAR, .6);
 
-    // ③ Muze 실행 — 풀 그루브 + 16분 아르페지오, 전송 라이저→임팩트 → 서스펜스 갭
+    // ③ Muze 7마디 — 그루브+16분 아르페지오(타이핑과 동일 간격), 5:3 전송 임팩트,
+    //    6마디째 서스펜스(비네트)·6:2.5부터 무음 갭(블랙아웃) → 드롭
     t = B[2];
-    const a2 = t + 20;
-    imp(a2, .95);
-    groove(a2, 4, [45, 48, 43, 45], 3);
-    [[0, [45, 57, 60, 64]], [1, [48, 55, 60, 64]], [2, [43, 55, 59, 62]], [3, [45, 57, 60, 64]]]
-      .forEach(([b, c]) => pad(a2 + b * BAR, BAR, c, .48, .2));
+    imp(t, .95);
+    groove(t, 5, [45, 48, 43, 45, 48], 3);
+    pulse.push([t, t + 6 * BAR]); back.push([t, t + 5 * BAR]);
+    [[0, [45, 57, 60, 64]], [1, [48, 55, 60, 64]], [2, [43, 55, 59, 62]], [3, [45, 57, 60, 64]], [4, [48, 55, 60, 64]]]
+      .forEach(([b, c]) => pad(t + b * BAR, BAR, c, .48, .2));
     const AP = [69, 72, 76, 79];
-    for (let b = 1; b < 4; b++) for (let h = 0; h < 16; h++)
-      arp(a2 + b * BAR + h * S16, AP[(h + b) % 4], .13);
-    riser(t + 7750, 1080, .6);                                 // 전송 빌드(24550→)
-    fx(t + 8750, "whoosh", 480, .6);
-    imp(t + 8920, .85);                                        // 전송 임팩트(25720)
-    // 서스펜스: 비트 걷어내고 드롭으로 — 저음 펄스 + 가속 스네어 + 롱 라이저
-    for (let n = 0; n < 5; n++) bl(t + 9100 + n * BEAT, 45, .35, 300);
-    for (let n = 0; n < 8; n++) snr(t + 9640 + n * S16 * 2, .15 + n * .04);
-    riser(t + 9900, 2380, .7);                                 // 26700 → 29080, 드롭 직전 갭까지
+    for (let b = 1; b < 5; b++) for (let h = 0; h < 16; h++)
+      arp(t + b * BAR + h * S16, AP[(h + b) % 4], .13);
+    riser(t + q(4, 3), 4 * BEAT, .6);                // 전송 빌드 → 5:3 임팩트
+    kick(t + q(5, 0), .8); kick(t + q(5, 1), .8); kick(t + q(5, 2), .8);
+    for (let n = 0; n < 6; n++) snr(t + q(5, 0) + n * 2 * S16, .15 + n * .04);
+    fx(t + q(5, 2.5), "whoosh", BEAT * .9, .6);
+    imp(t + q(5, 3), .85);                           // 메일 창 플라이아웃과 한 큐
+    bl(t + q(6, 0), 45, .35, 300); bl(t + q(6, 1), 45, .38, 300); bl(t + q(6, 2), 45, .4, 300);
+    [0, .5, 1, 1.5, 2].forEach((qq, i) => snr(t + q(6, qq), .16 + i * .05));
+    riser(t + q(6, 0), 2.5 * BEAT, .7);              // 6:2.5에서 컷 → 1.5비트 무음 갭
 
-    // ④ 자동 적립 — THE DROP: 딩동 벨(29100)과 동시에 풀 드럼 + 브라이트 리드 (C C F G)
+    // ④ 적립 4마디 = THE DROP — 0:0에 벨·임팩트·메일 팝·플래시·펀치가 한 큐.
+    //    카운트업(1:0)은 상승 런과 같은 큐·같은 길이(16분 12개)
     t = B[3];
-    const a3 = t + 700;                                        // 29100 — 메일 팝·벨 정렬
-    bell(a3, 76, .6); bell(a3 + 180, 79, .6);
-    imp(a3, 1.1);
-    groove(a3, 4, [48, 48, 41, 43], 3);
+    bell(t, 76, .62); bell(t + BEAT / 2, 79, .62);   // 딩-동 = 반비트 간격
+    imp(t, 1.1);
+    groove(t, 4, [48, 48, 41, 43], 3);
+    pulse.push([t, t + 4 * BAR]); back.push([t, t + 4 * BAR]);
     [[0, [48, 55, 60, 64, 67]], [1, [48, 55, 60, 64, 67]], [2, [41, 53, 57, 60, 65]], [3, [43, 55, 59, 62, 67]]]
-      .forEach(([b, c]) => pad(a3 + b * BAR, BAR, c, .62, .15));
+      .forEach(([b, c]) => pad(t + b * BAR, BAR, c, .62, .15));
     const HOOK = [[0, 72], [.5, 76], [1, 79], [1.75, 76], [2.5, 72], [3, 74], [3.5, 76],
                   [4.5, 79], [5, 81], [5.5, 79], [6, 76], [6.75, 74], [7.5, 72]];
-    for (let r = 0; r < 2; r++) HOOK.forEach(([bo, m]) => lead(a3 + r * 2 * BAR + bo * BEAT, m, .5));
+    for (let r = 0; r < 2; r++) HOOK.forEach(([bo, m]) => lead(t + r * 2 * BAR + bo * BEAT, m, .5));
     [60, 62, 64, 67, 69, 72, 74, 76, 79, 81, 84, 88]
-      .forEach((m, i) => arp(t + 2500 + i * S16, m, .3));      // 카운트업 상승 런
+      .forEach((m, i) => arp(t + BAR + i * S16, m, .3));   // 카운트업과 동일 큐의 상승 런
 
-    // ⑤ 잔고 — 드라이브 유지, 앤섬 파워 보이싱 (C Am F G)
+    // ⑤ 잔고 4마디 — 앤섬 유지. 타일 카운트 1:0, 행 4개는 백비트(1:1/1:3/2:1/2:3) = 클랩과 한 큐
     t = B[4];
-    const a4 = t + 20;
-    groove(a4, 4, [48, 45, 41, 43], 3);
+    groove(t, 4, [48, 45, 41, 43], 3);
+    pulse.push([t, t + 4 * BAR]); back.push([t, t + 4 * BAR]);
     [[0, [48, 55, 60, 64, 71]], [1, [45, 57, 60, 64, 67]], [2, [41, 53, 57, 60, 65]], [3, [43, 55, 59, 62, 67]]]
-      .forEach(([b, c]) => pad(a4 + b * BAR, BAR, c, .6, .2));
+      .forEach(([b, c]) => pad(t + b * BAR, BAR, c, .6, .2));
     [[.5, 72], [1, 76], [1.75, 79], [4.5, 76], [5, 72], [6.75, 74],
      [8.5, 79], [9, 81], [9.75, 84], [12.5, 79], [13, 76], [14, 74]]
-      .forEach(([bo, m]) => lead(a4 + bo * BEAT, m, .42));
+      .forEach(([bo, m]) => lead(t + bo * BEAT, m, .42));
 
-    // ⑥ 무브먼트 — 그루브 위 카드 팝 3연타(0.7/1.5/2.3s) 액센트 + 상행 리드 (F C G Am)
+    // ⑥ 무브먼트 4마디 — 카드 팝 3연타 = 연속 백비트 클랩(0:3/1:1/1:3)과 동일 큐 + 상행 리드
     t = B[5];
-    const a5 = t + 20;
-    groove(a5, 4, [41, 48, 43, 45], 3);
+    groove(t, 4, [41, 48, 43, 45], 3);
+    pulse.push([t, t + 4 * BAR]); back.push([t, t + 4 * BAR]);
     [[0, [41, 53, 57, 60]], [1, [48, 55, 60, 64]], [2, [43, 55, 59, 62]], [3, [45, 57, 60, 64]]]
-      .forEach(([b, c]) => pad(a5 + b * BAR, BAR, c, .55, .2));
-    clap(t + 700, .55); lead(t + 700, 72, .6, 500);
-    clap(t + 1500, .55); lead(t + 1500, 76, .6, 500);
-    imp(t + 2300, .75); lead(t + 2300, 79, .65, 700);
-    key(t + 4200, 76, .34); key(t + 6300, 74, .32); key(t + 7300, 76, .34);
-    pad(t + 8600, 1150, [41, 53, 57], .4, .5);                 // 일출로 가는 풀백
+      .forEach(([b, c]) => pad(t + b * BAR, BAR, c, .55, .2));
+    clap(t + q(0, 3), .6); lead(t + q(0, 3), 72, .6, BEAT);
+    clap(t + q(1, 1), .6); lead(t + q(1, 1), 76, .6, BEAT);
+    imp(t + q(1, 3), .7);  lead(t + q(1, 3), 79, .65, 1.5 * BEAT);
+    key(t + q(2, 1), 76, .34); key(t + q(3, 1), 74, .32);   // 칩(2:3) 전후 멜로디
 
-    // ⑦ 일출 — 드럼 아웃, 와이드 스웰 피크 → 말미 킥 3발 + 라이저로 비트 복귀 예고
+    // ⑦ 일출 3마디 — 드럼 아웃·와이드 스웰 피크(2:0), 2:1~2:3 킥 램프 + 라이저로 복귀
     t = B[6];
-    fx(t + 100, "air", 6400, .45);
-    pad(t + 200, 3600, [41, 53, 57, 60, 64], .6, 1.8); bass(t + 200, 41, 3500, .55);
-    pad(t + 3700, 3300, [48, 60, 64, 67, 72, 76], .68, 1.4); bass(t + 3700, 36, 3200, .55);
-    lead(t + 1500, 76, .4, 1600); lead(t + 4000, 79, .45, 1800);
-    kick(t + 5900, .6); kick(t + 5900 + BEAT, .7); kick(t + 5900 + 2 * BEAT, .8);
-    riser(t + 5800, 1580, .6);
+    fx(t, "air", 3 * BAR - 300, .45);
+    pad(t, 2 * BAR, [41, 53, 57, 60, 64], .6, 2 * BEAT / 1000);
+    bass(t, 41, 2 * BAR - 100, .55);
+    pad(t + 2 * BAR, BAR, [48, 60, 64, 67, 72, 76], .68, BEAT / 1000);
+    bass(t + 2 * BAR, 36, BAR - 100, .55);
+    lead(t + q(1, 0), 76, .4, 2 * BEAT); lead(t + q(2, 0), 79, .45, 2 * BEAT);
+    kick(t + q(2, 1), .6); kick(t + q(2, 2), .7); kick(t + q(2, 3), .8);
+    riser(t + q(2, 0), BAR, .6);                     // 다음 장면 0:0 임팩트로 꽂힌다
+    pulse.push([t + q(2, 1), t + 3 * BAR]);
 
-    // ⑧ 엔딩 — 파이널 그루브 2마디 → 마무리 히트 + 로고 스팅 (페이드아웃 없음, 링아웃)
+    // ⑧ 엔딩 5마디 — 0:0 히트+파이널 그루브 2마디, 2:0 CTA와 함께 로고 스팅, 링아웃(페이드아웃 없음)
     t = B[7];
-    const a7 = t + 20;
-    imp(a7, 1);
-    groove(a7, 2, [48, 43], 3);
+    imp(t, 1);
+    groove(t, 2, [48, 43], 3);
+    pulse.push([t, t + 2 * BAR + BEAT]); back.push([t, t + 2 * BAR]);
     [[0, [48, 55, 60, 64, 67]], [1, [43, 55, 59, 62, 67]]]
-      .forEach(([b, c]) => pad(a7 + b * BAR, BAR, c, .6, .15));
-    lead(a7 + .5 * BEAT, 72, .5); lead(a7 + BEAT, 76, .5); lead(a7 + 1.75 * BEAT, 79, .55);
-    lead(a7 + 4.5 * BEAT, 76, .45); lead(a7 + 5 * BEAT, 74, .45);
-    bell(t + 1450, 84, .35);                                   // "수동 기록 0" 칩(1.4s)
-    const s0 = a7 + 2 * BAR;                                   // 로고 스팅 "un · plug · in"
-    kick(s0, .85);
-    lead(s0, 72, .6, 240); lead(s0 + BEAT / 2, 79, .6, 240);
-    imp(s0 + BEAT, .95);
-    lead(s0 + BEAT, 84, .7, 1200); bell(s0 + BEAT, 84, .55);
-    pad(s0 + BEAT, 3400, [48, 55, 60, 64, 67, 72], .6, .02);
-    bass(s0 + BEAT, 36, 3300, .5);
+      .forEach(([b, c]) => pad(t + b * BAR, BAR, c, .6, .15));
+    lead(t + q(0, .5), 72, .5); lead(t + q(0, 1), 76, .5); lead(t + q(0, 1.75), 79, .55);
+    lead(t + q(1, .5), 76, .45); lead(t + q(1, 1), 74, .45);
+    bell(t + q(1, 1), 84, .35);                      // "수동 기록 0" 칩과 한 큐
+    kick(t + q(2, 0), .85);                          // 로고 스팅 "un · plug · in"
+    lead(t + q(2, 0), 72, .6, 240); lead(t + q(2, .5), 79, .6, 240);
+    imp(t + q(2, 1), .95);
+    lead(t + q(2, 1), 84, .7, 1200); bell(t + q(2, 1), 84, .55);
+    pad(t + q(2, 1), 2 * BAR - 600, [48, 55, 60, 64, 67, 72], .6, .02);
+    bass(t + q(2, 1), 36, 2 * BAR - 700, .5);
 
-    return ev.sort((a, b) => a.t - b.t);
+    return { ev: ev.sort((a, b) => a.t - b.t), pulse, back };
   }
 
   // 시킹: t0 이상인 첫 이벤트 인덱스 — 과거 노트는 절대 예약하지 않는다
@@ -630,9 +665,23 @@ const MUSIC = (() => {
       .map(e => ({ ev: e, off: t0 - e.t }));
   }
 
-  return { N, buildScore, startIndex, collect, sustainAt };
+  return { N, BPM, BEAT, BAR, S16, SCENE_BARS, q, durs, bounds, actions, buildScore,
+           startIndex, collect, sustainAt };
 })();
 // ──[MUSIC-PURE-END] ─────────────────────────────────────────────
+
+const scenes = [...document.querySelectorAll(".scene")];
+const DUR = MUSIC.durs();            // 장면 길이 = 큐시트 마디 수 × 마디 (data-dur 하드코딩 폐기)
+const TOTAL = DUR.reduce((a, b) => a + b, 0);
+const SCORE = MUSIC.buildScore();    // 악보 이벤트 + 킥(pulse)/백비트(back) 구간
+const ACTIONS = MUSIC.actions();     // JS 구동 모션 큐 — 악보와 같은 그리드에서 파생
+const NAMES = ["인트로", "팁 카드", "Muze 실행", "자동 적립", "잔고", "무브먼트", "오프라인", "엔딩"];
+
+// data-cue="bar:beat"(장면 로컬) → --d 변환 — CSS 등장 지연도 전부 비트 그리드에서 파생
+scenes.forEach(sc => sc.querySelectorAll("[data-cue]").forEach(el => {
+  const [b, qt] = el.dataset.cue.split(":").map(Number);
+  el.style.setProperty("--d", ((b * MUSIC.BAR + qt * MUSIC.BEAT) / 1000).toFixed(4) + "s");
+}));
 
 let cur = -1, playing = true, sceneStart = 0, sceneElapsed = 0;
 let timers = [], rafId = null;
@@ -821,7 +870,8 @@ const endScrub = () => {
 seekEl.addEventListener("pointerup", endScrub);
 seekEl.addEventListener("pointercancel", endScrub);
 
-// 진행 바 + 시간
+// 진행 바 + 시간 + 비트 펄스 (--pk 킥 / --bk 백비트 클랩) — filmTime 기준이라 소리 꺼짐·시킹과 무관하게 정합
+const rootStyle = document.documentElement.style;
 (function raf(t) {
   if (cur >= 0) {
     const el = playing ? performance.now() - sceneStart : sceneElapsed;
@@ -829,6 +879,19 @@ seekEl.addEventListener("pointercancel", endScrub);
     document.getElementById("pbar").style.width = (done / TOTAL * 100) + "%";
     const s = Math.floor(done / 1000);
     document.getElementById("tlabel").textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+    if (!reduce) {
+      let pk = 0, bk = 0;
+      for (const [a, b] of SCORE.pulse) if (done >= a && done < b) {
+        pk = Math.max(0, 1 - ((done - a) % MUSIC.BEAT) / 170); break;
+      }
+      for (const [a, b] of SCORE.back) if (done >= a && done < b) {
+        const d2 = (done - a) % (2 * MUSIC.BEAT);
+        if (d2 >= MUSIC.BEAT) bk = Math.max(0, 1 - (d2 - MUSIC.BEAT) / 170);
+        break;
+      }
+      rootStyle.setProperty("--pk", pk.toFixed(3));
+      rootStyle.setProperty("--bk", bk.toFixed(3));
+    }
   }
   requestAnimationFrame(raf);
 })();
@@ -868,7 +931,7 @@ const audio = (() => {
     delayIn.connect(dl); dl.connect(fl); fl.connect(fb); fb.connect(dl);
     const wet = ctx.createGain(); wet.gain.value = .6;
     dl.connect(wet); wet.connect(master);
-    events = MUSIC.buildScore(DUR);
+    events = SCORE.ev;   // 큐시트에서 이미 파생됨
   }
   function duckAt(when) {   // 킥·임팩트 사이드체인 펌핑
     const g = duck.gain;
