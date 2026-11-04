@@ -777,8 +777,11 @@ function seekTo(ms, auto) {
   ms = Math.max(0, Math.min(ms, TOTAL - 1));
   clearTimers();
   let i = 0, acc = 0;
-  while (i < scenes.length - 1 && ms - acc >= DUR[i]) { acc += DUR[i]; i++; }
-  const off = ms - acc;
+  // 장면 길이가 마디 파생 비정수(…857142…ms)라 goto()의 목표 시각과 누적 합이
+  // 1ULP 어긋날 수 있다 — 오차 없이 비교하면 경계에서 다음 장면 진입이 막혀
+  // 60ms 재시도 루프에 갇힌다(자동 적립 진입 프리즈). 0.5ms 허용 오차로 판정.
+  while (i < scenes.length - 1 && ms - acc >= DUR[i] - .5) { acc += DUR[i]; i++; }
+  const off = Math.max(0, ms - acc);
   const prevOff = cur < 0 ? 0 : (playing ? performance.now() - sceneStart : sceneElapsed);
   // 장면이 바뀌거나 같은 장면에서 뒤로 가면 등장 애니메이션부터 리셋
   if (cur !== i || off < prevOff) {
