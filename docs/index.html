@@ -30,6 +30,9 @@
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   html, body { height:100%; }
+  /* 루트는 스크롤 없음(main이 담당) — 3D 전환으로 회전한 body가 뷰포트를
+     벗어나며 문서 스크롤바를 잠깐 만드는 것도 함께 차단 */
+  html { overflow:hidden; }
   body {
     font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo", sans-serif;
     background: var(--bg0); color: var(--ink);

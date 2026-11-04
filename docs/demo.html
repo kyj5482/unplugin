@@ -19,7 +19,9 @@
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   html,body { height:100%; }
-  html { background: var(--dark0); }  /* 3D 전환 중 회전으로 드러나는 모서리 배경 */
+  /* 다크 배경: 3D 전환 중 회전으로 드러나는 모서리 보정.
+     overflow:hidden: 회전한 body의 뷰포트 넘침이 문서 스크롤바를 만들지 않게 */
+  html { background: var(--dark0); overflow:hidden; }
   body {
     font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo",sans-serif;
     background:linear-gradient(180deg,var(--dark0),var(--dark1)) fixed;
