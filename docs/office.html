@@ -113,7 +113,21 @@
   <a href="index.html">제품 소개로 돌아가기</a>
 </footer>
 
-<script src="office-data.js"></script>
+<script src="office-data.js?v=2"></script>
+<script>
+// 데이터 파일 구버전 캐시 가드 — html만 새로 받고 data가 캐시로 남으면
+// 화면이 조용히 깨진다. 스키마 불일치는 보이는 안내로 멈춘다.
+(function () {
+  var need = 2;
+  if (typeof OFFICE_DATA === "undefined" || (OFFICE_DATA.schema || 0) < need) {
+    document.addEventListener("DOMContentLoaded", function () {
+      var m = document.getElementById("main");
+      if (m) m.innerHTML = '<section class="pane on"><div class="card">⚠ <b>데이터 파일이 구버전으로 캐시되어 있습니다.</b><br>강력 새로고침(맥: ⌘⇧R, 모바일: 탭 닫고 재접속)을 해주세요.</div></section>';
+    });
+    throw new Error("stale office-data.js (schema " + (typeof OFFICE_DATA === "undefined" ? "none" : OFFICE_DATA.schema) + " < " + need + ")");
+  }
+})();
+</script>
 <script>
 /* ══════════ [OFFICE-PURE-BEGIN] 측정 엔진 — DOM·localStorage 무관 순수 블록.
    core(파이썬)의 classify/stress/dividend/tips/community 의미론을 그대로 포팅.
@@ -495,7 +509,22 @@ const MOVEMENT = (() => {
              timebank: { offers: [], requests: [], matches: [] },
              buddies: [], challenges: [], stamps: {}, gifts: [] };
   }
-  function migrate(m) { return Object.assign(emptyMovement(), m || {}); }
+  // 깊은 병합 — 이전 버전 저장 상태의 모양 불일치(예: timebank가 배열)가
+  // 얕은 병합으로 그대로 덮이면 렌더가 조용히 백지가 된다 (2026-11-05 버그)
+  function migrate(m) {
+    const base = emptyMovement(); m = m || {};
+    for (const k of Object.keys(base)) {
+      const v = m[k];
+      if (v === undefined || v === null) continue;
+      if (Array.isArray(base[k])) { if (Array.isArray(v)) base[k] = v; }
+      else if (typeof base[k] === "object") {
+        if (v && typeof v === "object" && !Array.isArray(v)) Object.assign(base[k], v);
+      } else base[k] = v;
+    }
+    for (const k of ["offers", "requests", "matches"])
+      if (!Array.isArray(base.timebank[k])) base.timebank[k] = [];
+    return base;
+  }
 
   // ── ICS (RFC5545 최소 유효 — CRLF, VCALENDAR/VEVENT/UID/DTSTAMP/DTSTART/DTEND/SUMMARY) ──
   function icsDate(ms) {
@@ -818,7 +847,18 @@ if (typeof module !== "undefined") module.exports.MOVEMENT = MOVEMENT;
    입력이 같으면 출력이 같다(Date 사용 금지). 검증: node tests/growth_tests.js ══════════ */
 const GROWTH = (() => {
   function emptyGrowth() { return { proposals: {} }; }
-  function migrate(g) { return Object.assign(emptyGrowth(), g || {}); }
+  function migrate(g) {   // 깊은 병합 — 이전 버전 상태의 모양 불일치 방어
+    const base = emptyGrowth(); g = g || {};
+    for (const k of Object.keys(base)) {
+      const v = g[k];
+      if (v === undefined || v === null) continue;
+      if (Array.isArray(base[k])) { if (Array.isArray(v)) base[k] = v; }
+      else if (typeof base[k] === "object") {
+        if (v && typeof v === "object" && !Array.isArray(v)) Object.assign(base[k], v);
+      } else base[k] = v;
+    }
+    return base;
+  }
   const axes = type => ({ st: (type || "")[0] || "S", fc: (type || "")[1] || "F",
                           mr: (type || "")[2] || "R", pa: (type || "")[3] || "A" });
 
@@ -911,7 +951,7 @@ const GROWTH = (() => {
 
   function mailBody(state, D, cid, week, primary, alts) {
     const prof = state.customers[cid] || {};
-    const tname = D.type_names[prof.type] || prof.type || "";
+    const tname = (D.type_names || {})[prof.type] || prof.type || "";
     return [
       `${prof.name || cid}님, ${week}주차 무브먼트를 골라봤어요${tname ? ` — '${tname}' 타입에 맞춰서요` : ""}.`,
       "",
@@ -1042,8 +1082,25 @@ if (typeof module !== "undefined") module.exports.GROWTH = GROWTH;
       `</button>`).join("");
     tabs.querySelectorAll("button").forEach(b =>
       b.onclick = () => { cur = b.dataset.tab; location.hash = cur; render(); });
-    $("#main").innerHTML = `<section class="pane on">${VIEWS[cur]()}</section>`;
-    bind();
+    // 어떤 탭도 '조용한 백지'가 되지 않게 — 렌더 예외는 에러 패널로 노출
+    try {
+      $("#main").innerHTML = `<section class="pane on">${VIEWS[cur]()}</section>`;
+      bind();
+    } catch (e) {
+      console.error(e);
+      $("#main").innerHTML = `<section class="pane on"><div class="card">
+        ⚠ <b>이 탭을 그리는 중 오류가 났습니다.</b> 대부분 캐시된 구버전 데이터가 원인입니다 —
+        먼저 <b>강력 새로고침(맥: ⌘⇧R)</b>을 해보세요.
+        <pre class="mailprev">${esc(e.message)}</pre>
+        <div class="row"><button class="act pri" onclick="location.reload()">새로고침</button>
+        <button class="act warn" id="stateReset">상태 초기화 (데이터 탭 백업 권장)</button></div></div></section>`;
+      const rb = document.getElementById("stateReset");
+      if (rb) rb.onclick = () => {
+        if (confirm("이 브라우저의 운영 상태를 초기화할까요? 되돌릴 수 없습니다.")) {
+          localStorage.removeItem(KEY); location.reload();
+        }
+      };
+    }
   }
 
   const VIEWS = {
@@ -1061,7 +1118,8 @@ if (typeof module !== "undefined") module.exports.GROWTH = GROWTH;
 
       const axisTxt = type => {
         const ax = GROWTH.axes(type);
-        return [D.unplug_axes["2"][ax.mr], D.unplug_axes["3"][ax.pa]]
+        const AX = D.unplug_axes || {};
+        return [(AX["2"] || {})[ax.mr], (AX["3"] || {})[ax.pa]]
           .map(t => (t || "").split(" — ")[0]).join(" · ");
       };
       const panels = cids.map(cid => {
@@ -1087,7 +1145,7 @@ if (typeof module !== "undefined") module.exports.GROWTH = GROWTH;
           + stamps.map(st => `<li><span class="t">${esc(st.day)}</span>🏅 실행 — ${esc(st.label)} <span class="mut">(${esc(st.source)})</span></li>`).join("");
         return `<div class="panel">
           <h3 style="font-size:1rem">${esc(p.name)}
-            <span class="pill ok">${esc(D.type_names[p.type] || p.type || "타입 미지정")}</span>
+            <span class="pill ok">${esc((D.type_names || {})[p.type] || p.type || "타입 미지정")}</span>
             <span class="rg">${esc(p.type || "")} — ${esc(axisTxt(p.type))} · ${esc(p.region || "지역 미등록")}</span></h3>
           <div class="row" style="gap:18px">
             <div><div class="mut">시간 티켓(잔고)</div><div class="big">${fmtHM(balance)}</div></div>

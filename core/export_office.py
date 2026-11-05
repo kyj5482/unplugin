@@ -110,6 +110,8 @@ def _demo_mails() -> list[dict]:
 def build() -> dict:
     return {
         "generated_note": "생성물 — python3 -m core.export_office 로 재생성",
+        # 스키마 버전 — office.html의 캐시 가드와 쌍. 데이터 계약이 바뀌면 둘 다 올린다.
+        "schema": 2,
         "constants": {
             "report_marker": REPORT_MARKER,
             "done_words": list(_DONE_WORDS),

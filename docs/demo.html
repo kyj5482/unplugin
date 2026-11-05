@@ -76,6 +76,9 @@
   .kt .line span { display:inline-block; font-size:clamp(1.9rem,5.6vw,3.4rem); font-weight:800;
     letter-spacing:-.04em; line-height:1.25; transform:translateY(110%); }
   .scene.on .kt .line span { animation:ktup .8s var(--ease) both; animation-delay:var(--d,0s); }
+  /* 키네틱 타이틀 안의 롤러 — .kt .line span의 inline-block이 inline-grid를 덮어
+     이름 5개가 가로로 퍼지던 버그. 롤러는 한 칸에 겹쳐 세로 플립해야 한다 */
+  .kt .line span.roll { display:inline-grid; }
   @keyframes ktup { to { transform:translateY(0); } }
   .kt em { font-style:normal; color:var(--amber); }
   .scsub { margin-top:16px; color:var(--w-ink2); font-size:clamp(.95rem,1.6vw,1.1rem); text-align:center; max-width:580px; }
