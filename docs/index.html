@@ -114,9 +114,13 @@
 
   /* ───────── 에이전트 이름 수직 롤 (Muze는 예시 — 멀티 에이전트 지원) ───────── */
   .roll { display:inline-block; position:relative; overflow:hidden; height:1.68em;
-    vertical-align:bottom; text-align:left; transition: width .45s var(--ease); }
+    vertical-align:bottom; text-align:center; }
+  /* 폭은 최장 이름("ChatGPT")으로 한 번에 고정 — 이름이 바뀌어도 주변 문장은
+     1px도 움직이지 않는다 (폭 트랜지션 방식은 문단 전체가 재줄바꿈되던 버그) */
+  .roll::after { content:"ChatGPT"; display:block; height:0; overflow:hidden;
+    visibility:hidden; font-weight:800; white-space:nowrap; }
   .roll-track { display:block; transition: transform .55s var(--ease); }
-  .roll-i { display:block; height:1.68em; white-space:nowrap; width:max-content;
+  .roll-i { display:block; height:1.68em; white-space:nowrap;
     font-weight:800; color:var(--amber-deep); }
   [data-theme="dark"] .roll-i { color:var(--amber); }
   /* JS 전 / reduced-motion: 첫 항목(Muze)만 보이고 폭도 Muze 기준 — 레이아웃 덜컹임 없음 */
@@ -834,8 +838,8 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
     track.appendChild(items[0].cloneNode(true));   // 한 바퀴 끝 → Muze로 끊김 없이 복귀
     r.classList.add('go');
     const av = r.closest('.mrow') && r.closest('.mrow').querySelector('.av');  // 메일 목업은 아바타 이니셜 동기화
+    // 폭은 CSS(.roll::after 최장 이름)로 고정 — JS는 이름 교체·아바타만 담당
     const setTo = el => {
-      r.style.width = el.offsetWidth + 'px';       // 이름 폭 차이는 width 트랜지션으로 흡수
       if (av) av.textContent = el.textContent.trim()[0];
     };
     setTo(items[0]);
