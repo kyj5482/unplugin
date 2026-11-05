@@ -21,6 +21,41 @@ from .tips import PLACEHOLDER_ADDR, REPORT_LINE
 OUT = common.ROOT / "docs" / "office-data.js"
 DEMO = common.ROOT / "demo"
 
+# 지역 무브먼트 코스 (local-course 실험) — 데모 고객 region 과 1:1.
+# 상세 조사·확장: ops/research-movement-ideas.md#local-course
+LOCAL_COURSES = {
+    "성수동": [
+        {"id": "ss-walk", "kind": "산책로", "title": "서울숲 은행나무길 한 바퀴",
+         "desc": "서울숲역 5번 출구 → 은행나무길 → 사슴우리 — 화면 없이 걷는 50분.",
+         "duration_min": 50},
+        {"id": "ss-market", "kind": "시장", "title": "뚝도시장 아침 장보기",
+         "desc": "토요일 오전의 뚝도시장 — 제철 채소 한 봉지, 어묵 한 꼬치.",
+         "duration_min": 60},
+        {"id": "ss-craft", "kind": "공방", "title": "수제화 거리 가죽 공방 원데이",
+         "desc": "성수 수제화 거리에서 카드지갑 만들기 — 손끝 감각 2시간.",
+         "duration_min": 120},
+    ],
+    "망원동": [
+        {"id": "mw-walk", "kind": "산책로", "title": "망원한강공원 노을 산책",
+         "desc": "망원나들목 → 한강 둔치 — 노을 시간대 40분 코스.",
+         "duration_min": 40},
+        {"id": "mw-market", "kind": "시장", "title": "망원시장 먹거리 투어",
+         "desc": "고로케·닭강정·칼국수 — 시장 한 바퀴 70분.",
+         "duration_min": 70},
+        {"id": "mw-craft", "kind": "공방", "title": "망원 도자기 물레 체험",
+         "desc": "초벌 컵 하나 — 흙 만지는 90분.",
+         "duration_min": 90},
+    ],
+    "판교": [
+        {"id": "pg-walk", "kind": "산책로", "title": "화랑공원 호수 둘레길",
+         "desc": "점심시간 탈출 — 호수 둘레 두 바퀴 40분.",
+         "duration_min": 40},
+        {"id": "pg-market", "kind": "시장", "title": "판교 금요 플리마켓",
+         "desc": "로컬 셀러 구경과 수공예 간식 — 60분.",
+         "duration_min": 60},
+    ],
+}
+
 
 def _demo_customers() -> list[dict]:
     rows = []
@@ -79,6 +114,7 @@ def build() -> dict:
         "keyword_fallback": [list(kv) for kv in stress._KEYWORD_FALLBACK],
         "group_names": community.GROUP_NAMES,
         "group_tips": community.GROUP_TIPS,
+        "local_courses": LOCAL_COURSES,
         "demo_customers": _demo_customers(),
         "demo_mails": _demo_mails(),
     }

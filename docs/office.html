@@ -479,6 +479,328 @@ const OFFICE = (() => {
 if (typeof module !== "undefined") module.exports = OFFICE;
 /* ══════════ [OFFICE-PURE-END] ══════════ */
 
+/* ══════════ [MOVEMENT-PURE-BEGIN] 무브먼트 실험 10종 — 순수 로직.
+   커뮤니티 모임을 실제 오프라인 시간으로 전환하는 메커니즘. DOM·localStorage 무관,
+   그룹 정보는 호출자가 OFFICE.memberships 로 계산해 전달한다.
+   검증: node tests/movement_tests.js / 근거: ops/research-movement-ideas.md ══════════ */
+const MOVEMENT = (() => {
+  const pad = n => String(n).padStart(2, "0");
+  const isoDay = ms => { const d = new Date(ms);
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+
+  // ── 기본 상태 (localStorage 스키마 v1 의 movement 네임스페이스) ──
+  function emptyMovement() {
+    return { evals: {}, locks: [], lightning: {}, seasons: [], partners: [],
+             vouchers: [], feeTotal: 0,
+             timebank: { offers: [], requests: [], matches: [] },
+             buddies: [], challenges: [], stamps: {}, gifts: [] };
+  }
+  function migrate(m) { return Object.assign(emptyMovement(), m || {}); }
+
+  // ── ICS (RFC5545 최소 유효 — CRLF, VCALENDAR/VEVENT/UID/DTSTAMP/DTSTART/DTEND/SUMMARY) ──
+  function icsDate(ms) {
+    const d = new Date(ms);
+    return d.getUTCFullYear() + pad(d.getUTCMonth() + 1) + pad(d.getUTCDate()) +
+      "T" + pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + pad(d.getUTCSeconds()) + "Z";
+  }
+  function icsFile({ uid, start, end, summary, description, nowMs }) {
+    const esc = s => String(s || "").replace(/\\/g, "\\\\").replace(/\n/g, "\\n")
+      .replace(/[,;]/g, c => "\\" + c);
+    const lines = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Unplugin//Office//KO",
+      "BEGIN:VEVENT",
+      `UID:${uid}`,
+      `DTSTAMP:${icsDate(nowMs || start)}`,
+      `DTSTART:${icsDate(start)}`,
+      `DTEND:${icsDate(end)}`,
+      `SUMMARY:${esc(summary)}`,
+    ];
+    if (description) lines.push(`DESCRIPTION:${esc(description)}`);
+    lines.push("END:VEVENT", "END:VCALENDAR");
+    return lines.join("\r\n") + "\r\n";
+  }
+  function nextWeekendSlot(nowMs, minutes) {  // 다음 토요일 10:00 (로컬) 기본 슬롯
+    const d = new Date(nowMs);
+    let add = (6 - d.getDay() + 7) % 7;
+    if (add === 0) add = 7;
+    const s = new Date(d.getFullYear(), d.getMonth(), d.getDate() + add, 10, 0, 0);
+    return { start: s.getTime(), end: s.getTime() + Math.max(30, minutes) * 60000 };
+  }
+
+  // ── 잔고 전환(차감) — 적립 총액은 보존하고 spent 를 따로 센다 ──
+  function balanceOf(state, cid) {
+    const l = state.ledgers[cid];
+    if (!l) return 0;
+    return l.totals.saved_minutes - (l.totals.spent_minutes || 0);
+  }
+  function spend(state, cid, minutes, label, source, nowMs) {
+    minutes = Math.trunc(minutes);
+    if (!(minutes > 0)) return { ok: false, reason: "전환할 분이 올바르지 않아요" };
+    if (balanceOf(state, cid) < minutes) return { ok: false, reason: "잔고가 부족해요" };
+    const l = state.ledgers[cid];
+    l.totals.spent_minutes = (l.totals.spent_minutes || 0) + minutes;
+    l.movements = l.movements || [];
+    const ev = { id: `mv-${nowMs}-${l.movements.length + 1}`, date: isoDay(nowMs),
+                 label, source, minutes };
+    l.movements.push(ev);
+    return { ok: true, event: ev, balance: balanceOf(state, cid) };
+  }
+
+  // ── ⑧ stamps — 실행 실측·레벨 (다른 실험들이 실행 시 자동 찍는다) ──
+  const LEVELS = [[10, "무브먼트 메이커 Lv4"], [6, "동네 단골 Lv3"],
+                  [3, "산책자 Lv2"], [1, "첫 걸음 Lv1"]];
+  function stampAdd(M, cid, source, label, day) {
+    (M.stamps[cid] = M.stamps[cid] || []).push({ source, label, day });
+  }
+  function levelOf(count) {
+    for (const [min, name] of LEVELS) if (count >= min) return name;
+    return "아직 스탬프 없음";
+  }
+
+  // ── ① time-lock — 잔고 N분 → .ics + 차감 ──
+  function timeLock(state, M, cid, minutes, label, nowMs) {
+    const r = spend(state, cid, minutes, label, "time-lock", nowMs);
+    if (!r.ok) return r;
+    const slot = nextWeekendSlot(nowMs, minutes);
+    const uid = `unplugin-lock-${cid}-${nowMs}-${M.locks.length + 1}@unplugin.me`;
+    const ics = icsFile({ uid, start: slot.start, end: slot.end, nowMs,
+      summary: `되찾은 시간 — ${label}`,
+      description: `Unplugin 시간 배당 ${minutes}분을 오프라인으로 전환합니다. 화면은 두고 가세요.` });
+    M.locks.push({ cid, minutes, label, uid, day: isoDay(slot.start) });
+    stampAdd(M, cid, "time-lock", label, isoDay(nowMs));
+    return { ok: true, ics, uid, slot, balance: r.balance };
+  }
+
+  // ── ② lightning — 같은 그룹+지역 자동 매칭 번개 ──
+  function lightningPropose(state, M, D, groups, nowMs) {
+    const created = [];
+    for (const g of Object.keys(groups)) {
+      const byRegion = {};
+      for (const m of groups[g]) {
+        const r = (state.customers[m.customer] || {}).region;
+        if (r) (byRegion[r] = byRegion[r] || []).push(m.customer);
+      }
+      for (const [region, ids] of Object.entries(byRegion)) {
+        if (ids.length < 2) continue;
+        const key = `${g}|${region}`;
+        if (M.lightning[key] && M.lightning[key].status !== "취소") continue;  // 중복 매칭 방지
+        const slot = nextWeekendSlot(nowMs, 90);
+        const places = (D.local_courses[region] || []).slice(0, 2).map(c => c.title);
+        M.lightning[key] = { key, group: g, region, members: ids.slice().sort(),
+          slot, places, status: "제안", rsvp: {} };
+        created.push(M.lightning[key]);
+      }
+    }
+    return created;
+  }
+  function lightningInvite(p, D) {
+    return [`[번개] ${D.group_names[p.group] || p.group} — ${p.region}`,
+      `같은 일을 맡기는 ${p.region} 이웃 ${p.members.length}명이 모였어요.`,
+      `일시(제안): ${isoDay(p.slot.start)} 토요일 오전`,
+      `장소 후보: ${p.places.join(" / ") || p.region + " 근처"}`,
+      "참석하실 분은 '수락'을 눌러 주세요 — 2명이 모이면 자리가 성사됩니다."].join("\n");
+  }
+  function lightningRsvp(M, key, cid, accept) {
+    const p = M.lightning[key];
+    if (!p || !p.members.includes(cid)) return null;
+    p.rsvp[cid] = !!accept;
+    const yes = p.members.filter(c => p.rsvp[c] === true);
+    if (yes.length >= 2 && p.status !== "성사") {
+      p.status = "성사";
+      for (const c of yes) stampAdd(M, c, "lightning", `${p.group} 번개 (${p.region})`, isoDay(Date.now()));
+    }
+    return p;
+  }
+  function lightningStats(M) {
+    const all = Object.values(M.lightning);
+    const done = all.filter(p => p.status === "성사").length;
+    return { proposed: all.length, done,
+             rate: all.length ? Math.round(done / all.length * 100) : 0 };
+  }
+
+  // ── ③ season — 유료 시즌 모임 (수익 C 실증) ──
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, Math.trunc(v)));
+  function seasonCreate(M, { name, rounds, price, capacity }) {
+    const s = { id: `season-${M.seasons.length + 1}`, name: name || "이름 없는 시즌",
+      rounds: clamp(rounds || 4, 4, 8), price: clamp(price || 100000, 100000, 250000),
+      capacity: Math.max(1, Math.trunc(capacity || 4)), applicants: [], waitlist: [] };
+    M.seasons.push(s);
+    return s;
+  }
+  function seasonApply(M, sid, cid) {
+    const s = M.seasons.find(x => x.id === sid);
+    if (!s) return { ok: false, reason: "시즌 없음" };
+    if (s.applicants.includes(cid) || s.waitlist.includes(cid))
+      return { ok: false, reason: "이미 신청" };
+    if (s.applicants.length < s.capacity) { s.applicants.push(cid); return { ok: true, status: "확정" }; }
+    s.waitlist.push(cid);
+    return { ok: true, status: "대기열" };
+  }
+  const seasonRevenue = s => s.price * s.applicants.length;
+
+  // ── ④ partner-voucher — 파트너 바우처·수수료 (수익 A 실증) ──
+  function partnerAdd(M, { name, region, category, feePct }) {
+    const p = { id: `partner-${M.partners.length + 1}`, name: name || "이름 없는 파트너",
+      region: region || "", category: category || "공방",
+      feePct: clamp(feePct || 15, 15, 20) };
+    M.partners.push(p);
+    return p;
+  }
+  function voucherEligible(state) {   // 잔고(적립-전환)가 임계치 이상인 고객
+    return Object.keys(state.customers).sort().filter(cid => {
+      const th = Math.trunc((state.customers[cid] || {}).movement_threshold_minutes ?? 180);
+      return balanceOf(state, cid) >= th;
+    });
+  }
+  function voucherIssue(M, cid, partnerId, nowMs) {
+    if (M.vouchers.some(v => v.cid === cid && v.partner === partnerId && v.status === "발급"))
+      return { ok: false, reason: "미사용 바우처가 이미 있어요" };
+    const v = { id: `v-${M.vouchers.length + 1}`, cid, partner: partnerId,
+                status: "발급", day: isoDay(nowMs) };
+    M.vouchers.push(v);
+    return { ok: true, voucher: v };
+  }
+  function voucherUse(M, vid, amountKRW, nowMs) {
+    const v = M.vouchers.find(x => x.id === vid);
+    if (!v || v.status !== "발급") return { ok: false, reason: "사용 가능한 바우처가 아니에요" };
+    const partner = M.partners.find(p => p.id === v.partner);
+    const fee = Math.round(Math.max(0, Math.trunc(amountKRW)) * (partner ? partner.feePct : 15) / 100);
+    v.status = "사용"; v.amount = Math.trunc(amountKRW); v.fee = fee; v.usedDay = isoDay(nowMs);
+    M.feeTotal += fee;
+    stampAdd(M, v.cid, "partner-voucher", partner ? partner.name : v.partner, isoDay(nowMs));
+    return { ok: true, fee, feeTotal: M.feeTotal };
+  }
+
+  // ── ⑤ timebank — 그룹 품앗이 보드 ──
+  function timebankPost(M, { cid, kind, text }) {
+    const list = kind === "offer" ? M.timebank.offers : M.timebank.requests;
+    const it = { id: `${kind}-${list.length + 1}`, cid, text: (text || "").trim(), matched: false };
+    if (!it.text) return { ok: false, reason: "내용을 적어주세요" };
+    list.push(it);
+    return { ok: true, item: it };
+  }
+  function timebankMatch(M, offerId, requestId, nowMs) {
+    const o = M.timebank.offers.find(x => x.id === offerId);
+    const r = M.timebank.requests.find(x => x.id === requestId);
+    if (!o || !r) return { ok: false, reason: "항목 없음" };
+    if (o.matched || r.matched) return { ok: false, reason: "이미 매칭된 항목" };
+    if (o.cid === r.cid) return { ok: false, reason: "본인 제공↔요청은 매칭 불가" };
+    o.matched = r.matched = true;
+    const m = { id: `tb-${M.timebank.matches.length + 1}`, offer: o.id, request: r.id,
+                between: [o.cid, r.cid], day: isoDay(nowMs) };
+    M.timebank.matches.push(m);
+    stampAdd(M, o.cid, "timebank", `제공: ${o.text}`, m.day);
+    stampAdd(M, r.cid, "timebank", `배움: ${o.text}`, m.day);
+    return { ok: true, match: m };
+  }
+
+  // ── ⑥ buddy — 같은 그룹 2인 짝꿍 ──
+  function buddyActive(M, cid) {
+    return M.buddies.some(b => !b.done && (b.a === cid || b.b === cid));
+  }
+  function buddyPair(M, groups) {
+    const created = [];
+    for (const g of Object.keys(groups)) {
+      const free = groups[g].map(m => m.customer).filter(c => !buddyActive(M, c)).sort();
+      for (let i = 0; i + 1 < free.length; i += 2) {
+        const b = { id: `buddy-${M.buddies.length + 1}`, group: g,
+          a: free[i], b: free[i + 1], promise: null,
+          confirms: {}, done: false };
+        M.buddies.push(b); created.push(b);
+      }
+    }
+    return created;
+  }
+  function buddyPromise(M, id, label, day) {
+    const b = M.buddies.find(x => x.id === id);
+    if (!b || b.done) return null;
+    b.promise = { label: label || "같이 무브먼트", day: day || "" };
+    return b;
+  }
+  function buddyConfirm(M, id, cid, nowMs) {
+    const b = M.buddies.find(x => x.id === id);
+    if (!b || b.done || (cid !== b.a && cid !== b.b) || !b.promise) return null;
+    b.confirms[cid] = true;
+    if (b.confirms[b.a] && b.confirms[b.b]) {
+      b.done = true;
+      for (const c of [b.a, b.b]) stampAdd(M, c, "buddy", b.promise.label, isoDay(nowMs));
+    }
+    return b;
+  }
+
+  // ── ⑦ challenge — 주간 오프라인 챌린지·스트릭 ──
+  function challengeCreate(M, title, nowMs) {
+    const c = { id: `ch-${M.challenges.length + 1}`, title: title || "주간 챌린지",
+                created: isoDay(nowMs), participants: {} };
+    M.challenges.push(c);
+    return c;
+  }
+  function challengeJoin(M, id, cid) {
+    const c = M.challenges.find(x => x.id === id);
+    if (!c) return null;
+    c.participants[cid] = c.participants[cid] || [];
+    return c;
+  }
+  function challengeCheckin(M, id, cid, day) {
+    const c = M.challenges.find(x => x.id === id);
+    if (!c || !c.participants[cid]) return { ok: false, reason: "참여자가 아니에요" };
+    if (c.participants[cid].includes(day)) return { ok: false, reason: "이미 인증한 날" };
+    c.participants[cid].push(day);
+    c.participants[cid].sort();
+    stampAdd(M, cid, "challenge", c.title, day);
+    return { ok: true, streak: streakOf(c.participants[cid]) };
+  }
+  function streakOf(days) {   // 마지막 인증일에서 거꾸로 — 연속한 날 수
+    if (!days.length) return 0;
+    const sorted = [...days].sort();
+    let streak = 1;
+    for (let i = sorted.length - 1; i > 0; i--) {
+      const gap = (Date.parse(sorted[i]) - Date.parse(sorted[i - 1])) / 86400e3;
+      if (gap === 1) streak++;
+      else if (gap === 0) continue;
+      else break;
+    }
+    return streak;
+  }
+
+  // ── ⑨ local-course — 지역 코스 추천 (time-lock 연계는 UI에서 timeLock 호출) ──
+  function coursesFor(state, D, cid) {
+    const region = (state.customers[cid] || {}).region;
+    return { region, courses: (region && D.local_courses[region]) || [] };
+  }
+
+  // ── ⑩ gift-time — 잔고를 지인 초대장으로 ──
+  function giftTime(state, M, cid, minutes, toName, nowMs) {
+    const r = spend(state, cid, minutes, `지인 초대 — ${toName}`, "gift-time", nowMs);
+    if (!r.ok) return r;
+    const slot = nextWeekendSlot(nowMs, minutes);
+    const uid = `unplugin-gift-${cid}-${nowMs}-${M.gifts.length + 1}@unplugin.me`;
+    const giver = (state.customers[cid] || {}).name || cid;
+    const summary = `${giver}님이 선물한 시간 — ${toName}님과 ${minutes}분`;
+    const ics = icsFile({ uid, start: slot.start, end: slot.end, nowMs, summary,
+      description: "AI가 벌어준 시간을 당신과 쓰고 싶어요. — Unplugin 초대장" });
+    const invite = [`${toName}님께`, "",
+      `${giver}님이 AI 에이전트로 벌어둔 시간 ${minutes}분을 당신과의 만남에 쓰기로 했어요.`,
+      `제안 일시: ${isoDay(slot.start)} 토요일 오전 (첨부한 캘린더 초대 참고)`,
+      "장소는 회신으로 정해요. — Unplugin"].join("\n");
+    M.gifts.push({ cid, toName, minutes, uid, day: isoDay(nowMs) });
+    stampAdd(M, cid, "gift-time", `${toName}에게 ${minutes}분`, isoDay(nowMs));
+    return { ok: true, ics, invite, balance: r.balance };
+  }
+
+  return { emptyMovement, migrate, icsFile, icsDate, nextWeekendSlot, isoDay,
+           balanceOf, spend, timeLock,
+           lightningPropose, lightningInvite, lightningRsvp, lightningStats,
+           seasonCreate, seasonApply, seasonRevenue,
+           partnerAdd, voucherEligible, voucherIssue, voucherUse,
+           timebankPost, timebankMatch,
+           buddyActive, buddyPair, buddyPromise, buddyConfirm,
+           challengeCreate, challengeJoin, challengeCheckin, streakOf,
+           stampAdd, levelOf, coursesFor, giftTime };
+})();
+if (typeof module !== "undefined") module.exports.MOVEMENT = MOVEMENT;
+/* ══════════ [MOVEMENT-PURE-END] ══════════ */
+
 /* ───────── UI — 상태는 localStorage(unplugin-office-v1), 서버 전송 없음 ───────── */
 (() => {
   if (typeof window === "undefined") return;   // node 패리티 로드 시 UI 생략
@@ -490,12 +812,16 @@ if (typeof module !== "undefined") module.exports = OFFICE;
     const customers = {};
     for (const p of D.demo_customers) customers[p.id] = JSON.parse(JSON.stringify(p));
     return { v: 1, customers, ledgers: {}, outbox: [], log: [],
-             community: { groups: {} }, processed: {}, demoCursor: 0 };
+             community: { groups: {} }, processed: {}, demoCursor: 0,
+             movement: MOVEMENT.emptyMovement() };
   }
   function load() {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) { const s = JSON.parse(raw); if (s && s.v === 1) return s; }
+      if (raw) {
+        const s = JSON.parse(raw);
+        if (s && s.v === 1) { s.movement = MOVEMENT.migrate(s.movement); return s; }
+      }
     } catch (_) {}
     return seedState();
   }
@@ -534,7 +860,8 @@ if (typeof module !== "undefined") module.exports = OFFICE;
   /* ── 탭 구성 ── */
   const TABS = [
     ["dash", "대시보드"], ["inbox", "수신함"], ["feed", "적립 피드"],
-    ["tips", "팁 생성기"], ["community", "커뮤니티"], ["customers", "고객"],
+    ["tips", "팁 생성기"], ["community", "커뮤니티"],
+    ["movement", "무브먼트 실험"], ["customers", "고객"],
     ["backlog", "미매칭 백로그"], ["data", "데이터"],
   ];
   let cur = location.hash.slice(1) || "dash";
@@ -565,10 +892,14 @@ if (typeof module !== "undefined") module.exports = OFFICE;
         const th = p.movement_threshold_minutes || D.constants.default_threshold;
         const seg = l.totals.saved_minutes % th;
         const pct = Math.min(100, Math.round(seg / th * 100));
+        const spent = l.totals.spent_minutes || 0;
+        const stamps = (S.movement.stamps[cid] || []).length;
         return `<div class="card">
           <h3>${esc(p.name)} <span class="rg">${esc(p.region || "지역 미등록")} · ×${p.time_factor ?? 1}</span></h3>
-          <div class="big">${fmtHM(l.totals.saved_minutes)}</div>
-          <div class="mut">아낀 감정 <span class="emo">${l.totals.emotion_saved}</span> · 적립 ${l.totals.events_count}건</div>
+          <div class="big">${fmtHM(MOVEMENT.balanceOf(S, cid))}</div>
+          <div class="mut">적립 ${fmtHM(l.totals.saved_minutes)} · 오프라인 전환 ${fmtHM(spent)}</div>
+          <div class="mut">아낀 감정 <span class="emo">${l.totals.emotion_saved}</span> · 적립 ${l.totals.events_count}건
+            · <span class="pill ok">🏅 ${esc(MOVEMENT.levelOf(stamps))}</span></div>
           <div class="meter"><i style="width:${pct}%"></i></div>
           <div class="mut">다음 무브먼트 제안까지 ${th - seg}분 (임계치 ${th}분)</div>
         </div>`;
@@ -684,7 +1015,177 @@ if (typeof module !== "undefined") module.exports = OFFICE;
             `<li><span class="t">${esc(String(v.last_digest).slice(0, 19))}</span>${esc(D.group_names[g] || g)} — ${v.members}명</li>`).join("")}</ul></div>` : ""}`;
     },
 
-    /* ⑥ 고객 */
+    /* ⑥ 무브먼트 실험 — 오프라인 전환 메커니즘 10종, 대표 feasibility 평가용 */
+    movement() {
+      const M = S.movement;
+      const groups = OFFICE.memberships(S, D);
+      const custSel = id => `<select id="${id}">` + Object.keys(S.customers).sort().map(cid =>
+        `<option value="${cid}">${esc(S.customers[cid].name)} (잔고 ${MOVEMENT.balanceOf(S, cid)}분)</option>`).join("") + `</select>`;
+      const evalBox = id => {
+        const ev = M.evals[id] || {};
+        const btn = (v, lbl, cls) => `<button class="act ${ev.verdict === v ? cls : ""}"
+          data-ev="${id}|${v}">${lbl}${ev.verdict === v ? " ✓" : ""}</button>`;
+        return `<div class="row" style="margin-top:10px;border-top:1px dashed var(--hair);padding-top:10px">
+          <span class="mut">대표 평가:</span>
+          ${btn("go", "Go", "pri")}${btn("hold", "보류", "")}${btn("nogo", "No-go", "warn")}
+          <input type="text" id="memo-${id}" placeholder="메모" value="${esc(ev.memo || "")}" style="flex:1;min-width:140px">
+          <button class="act" data-evmemo="${id}">메모 저장</button>
+          <a class="mut" href="https://github.com/kyj5482/unplugin/blob/main/ops/research-movement-ideas.md" target="_blank" rel="noopener" title="근거 문서 (GitHub)">근거: ops/research-movement-ideas.md#${id}</a>
+        </div>`;
+      };
+      const card = (id, no, title, desc, metric, body) => `<div class="panel" id="mv-${id}">
+        <h3 style="font-size:1rem">${no}. ${esc(title)} <span class="pill">${id}</span>
+          ${M.evals[id] ? `<span class="pill ${M.evals[id].verdict === "go" ? "ok" : M.evals[id].verdict === "nogo" ? "bad" : "warn"}">${
+            { go: "Go", hold: "보류", nogo: "No-go" }[M.evals[id].verdict]}</span>` : ""}</h3>
+        <div class="sub" style="margin-bottom:8px">${desc}</div>
+        <div class="mut" style="margin-bottom:8px">📊 ${metric}</div>
+        ${body}${evalBox(id)}</div>`;
+
+      // 요약판
+      const verdicts = { go: 0, hold: 0, nogo: 0 };
+      Object.values(M.evals).forEach(e => { if (verdicts[e.verdict] !== undefined) verdicts[e.verdict]++; });
+      const evaluated = Object.keys(M.evals).length;
+      const ls = MOVEMENT.lightningStats(M);
+      const totalSpent = Object.values(S.ledgers).reduce((a, l) => a + (l.totals.spent_minutes || 0), 0);
+
+      // 지표 계산
+      const seasonsApplied = M.seasons.reduce((a, s) => a + s.applicants.length, 0);
+      const seasonsCap = M.seasons.reduce((a, s) => a + s.capacity, 0);
+      const seasonsRev = M.seasons.reduce((a, s) => a + MOVEMENT.seasonRevenue(s), 0);
+      const vUsed = M.vouchers.filter(v => v.status === "사용").length;
+      const stampsTotal = Object.values(M.stamps).reduce((a, x) => a + x.length, 0);
+      const bestStreak = Math.max(0, ...M.challenges.flatMap(c =>
+        Object.values(c.participants).map(MOVEMENT.streakOf)));
+      const regions = [...new Set(Object.values(S.customers).map(p => p.region).filter(Boolean))];
+      const covered = regions.filter(r => (D.local_courses[r] || []).length);
+
+      return `<h2>무브먼트 실험 — 오프라인 전환 메커니즘 10종</h2>
+        <p class="sub">커뮤니티 모임을 실제 오프라인 시간으로 바꾸는 장치들. 하나씩 실행해 보고
+        Go/보류/No-go 를 평가하세요. 모든 동작·평가는 이 브라우저에만 저장됩니다.</p>
+        <div class="sum"><div><b>${evaluated}/10</b> <span>평가 완료</span></div>
+          <div><b>${verdicts.go}</b> <span>Go</span></div>
+          <div><b>${verdicts.hold}</b> <span>보류</span></div>
+          <div><b>${verdicts.nogo}</b> <span>No-go</span></div>
+          <div><b>${fmtHM(totalSpent)}</b> <span>오프라인 전환 합계</span></div></div>
+
+        ${card("time-lock", 1, "타임락 — 잔고를 캘린더에 박제", "잔고에서 N분을 골라 실제 .ics 일정 파일을 만들고 잔고에서 차감합니다. '시간이 있다'를 '시간을 잡았다'로.",
+          `전환 ${M.locks.length}건 · 합계 ${M.locks.reduce((a, l) => a + l.minutes, 0)}분`,
+          `<div class="row">${custSel("tlCust")}
+            <input type="number" id="tlMin" value="60" min="10" style="width:84px"> 분
+            <select id="tlLabel"><option>관계 — 미뤄둔 만남</option><option>배움 — 원데이 클래스</option><option>오감 — 동네 산책</option></select>
+            <button class="act pri" id="tlGo">ICS 생성 + 차감</button></div>
+          <div id="tlOut"></div>`)}
+
+        ${card("lightning", 2, "번개 — 같은 그룹·같은 동네 자동 매칭", "같은 일을 위임하는 같은 지역 이웃을 자동으로 묶어 번개를 제안하고, RSVP 2명이면 성사됩니다.",
+          `제안 ${ls.proposed}건 · 성사 ${ls.done}건 · 성사율 ${ls.rate}%`,
+          `<div class="row"><button class="act pri" id="ltGo">번개 제안 생성 (자동 매칭)</button></div>
+          ${Object.values(M.lightning).map(p => `<div class="card" style="margin:8px 0">
+            <b>${esc(D.group_names[p.group] || p.group)} · ${esc(p.region)}</b>
+            <span class="pill ${p.status === "성사" ? "ok" : ""}">${esc(p.status)}</span>
+            <div class="mut">${p.members.map(c => `${esc(S.customers[c]?.name || c)}:
+              ${p.rsvp[c] === true ? "수락" : p.rsvp[c] === false ? "거절" : "-"}
+              <button class="act" data-rsvp="${esc(p.key)}|${c}|1" style="padding:2px 8px">수락</button>
+              <button class="act" data-rsvp="${esc(p.key)}|${c}|0" style="padding:2px 8px">거절</button>`).join(" · ")}</div>
+            <details><summary>초대 메일 미리보기</summary><pre class="mailprev">${esc(MOVEMENT.lightningInvite(p, D))}</pre></details>
+            ${p.status === "성사" ? `<div class="row"><button class="act" data-ltlock="${esc(p.key)}">성사 ICS + 참석자 90분 차감 (타임락 연계)</button></div>` : ""}
+          </div>`).join("") || '<div class="mut">아직 제안이 없습니다 — 생성 버튼을 누르세요.</div>'}`)}
+
+        ${card("season", 3, "유료 시즌 모임 — 수익 모델 C 실증", "트레바리형: 4~8회차·10~25만 원 시즌 모임을 개설하고 신청·정원·대기열·예상 매출을 봅니다.",
+          `시즌 ${M.seasons.length}개 · 신청 ${seasonsApplied}/${seasonsCap}명 · 예상 매출 ${seasonsRev.toLocaleString()}원`,
+          `<div class="grid2"><div><label class="f">이름</label><input type="text" id="snName" value="환불 전사단 — 받아낸 돈으로 떠나는 시즌"></div>
+            <div class="row" style="margin-top:22px">
+              <input type="number" id="snRounds" value="4" min="4" max="8" style="width:64px">회차
+              <input type="number" id="snPrice" value="150000" step="10000" style="width:110px">원
+              정원 <input type="number" id="snCap" value="2" min="1" style="width:56px"></div></div>
+          <div class="row"><button class="act pri" id="snGo">시즌 개설</button></div>
+          ${M.seasons.map(s => `<div class="card" style="margin:8px 0"><b>${esc(s.name)}</b>
+            <span class="pill">${s.rounds}회 · ${s.price.toLocaleString()}원 · 정원 ${s.capacity}</span>
+            <div class="mut">확정 ${s.applicants.map(c => esc(S.customers[c]?.name || c)).join(", ") || "-"} ·
+              대기 ${s.waitlist.map(c => esc(S.customers[c]?.name || c)).join(", ") || "-"} ·
+              <b>매출 ${MOVEMENT.seasonRevenue(s).toLocaleString()}원</b></div>
+            <div class="row">${custSel("snApply-" + s.id)}<button class="act" data-snapply="${s.id}">신청</button></div>
+          </div>`).join("")}`)}
+
+        ${card("partner-voucher", 4, "파트너 바우처 — 수익 모델 A 실증", "지역 공방·클래스 파트너를 등록하고, 잔고 임계치 도달 고객에게 바우처를 발급 — 사용되면 수수료(15~20%)가 집계됩니다.",
+          `파트너 ${M.partners.length} · 발급 ${M.vouchers.length} · 사용 ${vUsed} · 수수료 누계 ${M.feeTotal.toLocaleString()}원`,
+          `<div class="row"><input type="text" id="ptName" value="성수 가죽공방" style="width:150px">
+            <input type="text" id="ptRegion" value="성수동" style="width:90px">
+            수수료 <input type="number" id="ptFee" value="18" min="15" max="20" style="width:56px">%
+            <button class="act pri" id="ptAdd">파트너 등록</button></div>
+          <div class="mut">바우처 대상(잔고 ≥ 임계치): ${MOVEMENT.voucherEligible(S).map(c => esc(S.customers[c]?.name || c)).join(", ") || "없음 — 수신함에서 적립을 먼저"}</div>
+          ${M.partners.length ? `<div class="row">${custSel("vcCust")}
+            <select id="vcPartner">${M.partners.map(p => `<option value="${p.id}">${esc(p.name)} (${p.feePct}%)</option>`).join("")}</select>
+            <button class="act" id="vcIssue">바우처 발급</button></div>` : ""}
+          ${M.vouchers.map(v => `<div class="mut" style="padding:4px 0">🎟 ${v.id} — ${esc(S.customers[v.cid]?.name || v.cid)} →
+            ${esc((M.partners.find(p => p.id === v.partner) || {}).name || v.partner)} · ${esc(v.status)}
+            ${v.status === "발급" ? `<input type="number" id="amt-${v.id}" value="80000" step="10000" style="width:100px">원
+              <button class="act" data-vuse="${v.id}" style="padding:2px 8px">사용 처리</button>`
+              : `(${(v.amount || 0).toLocaleString()}원 · 수수료 ${(v.fee || 0).toLocaleString()}원)`}</div>`).join("")}`)}
+
+        ${card("timebank", 5, "타임뱅크 — 그룹 품앗이 보드", "같은 그룹끼리 노하우를 교환합니다: '환불 노하우 알려드려요' ↔ '베이킹 기초 배우고 싶어요'.",
+          `제공 ${M.timebank.offers.length} · 요청 ${M.timebank.requests.length} · 성사 ${M.timebank.matches.length}건`,
+          `<div class="grid2">
+            <div><label class="f">제공 등록</label><div class="row">${custSel("tbOfferCust")}
+              <input type="text" id="tbOfferText" placeholder="환불 노하우 1:1" style="flex:1"><button class="act" id="tbOffer">등록</button></div></div>
+            <div><label class="f">요청 등록</label><div class="row">${custSel("tbReqCust")}
+              <input type="text" id="tbReqText" placeholder="베이킹 기초" style="flex:1"><button class="act" id="tbReq">등록</button></div></div></div>
+          ${(M.timebank.offers.length && M.timebank.requests.length) ? `<div class="row">
+            <select id="tbMo">${M.timebank.offers.filter(o => !o.matched).map(o => `<option value="${o.id}">${esc(S.customers[o.cid]?.name)}: ${esc(o.text)}</option>`).join("")}</select> ↔
+            <select id="tbMr">${M.timebank.requests.filter(r => !r.matched).map(r => `<option value="${r.id}">${esc(S.customers[r.cid]?.name)}: ${esc(r.text)}</option>`).join("")}</select>
+            <button class="act pri" id="tbMatch">매칭</button></div>` : ""}
+          ${M.timebank.matches.map(m => `<div class="mut">🤝 ${m.id}: ${m.between.map(c => esc(S.customers[c]?.name || c)).join(" ↔ ")} (${m.day})</div>`).join("")}`)}
+
+        ${card("buddy", 6, "짝꿍 — 같은 그룹 2인 상호 약속", "같은 그룹에서 2인씩 짝을 맺고, 무브먼트 약속을 정해 양쪽이 확인하면 완료됩니다.",
+          `쌍 ${M.buddies.length} · 완료 ${M.buddies.filter(b => b.done).length}`,
+          `<div class="row"><button class="act pri" id="bdGo">짝꿍 매칭 실행</button></div>
+          ${M.buddies.map(b => `<div class="card" style="margin:8px 0">
+            <b>${esc(S.customers[b.a]?.name || b.a)} ↔ ${esc(S.customers[b.b]?.name || b.b)}</b>
+            <span class="pill">${esc(D.group_names[b.group] || b.group)}</span>
+            ${b.done ? '<span class="pill ok">완료 🏅</span>' : ""}
+            ${!b.promise ? `<div class="row"><input type="text" id="bp-${b.id}" placeholder="약속 (예: 토요일 시장 산책)" style="flex:1">
+              <input type="text" id="bpd-${b.id}" placeholder="날짜" style="width:110px">
+              <button class="act" data-bprom="${b.id}">약속 정하기</button></div>`
+            : `<div class="mut">약속: ${esc(b.promise.label)} (${esc(b.promise.day || "-")})
+              ${!b.done ? ` — 확인: <button class="act" data-bconf="${b.id}|${b.a}" style="padding:2px 8px">${esc(S.customers[b.a]?.name)}${b.confirms[b.a] ? " ✓" : ""}</button>
+              <button class="act" data-bconf="${b.id}|${b.b}" style="padding:2px 8px">${esc(S.customers[b.b]?.name)}${b.confirms[b.b] ? " ✓" : ""}</button>` : ""}</div>`}
+          </div>`).join("")}`)}
+
+        ${card("challenge", 7, "주간 오프라인 챌린지 — 스트릭", "'토요일 아침 시장 산책' 같은 챌린지를 만들고 참여자가 인증하면 연속 일수(스트릭)가 쌓입니다.",
+          `챌린지 ${M.challenges.length} · 최고 스트릭 ${bestStreak}일`,
+          `<div class="row"><input type="text" id="chTitle" value="토요일 아침 시장 산책" style="flex:1">
+            <button class="act pri" id="chGo">챌린지 생성</button></div>
+          ${M.challenges.map(c => `<div class="card" style="margin:8px 0"><b>${esc(c.title)}</b>
+            <div class="row">${custSel("chJoin-" + c.id)}<button class="act" data-chjoin="${c.id}">참여</button></div>
+            ${Object.keys(c.participants).map(cid => `<div class="mut">${esc(S.customers[cid]?.name || cid)} —
+              인증 ${c.participants[cid].length}회 · 스트릭 ${MOVEMENT.streakOf(c.participants[cid])}일
+              <button class="act" data-chk="${c.id}|${cid}" style="padding:2px 8px">오늘 인증</button></div>`).join("")}
+          </div>`).join("")}`)}
+
+        ${card("stamps", 8, "스탬프·레벨 — 실행 실측 (Growth)", "제안이 아니라 '실제 실행'을 셉니다. 다른 실험들이 실행될 때 자동으로 찍히고, 대시보드에 레벨로 표시됩니다.",
+          `스탬프 ${stampsTotal}개 (타임락·번개·바우처·품앗이·짝꿍·챌린지·선물에서 자동)`,
+          `<table><tr><th>고객</th><th>스탬프</th><th>레벨</th><th>최근 실행</th></tr>
+          ${Object.keys(S.customers).sort().map(cid => { const st = M.stamps[cid] || [];
+            const last = st[st.length - 1];
+            return `<tr><td>${esc(S.customers[cid].name)}</td><td>${st.length}</td>
+              <td>🏅 ${esc(MOVEMENT.levelOf(st.length))}</td>
+              <td class="mut">${last ? esc(`${last.day} ${last.source}: ${last.label}`) : "-"}</td></tr>`; }).join("")}
+          </table>`)}
+
+        ${card("local-course", 9, "동네 코스 — 지역 기반 추천", "고객 region에 맞는 산책로·시장·공방 코스를 추천하고, 버튼 한 번으로 타임락(ICS+차감)에 연결합니다.",
+          `코스 보유 지역 ${covered.length}/${regions.length} (${covered.join("·") || "-"}) · 코스 ${Object.values(D.local_courses).flat().length}개`,
+          `<div class="row">${custSel("lcCust")}<button class="act pri" id="lcGo">내 동네 코스 보기</button></div>
+          <div id="lcOut"></div>`)}
+
+        ${card("gift-time", 10, "시간 선물 — 잔고를 지인 초대장으로", "내 잔고 일부를 지인과의 만남에 씁니다 — 초대 문안과 캘린더 초대(.ics)가 만들어지고 잔고에서 차감됩니다.",
+          `선물 ${M.gifts.length}건 · 합계 ${M.gifts.reduce((a, g) => a + g.minutes, 0)}분`,
+          `<div class="row">${custSel("gtCust")}
+            <input type="number" id="gtMin" value="90" min="30" style="width:84px">분 →
+            <input type="text" id="gtName" placeholder="지인 이름" value="소연" style="width:110px">
+            <button class="act pri" id="gtGo">초대장 + ICS 생성</button></div>
+          <div id="gtOut"></div>`)}`;
+    },
+
+    /* ⑦ 고객 */
     customers() {
       const rows = Object.keys(S.customers).sort().map(cid => {
         const p = S.customers[cid];
@@ -836,6 +1337,171 @@ if (typeof module !== "undefined") module.exports = OFFICE;
       rd.readAsText(f);
     };
     on("#resetBtn", () => { S = seedState(); render(); });
+    bindMovement(on);
+  }
+
+  /* ── 무브먼트 실험 핸들러 ── */
+  function downloadICS(name, text) {
+    const url = URL.createObjectURL(new Blob([text], { type: "text/calendar" }));
+    const a = document.createElement("a");
+    a.href = url; a.download = name; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+  function icsResultHtml(r, label) {
+    return `<div class="card" style="margin-top:8px">✅ ${esc(label)} — 차감 후 잔고 ${r.balance}분
+      <details open><summary>.ics 미리보기</summary><pre class="mailprev">${esc(r.ics)}</pre></details>
+      <div class="row"><button class="act pri" data-icsdl>캘린더 파일(.ics) 다운로드</button></div></div>`;
+  }
+  function bindMovement(on) {
+    if (cur !== "movement") return;
+    const M = S.movement;
+    const val = id => { const el = $("#" + id); return el ? el.value : ""; };
+    let lastICS = null;
+
+    on("#tlGo", () => {
+      const cid = val("tlCust");
+      const r = MOVEMENT.timeLock(S, M, cid, parseInt(val("tlMin"), 10), val("tlLabel"), Date.now());
+      if (!r.ok) { $("#tlOut").innerHTML = `<div class="mut">⚠ ${esc(r.reason)}</div>`; return; }
+      lastICS = { name: `unplugin-${cid}.ics`, text: r.ics };
+      pushLog("movement", `time-lock — ${S.customers[cid].name} ${val("tlMin")}분 전환`);
+      save();
+      $("#tlOut").innerHTML = icsResultHtml(r, "타임락 생성");
+      $("#tlOut [data-icsdl]").onclick = () => downloadICS(lastICS.name, lastICS.text);
+    });
+
+    on("#ltGo", () => {
+      const created = MOVEMENT.lightningPropose(S, M, D, OFFICE.memberships(S, D), Date.now());
+      pushLog("movement", `lightning — 제안 ${created.length}건 생성`);
+      render();
+    });
+    document.querySelectorAll("[data-rsvp]").forEach(b => b.onclick = () => {
+      const [key, cid, yes] = b.dataset.rsvp.split("|");
+      MOVEMENT.lightningRsvp(M, key, cid, yes === "1");
+      save(); render();
+    });
+    document.querySelectorAll("[data-ltlock]").forEach(b => b.onclick = () => {
+      const p = M.lightning[b.dataset.ltlock];
+      const yes = p.members.filter(c => p.rsvp[c] === true);
+      let deducted = 0;
+      for (const c of yes)
+        if (MOVEMENT.spend(S, c, 90, `번개 — ${p.group} (${p.region})`, "lightning", Date.now()).ok) deducted++;
+      const slot = p.slot;
+      const ics = MOVEMENT.icsFile({ uid: `unplugin-lt-${Date.now()}@unplugin.me`,
+        start: slot.start, end: slot.end, nowMs: Date.now(),
+        summary: `번개 — ${D.group_names[p.group] || p.group} (${p.region})`,
+        description: `참석 ${yes.length}명 · 장소 후보: ${p.places.join(" / ")}` });
+      pushLog("movement", `lightning 성사 ICS — 참석 ${yes.length}명, 차감 ${deducted}명 × 90분`);
+      downloadICS(`unplugin-lightning.ics`, ics);
+      save(); render();
+    });
+
+    on("#snGo", () => {
+      MOVEMENT.seasonCreate(M, { name: val("snName"), rounds: +val("snRounds"),
+        price: +val("snPrice"), capacity: +val("snCap") });
+      pushLog("movement", `season — 시즌 개설`);
+      render();
+    });
+    document.querySelectorAll("[data-snapply]").forEach(b => b.onclick = () => {
+      const sid = b.dataset.snapply;
+      const r = MOVEMENT.seasonApply(M, sid, val("snApply-" + sid));
+      pushLog("movement", `season 신청 — ${r.ok ? r.status : r.reason}`);
+      render();
+    });
+
+    on("#ptAdd", () => {
+      MOVEMENT.partnerAdd(M, { name: val("ptName"), region: val("ptRegion"),
+        category: "공방", feePct: +val("ptFee") });
+      render();
+    });
+    on("#vcIssue", () => {
+      const r = MOVEMENT.voucherIssue(M, val("vcCust"), val("vcPartner"), Date.now());
+      pushLog("movement", `voucher — ${r.ok ? "발급 " + r.voucher.id : r.reason}`);
+      render();
+    });
+    document.querySelectorAll("[data-vuse]").forEach(b => b.onclick = () => {
+      const vid = b.dataset.vuse;
+      const r = MOVEMENT.voucherUse(M, vid, +val("amt-" + vid), Date.now());
+      pushLog("movement", `voucher 사용 — ${r.ok ? "수수료 " + r.fee + "원 (누계 " + r.feeTotal + ")" : r.reason}`);
+      render();
+    });
+
+    on("#tbOffer", () => { MOVEMENT.timebankPost(M, { cid: val("tbOfferCust"), kind: "offer", text: val("tbOfferText") }); render(); });
+    on("#tbReq", () => { MOVEMENT.timebankPost(M, { cid: val("tbReqCust"), kind: "request", text: val("tbReqText") }); render(); });
+    on("#tbMatch", () => {
+      const r = MOVEMENT.timebankMatch(M, val("tbMo"), val("tbMr"), Date.now());
+      pushLog("movement", `timebank — ${r.ok ? "매칭 " + r.match.id : r.reason}`);
+      render();
+    });
+
+    on("#bdGo", () => {
+      const created = MOVEMENT.buddyPair(M, OFFICE.memberships(S, D));
+      pushLog("movement", `buddy — ${created.length}쌍 매칭`);
+      render();
+    });
+    document.querySelectorAll("[data-bprom]").forEach(b => b.onclick = () => {
+      const id = b.dataset.bprom;
+      MOVEMENT.buddyPromise(M, id, val("bp-" + id), val("bpd-" + id));
+      save(); render();
+    });
+    document.querySelectorAll("[data-bconf]").forEach(b => b.onclick = () => {
+      const [id, cid] = b.dataset.bconf.split("|");
+      MOVEMENT.buddyConfirm(M, id, cid, Date.now());
+      save(); render();
+    });
+
+    on("#chGo", () => { MOVEMENT.challengeCreate(M, val("chTitle"), Date.now()); render(); });
+    document.querySelectorAll("[data-chjoin]").forEach(b => b.onclick = () => {
+      MOVEMENT.challengeJoin(M, b.dataset.chjoin, val("chJoin-" + b.dataset.chjoin));
+      save(); render();
+    });
+    document.querySelectorAll("[data-chk]").forEach(b => b.onclick = () => {
+      const [id, cid] = b.dataset.chk.split("|");
+      const r = MOVEMENT.challengeCheckin(M, id, cid, MOVEMENT.isoDay(Date.now()));
+      pushLog("movement", `challenge 인증 — ${r.ok ? "스트릭 " + r.streak + "일" : r.reason}`);
+      render();
+    });
+
+    on("#lcGo", () => {
+      const cid = val("lcCust");
+      const { region, courses } = MOVEMENT.coursesFor(S, D, cid);
+      $("#lcOut").innerHTML = courses.length ? courses.map(c =>
+        `<div class="card" style="margin:8px 0"><b>${esc(c.title)}</b> <span class="pill">${esc(c.kind)} · ${c.duration_min}분</span>
+         <div class="mut">${esc(c.desc)}</div>
+         <div class="row"><button class="act" data-lclock="${esc(c.id)}|${c.duration_min}|${esc(c.title)}">이 코스로 타임락 (ICS+차감)</button></div></div>`).join("")
+        : `<div class="mut">⚠ ${esc(region || "지역 미등록")} — 등록된 코스가 없어요.</div>`;
+      document.querySelectorAll("[data-lclock]").forEach(b2 => b2.onclick = () => {
+        const [, mins, title] = b2.dataset.lclock.split("|");
+        const r = MOVEMENT.timeLock(S, M, cid, parseInt(mins, 10), title, Date.now());
+        if (!r.ok) { alert(r.reason); return; }
+        pushLog("movement", `local-course — ${title} 타임락`);
+        downloadICS("unplugin-course.ics", r.ics);
+        save(); render();
+      });
+    });
+
+    on("#gtGo", () => {
+      const cid = val("gtCust");
+      const r = MOVEMENT.giftTime(S, M, cid, parseInt(val("gtMin"), 10), val("gtName") || "지인", Date.now());
+      if (!r.ok) { $("#gtOut").innerHTML = `<div class="mut">⚠ ${esc(r.reason)}</div>`; return; }
+      pushLog("movement", `gift-time — ${S.customers[cid].name} → ${val("gtName")} ${val("gtMin")}분`);
+      save();
+      $("#gtOut").innerHTML = `<div class="card" style="margin-top:8px">💌
+        <pre class="mailprev">${esc(r.invite)}</pre>${icsResultHtml(r, "초대장 생성")}</div>`;
+      $("#gtOut [data-icsdl]").onclick = () => downloadICS("unplugin-gift.ics", r.ics);
+    });
+
+    // 평가 — Go/보류/No-go + 메모 (localStorage 저장)
+    document.querySelectorAll("[data-ev]").forEach(b => b.onclick = () => {
+      const [id, v] = b.dataset.ev.split("|");
+      M.evals[id] = Object.assign({}, M.evals[id], { verdict: v, t: nowIso() });
+      save(); render();
+    });
+    document.querySelectorAll("[data-evmemo]").forEach(b => b.onclick = () => {
+      const id = b.dataset.evmemo;
+      M.evals[id] = Object.assign({ verdict: "hold" }, M.evals[id],
+        { memo: $("#memo-" + id).value, t: nowIso() });
+      save(); render();
+    });
   }
 
   render();
