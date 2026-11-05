@@ -296,7 +296,7 @@
 
   /* ───────── 3열 카드 그리드 (세 갈래) ───────── */
   .tiers { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:44px; align-items:stretch; }
-  .tier { background:#fff; border:1px solid var(--hair); border-radius:24px; padding:30px 26px; text-align:left;
+  .tier { position:relative; background:#fff; border:1px solid var(--hair); border-radius:24px; padding:30px 26px; text-align:left;
     box-shadow:var(--shadow); display:flex; flex-direction:column;
     transition: transform .35s var(--ease), box-shadow .35s; }
   .tier:hover { transform:translateY(-6px); }
@@ -313,8 +313,10 @@
   .tier.hot .td { color:var(--w-ink2); }
   .tier.hot .say { background:rgba(255,255,255,.08); border-color:var(--hair-d); color:var(--w-ink); }
   .tier.hot .say b { color:var(--amber); }
-  .tier .hotbadge { align-self:flex-start; font-size:.68rem; font-weight:800; letter-spacing:.1em; color:#2A1708;
-    background:linear-gradient(135deg,#E5AC6C,#D08A4E); padding:4px 12px; border-radius:999px; margin-bottom:14px; }
+  /* 배지는 흐름 밖(카드 우상단, '배움' 라벨의 오른쪽 정렬선) — 흐름에 두면
+     배움 카드만 본문이 내려가 3카드 정렬이 깨진다 */
+  .tier .hotbadge { position:absolute; top:28px; right:26px; font-size:.68rem; font-weight:800; letter-spacing:.1em; color:#2A1708;
+    background:linear-gradient(135deg,#E5AC6C,#D08A4E); padding:4px 12px; border-radius:999px; }
 
   /* ───────── 마지막 CTA (다크) ───────── */
   #s9 { text-align:center; }
@@ -669,7 +671,7 @@ addEventListener("DOMContentLoaded", () => {
         <h3>숲길 산책자</h3>
         <p class="td">스크롤로 쉬는 척했지만, 한 번도 쉰 적 없는 사람. 당신에게 필요한 건 계획이 아니라 그냥 바람입니다.</p>
         <div class="tq">이 타입이 받는 첫 제안 — <b>"해 질 녘, 집에서 가장 가까운 천변 30분. 이어폰은 두고 가세요."</b></div>
-        <div class="tfoot">이 타입의 이웃들은 주로 <b>해질녘 산책</b>과 <b>북토크</b>로 토요일을 바꿨습니다.</div>
+        <div class="tfoot">이 타입의 이웃들은 주로 <b>해질녘 산책</b>과 <b>북토크</b>로 저녁과 주말을 바꿨습니다.</div>
       </div>
     </div>
   </section>
@@ -684,8 +686,8 @@ addEventListener("DOMContentLoaded", () => {
         <div class="tier rv d1">
           <span class="tn">관계</span>
           <div class="tp">사람</div>
-          <p class="td">혼자 보내는 주말이 길게 느껴지는 사람에게</p>
-          <div class="say">"같은 클럽 이웃 셋이 <b>토요일 번개</b>를 잡았어요 — 당신 자리 하나 비워뒀어요."</div>
+          <p class="td">혼자 보내는 저녁과 주말이 길게 느껴지는 사람에게</p>
+          <div class="say">"같은 클럽 이웃 셋이 <b>퇴근 후 번개</b>를 잡았어요 — 당신 자리 하나 비워뒀어요."</div>
         </div>
         <div class="tier hot rv d2">
           <span class="hotbadge">만남이 배움이 되기도</span>
@@ -710,7 +712,7 @@ addEventListener("DOMContentLoaded", () => {
     <div class="aurora au1" style="left:50%; top:auto; bottom:-320px; transform:translateX(-50%);"></div><div class="grain"></div>
     <div class="wrap">
       <div class="eyebrow rv" style="justify-content:center;">Begin — Free</div>
-      <h2 class="rv d1">다음 토요일, 뭘 할지는 <br><span class="serif">저희가 고민할게요</span></h2>
+      <h2 class="rv d1">오늘 저녁도, 다음 토요일도 — <br><span class="serif">뭘 할지는 저희가 고민할게요</span></h2>
       <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">내가 할 준비는 한 줄뿐 — 에이전트에 일을 시킬 때 "끝나면 내 Unplugin 주소로 보고"만 붙이면, 벌어진 시간이 제안을 받는 티켓이 됩니다. 성향 테스트 · 커뮤니티 · 번개 참가는 영구 무료, 유료는 시즌 모임 같은 더해지는 가치뿐입니다.</p>
       <div class="rv d3" style="margin-top:36px;">
         <a class="btn btn-accent" href="test.html">내 성향부터 알아보기 — 1분 <span class="arr">→</span></a>

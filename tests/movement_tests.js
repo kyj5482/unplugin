@@ -205,5 +205,22 @@ const groups = OFFICE.memberships(S, DATA);
     && Object.keys(copy.stamps).length === Object.keys(M.stamps).length, "");
 }
 
+// 28~30) 저녁 슬롯 — 주말만이 아니라 평일 저녁 삶도 (대표 피드백 2026-11-05)
+{
+  const ev = MOVEMENT.nextEveningSlot(NOW, 45);
+  const d = new Date(ev.start);
+  check("저녁 슬롯: 내일 20:00 + 요청 분만큼",
+    d.getHours() === 20 && ev.end - ev.start === 45 * 60000
+    && ev.start > NOW && ev.start - NOW < 48 * 3600000,
+    d.toString());
+  check("슬롯 라벨: 저녁은 '저녁 20시', 주말은 '토요일 오전'",
+    MOVEMENT.slotLabel(ev).includes("저녁 20시")
+    && MOVEMENT.slotLabel(MOVEMENT.nextWeekendSlot(NOW, 60)).includes("토요일 오전"), "");
+  const cid = Object.keys(S.ledgers)[0];
+  const r = MOVEMENT.timeLock(S, M, cid, 30, "오감 — 동네 산책", NOW, "evening");
+  check("타임락: when=evening 이면 ICS가 저녁 슬롯",
+    r.ok && new Date(r.slot.start).getHours() === 20 && r.ics.includes("BEGIN:VEVENT"), "");
+}
+
 console.log(`\n결과: ${pass} PASS / ${fail} FAIL`);
 process.exit(fail ? 1 : 0);

@@ -526,6 +526,18 @@ const MOVEMENT = (() => {
     const s = new Date(d.getFullYear(), d.getMonth(), d.getDate() + add, 10, 0, 0);
     return { start: s.getTime(), end: s.getTime() + Math.max(30, minutes) * 60000 };
   }
+  function nextEveningSlot(nowMs, minutes) {  // 내일 저녁 20:00 — 주말만이 아니라 평일 저녁 삶도
+    const d = new Date(nowMs);
+    const s = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1, 20, 0, 0);
+    return { start: s.getTime(), end: s.getTime() + Math.max(30, minutes) * 60000 };
+  }
+  function pickSlot(when, nowMs, minutes) {
+    return when === "evening" ? nextEveningSlot(nowMs, minutes) : nextWeekendSlot(nowMs, minutes);
+  }
+  function slotLabel(slot) {
+    const h = new Date(slot.start).getHours();
+    return `${isoDay(slot.start)} ${h >= 18 ? "저녁 " + h + "시" : "토요일 오전"}`;
+  }
 
   // ── 잔고 전환(차감) — 적립 총액은 보존하고 spent 를 따로 센다 ──
   function balanceOf(state, cid) {
@@ -558,10 +570,10 @@ const MOVEMENT = (() => {
   }
 
   // ── ① time-lock — 잔고 N분 → .ics + 차감 ──
-  function timeLock(state, M, cid, minutes, label, nowMs) {
+  function timeLock(state, M, cid, minutes, label, nowMs, when) {
     const r = spend(state, cid, minutes, label, "time-lock", nowMs);
     if (!r.ok) return r;
-    const slot = nextWeekendSlot(nowMs, minutes);
+    const slot = pickSlot(when, nowMs, minutes);
     const uid = `unplugin-lock-${cid}-${nowMs}-${M.locks.length + 1}@unplugin.me`;
     const ics = icsFile({ uid, start: slot.start, end: slot.end, nowMs,
       summary: `되찾은 시간 — ${label}`,
@@ -596,7 +608,7 @@ const MOVEMENT = (() => {
   function lightningInvite(p, D) {
     return [`[번개] ${D.group_names[p.group] || p.group} — ${p.region}`,
       `같은 일을 맡기는 ${p.region} 이웃 ${p.members.length}명이 모였어요.`,
-      `일시(제안): ${isoDay(p.slot.start)} 토요일 오전`,
+      `일시(제안): ${slotLabel(p.slot)}`,
       `장소 후보: ${p.places.join(" / ") || p.region + " 근처"}`,
       "참석하실 분은 '수락'을 눌러 주세요 — 2명이 모이면 자리가 성사됩니다."].join("\n");
   }
@@ -770,10 +782,10 @@ const MOVEMENT = (() => {
   }
 
   // ── ⑩ gift-time — 잔고를 지인 초대장으로 ──
-  function giftTime(state, M, cid, minutes, toName, nowMs) {
+  function giftTime(state, M, cid, minutes, toName, nowMs, when) {
     const r = spend(state, cid, minutes, `지인 초대 — ${toName}`, "gift-time", nowMs);
     if (!r.ok) return r;
-    const slot = nextWeekendSlot(nowMs, minutes);
+    const slot = pickSlot(when, nowMs, minutes);
     const uid = `unplugin-gift-${cid}-${nowMs}-${M.gifts.length + 1}@unplugin.me`;
     const giver = (state.customers[cid] || {}).name || cid;
     const summary = `${giver}님이 선물한 시간 — ${toName}님과 ${minutes}분`;
@@ -781,14 +793,14 @@ const MOVEMENT = (() => {
       description: "AI가 벌어준 시간을 당신과 쓰고 싶어요. — Unplugin 초대장" });
     const invite = [`${toName}님께`, "",
       `${giver}님이 AI 에이전트로 벌어둔 시간 ${minutes}분을 당신과의 만남에 쓰기로 했어요.`,
-      `제안 일시: ${isoDay(slot.start)} 토요일 오전 (첨부한 캘린더 초대 참고)`,
+      `제안 일시: ${slotLabel(slot)} (첨부한 캘린더 초대 참고)`,
       "장소는 회신으로 정해요. — Unplugin"].join("\n");
     M.gifts.push({ cid, toName, minutes, uid, day: isoDay(nowMs) });
     stampAdd(M, cid, "gift-time", `${toName}에게 ${minutes}분`, isoDay(nowMs));
     return { ok: true, ics, invite, balance: r.balance };
   }
 
-  return { emptyMovement, migrate, icsFile, icsDate, nextWeekendSlot, isoDay,
+  return { emptyMovement, migrate, icsFile, icsDate, nextWeekendSlot, nextEveningSlot, pickSlot, slotLabel, isoDay,
            balanceOf, spend, timeLock,
            lightningPropose, lightningInvite, lightningRsvp, lightningStats,
            seasonCreate, seasonApply, seasonRevenue,
@@ -1278,6 +1290,7 @@ if (typeof module !== "undefined") module.exports.GROWTH = GROWTH;
           `<div class="row">${custSel("tlCust")}
             <input type="number" id="tlMin" value="60" min="10" style="width:84px"> 분
             <select id="tlLabel"><option>관계 — 미뤄둔 만남</option><option>배움 — 원데이 클래스</option><option>오감 — 동네 산책</option></select>
+            <select id="tlWhen"><option value="weekend">다음 토요일 오전</option><option value="evening">내일 저녁 8시</option></select>
             <button class="act pri" id="tlGo">ICS 생성 + 차감</button></div>
           <div id="tlOut"></div>`)}
 
@@ -1386,6 +1399,7 @@ if (typeof module !== "undefined") module.exports.GROWTH = GROWTH;
           `<div class="row">${custSel("gtCust")}
             <input type="number" id="gtMin" value="90" min="30" style="width:84px">분 →
             <input type="text" id="gtName" placeholder="지인 이름" value="소연" style="width:110px">
+            <select id="gtWhen"><option value="weekend">다음 토요일 오전</option><option value="evening">내일 저녁 8시</option></select>
             <button class="act pri" id="gtGo">초대장 + ICS 생성</button></div>
           <div id="gtOut"></div>`)}`;
     },
@@ -1607,7 +1621,7 @@ if (typeof module !== "undefined") module.exports.GROWTH = GROWTH;
 
     on("#tlGo", () => {
       const cid = val("tlCust");
-      const r = MOVEMENT.timeLock(S, M, cid, parseInt(val("tlMin"), 10), val("tlLabel"), Date.now());
+      const r = MOVEMENT.timeLock(S, M, cid, parseInt(val("tlMin"), 10), val("tlLabel"), Date.now(), val("tlWhen"));
       if (!r.ok) { $("#tlOut").innerHTML = `<div class="mut">⚠ ${esc(r.reason)}</div>`; return; }
       lastICS = { name: `unplugin-${cid}.ics`, text: r.ics };
       pushLog("movement", `time-lock — ${S.customers[cid].name} ${val("tlMin")}분 전환`);
@@ -1728,7 +1742,7 @@ if (typeof module !== "undefined") module.exports.GROWTH = GROWTH;
 
     on("#gtGo", () => {
       const cid = val("gtCust");
-      const r = MOVEMENT.giftTime(S, M, cid, parseInt(val("gtMin"), 10), val("gtName") || "지인", Date.now());
+      const r = MOVEMENT.giftTime(S, M, cid, parseInt(val("gtMin"), 10), val("gtName") || "지인", Date.now(), val("gtWhen"));
       if (!r.ok) { $("#gtOut").innerHTML = `<div class="mut">⚠ ${esc(r.reason)}</div>`; return; }
       pushLog("movement", `gift-time — ${S.customers[cid].name} → ${val("gtName")} ${val("gtMin")}분`);
       save();
