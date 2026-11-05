@@ -57,10 +57,35 @@ LOCAL_COURSES = {
 }
 
 
+# ── 언플러그 타입 (성장 비서 콘솔) — 의미의 진실원은 docs/test.html ──
+# 4축: S/T(시간이 새는 곳: 탐색/처리) F/C(맡김: 통째로/확인) M/R(취향: 만들기/감각) P/A(함께/혼자)
+UNPLUG_AXES = {
+    "0": {"S": "탐색형 — 피드·비교에 시간이 샌다", "T": "처리형 — 할 일 처리에 시간이 샌다"},
+    "1": {"F": "통째로 맡김 — 결과만", "C": "확인형 — 중간 보고 필요"},
+    "2": {"M": "만들기·배움 — 손을 움직일 때 산다", "R": "감각·휴식 — 바람·풍경이 필요"},
+    "3": {"P": "함께 — 같이 갈 사람부터 떠올림", "A": "혼자 — 조용한 몰입"},
+}
+# 데모 고객 타입 — 추천 차이가 보이도록 축 조합을 다르게 (test.html 16타입 중)
+DEMO_TYPES = {
+    "jisoo": "SFRP",   # 노을 피크닉러 — 함께/오감
+    "minho": "SCMP",   # 주말 베이킹 반장 — 함께/배움
+    "sora": "TCRA",    # 필름 산책가 — 혼자/오감
+    "yuna": "SFMA",    # 심야 공방러 — 혼자/배움
+    "doyun": "TFRA",   # 맨발 러너 — 혼자/오감(처리형)
+}
+TYPE_NAMES = {  # 사용 중인 타입의 표시명 (전체 16종은 docs/test.html)
+    "SFRP": "노을 피크닉러", "SCMP": "주말 베이킹 반장", "TCRA": "필름 산책가",
+    "SFMA": "심야 공방러", "TFRA": "맨발 러너",
+}
+
+
 def _demo_customers() -> list[dict]:
     rows = []
     for p in sorted((DEMO / "customers").glob("*/profile.json")):
-        rows.append(common.read_json(p))
+        prof = common.read_json(p)
+        if prof.get("id") in DEMO_TYPES:   # 콘솔용 타입 오버라이드 (demo/는 불변)
+            prof["type"] = DEMO_TYPES[prof["id"]]
+        rows.append(prof)
     return rows
 
 
@@ -115,6 +140,8 @@ def build() -> dict:
         "group_names": community.GROUP_NAMES,
         "group_tips": community.GROUP_TIPS,
         "local_courses": LOCAL_COURSES,
+        "unplug_axes": UNPLUG_AXES,
+        "type_names": TYPE_NAMES,
         "demo_customers": _demo_customers(),
         "demo_mails": _demo_mails(),
     }

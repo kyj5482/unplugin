@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unplugin — 일은 AI에게, 시간은 삶으로</title>
-<meta name="description" content="일은 AI에게, 시간은 삶으로. Unplugin은 Muze·ChatGPT 등 에이전트가 벌어준 시간을 번개 모임·짝꿍·클래스 같은 다음 무브먼트로 옮기는 온라인-오프라인 다리입니다. 측정·커뮤니티·번개 참가는 무료.">
+<title>Unplugin — 남은 시간의 비서</title>
+<meta name="description" content="AI가 벌어준 저녁 8시, 또 썸네일만 넘기고 있나요? Unplugin은 당신의 성향에 맞춰 관계·배움·오감의 오프라인을 이번 주 딱 하나로 제안하는 '남은 시간의 비서'입니다. 성향 테스트·커뮤니티·번개 참가는 무료.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   :root {
@@ -44,7 +44,7 @@
   /* ───────── 스크롤 컨테이너 ───────── */
   /* svh 미지원 브라우저용 vh 폴백 — main 높이가 무효면 스크롤·리빌 전체가 깨진다 */
   main { height:100vh; height:100svh; overflow-y:auto; scroll-snap-type:y mandatory; scroll-behavior:smooth;
-    scrollbar-width:none; }  /* 스크롤바 숨김 — 위치는 우측 레일·상단 진행 바가 표시 (이중 표시 제거) */
+    scrollbar-width:none; }  /* 스크롤바 숨김 — 위치는 우측 레일·상단 진행 바가 표시 */
   main::-webkit-scrollbar { display:none; width:0; height:0; }
   section {
     min-height:100vh; min-height:100svh; scroll-snap-align:start; scroll-snap-stop:always;
@@ -148,7 +148,7 @@
   .in .rv.d1 { transition-delay:.1s; } .in .rv.d2 { transition-delay:.2s; }
   .in .rv.d3 { transition-delay:.3s; } .in .rv.d4 { transition-delay:.4s; }
 
-  /* ───────── S1 히어로 ───────── */
+  /* ───────── S1 훅 — 저녁 8시 썸네일 루프 ───────── */
   #s1 { text-align:center; }
   .aurora { position:absolute; border-radius:50%; filter:blur(90px); pointer-events:none; z-index:0; }
   .au1 { width:620px; height:620px; left:-180px; top:-220px;
@@ -157,46 +157,27 @@
   .au2 { width:560px; height:560px; right:-160px; bottom:-200px;
     background:radial-gradient(circle, rgba(201,120,64,.34), transparent 65%);
     animation: drift2 19s ease-in-out infinite alternate; }
-  .horizon { position:absolute; left:0; right:0; bottom:-26svh; height:52svh; z-index:0; pointer-events:none;
-    background:radial-gradient(ellipse 85% 100% at 50% 100%, rgba(216,154,91,.16), transparent 62%); }
   @keyframes drift1 { from { transform:translate(0,0) scale(1); } to { transform:translate(70px,50px) scale(1.12); } }
   @keyframes drift2 { from { transform:translate(0,0) scale(1.08); } to { transform:translate(-60px,-40px) scale(1); } }
-
-  .hero-pill { display:inline-flex; align-items:center; gap:8px; font-size:.82rem; font-weight:600;
-    color:var(--w-ink2); border:1px solid var(--hair-d); background:rgba(255,255,255,.05);
-    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-    border-radius:999px; padding:7px 18px; margin-bottom:28px; }
-  .hero-pill b { color: var(--amber); font-weight:700; }
   #s1 h1 { color: var(--w-ink); }
   #s1 .lead { margin-left:auto; margin-right:auto; }
-  .hero-cta { margin-top:38px; display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
 
-  /* 제품 UI 목업 카드 (플로팅) */
-  .proof { margin:54px auto 0; display:flex; justify-content:center; gap:18px; flex-wrap:wrap; perspective:900px; }
-  .pcard {
-    width:258px; text-align:left; border-radius:18px; padding:18px 18px 16px;
-    background: linear-gradient(160deg, rgba(255,255,255,.1), rgba(255,255,255,.045));
-    border:1px solid var(--hair-d);
-    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 24px 48px rgba(0,0,0,.35);
-    animation: floaty 7s var(--ease) infinite alternate;
-  }
-  .pcard:nth-child(1) { transform:rotate(-2deg); }
-  .pcard:nth-child(2) { animation-delay:1.1s; transform:translateY(-8px); }
-  .pcard:nth-child(3) { animation-delay:2.2s; transform:rotate(2deg); }
-  @keyframes floaty { from { translate:0 0; } to { translate:0 -10px; } }
-  .pcard .ph { display:flex; align-items:center; gap:9px; margin-bottom:10px; }
-  .pcard .dot { width:26px; height:26px; border-radius:50%; flex:none;
-    background:radial-gradient(circle at 32% 30%, #5CA87C, #1E4733);
-    box-shadow:0 0 14px rgba(92,168,124,.45); }
-  .pcard .who { font-size:.72rem; font-weight:700; color:var(--w-ink2); letter-spacing:.04em; }
-  .pcard .msg { font-size:.9rem; font-weight:600; color:var(--w-ink); line-height:1.5; }
-  .pcard .meta { margin-top:10px; font-size:.75rem; color:var(--w-ink3); }
-  .pcard .tag { display:inline-block; margin-top:12px; font-size:.72rem; font-weight:700;
-    padding:4px 11px; border-radius:999px; }
-  .tag.run { color:#F3CFA6; background:rgba(216,154,91,.16); border:1px solid rgba(216,154,91,.3); }
-  .tag.done { color:#A9DDBE; background:rgba(92,168,124,.14); border:1px solid rgba(92,168,124,.3); }
-  .tag.time { color:#F2EFE7; background:rgba(255,255,255,.08); border:1px solid var(--hair-d); }
+  /* 자동재생 썸네일 무한 루프 — 트랙에 카드 세트를 2벌 넣고 -50%까지 민다 */
+  .thumbs { margin:52px auto 0; max-width:920px; overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent); }
+  .trow { display:flex; gap:14px; width:max-content; animation: marq 30s linear infinite; }
+  .trow + .trow { margin-top:14px; animation-duration:38s; animation-direction:reverse; }
+  @keyframes marq { to { transform:translateX(-50%); } }
+  .thumb { width:190px; height:106px; border-radius:12px; flex:none; position:relative;
+    background:linear-gradient(160deg,#17271C,#0D1912); border:1px solid var(--hair-d);
+    display:flex; align-items:flex-end; padding:10px 12px; text-align:left; }
+  .thumb .tplay { position:absolute; top:50%; left:50%; transform:translate(-50%,-62%);
+    width:36px; height:25px; border-radius:7px; background:rgba(255,255,255,.1);
+    display:flex; align-items:center; justify-content:center; font-size:.58rem; color:var(--w-ink2); }
+  .thumb .tl { font-size:.72rem; color:var(--w-ink3); font-weight:600; line-height:1.4; }
+  .thumb.hot { border-color:rgba(216,154,91,.55); background:linear-gradient(160deg,#2A1F12,#171009); }
+  .thumb.hot .tl { color:var(--amber); font-weight:800; }
 
   .scroll-hint { position:absolute; bottom:22px; left:50%; transform:translateX(-50%); z-index:2;
     font-size:.74rem; letter-spacing:.14em; color:var(--w-ink3); display:flex; flex-direction:column; align-items:center; gap:8px; }
@@ -229,22 +210,17 @@
   @keyframes grow { from { width:0; } to { width:var(--w); } }
   .in .brow:nth-child(2) .bfill { animation-delay:.12s; }
   .in .brow:nth-child(3) .bfill { animation-delay:.24s; }
-  .in .brow:nth-child(4) .bfill { animation-delay:.36s; }
   .brow .bv { font-size:.88rem; font-weight:800; text-align:right; color:var(--ink); font-variant-numeric:tabular-nums; }
-  /* 강조 행 — 가장 큰 항목 하나만 도드라지게 */
   .brow.hl .bl { color:var(--ink); font-weight:800; }
   .brow.hl .btrack { height:17px; }
   .brow.hl .bfill { background:linear-gradient(90deg,#D08A4E,#C97840); }
   .brow.hl .bv { color:var(--amber-deep); font-size:1rem; }
-
-  /* 비교 바 (amber 변형) + 전환율 히어로 */
-  .bfill.alt { background:linear-gradient(90deg,#D08A4E,#C97840); }
   .conv { display:flex; align-items:center; gap:16px; margin-top:18px; padding-top:16px;
     border-top:1px solid var(--hair); }
   .conv .pct { font-size:2.4rem; font-weight:800; letter-spacing:-.03em; color:var(--green-deep); line-height:1; }
   .conv .pd { font-size:.82rem; color:var(--ink2); }
 
-  /* ───────── S3 대화 타임라인 (실제 메일 스레드 형태) ───────── */
+  /* ───────── 대화 타임라인 (비서 ↔ 나) ───────── */
   .journey { max-width:580px; margin:26px auto 0; text-align:left; }
   .jt { position:relative; display:flex; gap:12px; padding-bottom:12px; }
   .jt:last-child { padding-bottom:0; }
@@ -266,32 +242,11 @@
     padding:3px 11px; border-radius:999px; }
   .jtag.g { color:var(--green-deep); background:rgba(47,107,74,.1); border:1px solid rgba(47,107,74,.25); }
   .jtag.o { color:var(--amber-deep); background:rgba(201,120,64,.1); border:1px solid rgba(201,120,64,.3); }
+  .chip { display:inline-flex; align-items:center; gap:6px; margin-top:9px; margin-right:6px;
+    font-size:.74rem; font-weight:700; padding:5px 12px; border-radius:999px;
+    background:rgba(47,107,74,.09); color:var(--green-deep); border:1px solid rgba(47,107,74,.22); }
 
-  /* ───────── S4 타입 (다크) ───────── */
-  .typegrid { display:flex; flex-wrap:wrap; gap:9px; margin-top:30px; max-width:560px; }
-  .tpill { font-size:.82rem; font-weight:600; color:var(--w-ink2);
-    border:1px solid var(--hair-d); background:rgba(255,255,255,.05); border-radius:999px; padding:7px 15px; }
-  .tpill b { color:var(--amber); font-weight:800; letter-spacing:.08em; margin-right:7px; font-size:.74rem; }
-  .tcard {
-    border-radius:24px; padding:28px 26px;
-    background:linear-gradient(165deg, rgba(255,255,255,.1), rgba(255,255,255,.04));
-    border:1px solid var(--hair-d); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-    box-shadow:0 30px 60px rgba(0,0,0,.4); text-align:left;
-  }
-  .tcard .code { font-size:.74rem; font-weight:800; letter-spacing:.3em; color:var(--amber); }
-  .tcard h3 { font-size:1.6rem; font-weight:800; letter-spacing:-.03em; color:var(--w-ink); margin:6px 0 4px; }
-  .tcard .td { font-size:.88rem; color:var(--w-ink2); }
-  .mbar { margin-top:18px; }
-  .mbar .row { display:flex; justify-content:space-between; font-size:.78rem; color:var(--w-ink2); margin:12px 0 6px; }
-  .mbar .row b { color:var(--w-ink); font-weight:700; }
-  .mbar .track { height:9px; border-radius:999px; background:rgba(255,255,255,.09); overflow:hidden; }
-  .mbar .fill { display:block; height:100%; border-radius:999px; width:var(--w);
-    background:linear-gradient(90deg,#5CA87C,#D89A5B); }
-  .in .mbar .fill { animation: grow 1.2s var(--ease) .35s both; }
-  .tfoot { margin-top:18px; padding-top:16px; border-top:1px solid var(--hair-d); font-size:.82rem; color:var(--w-ink2); }
-  .tfoot b { color:var(--amber); }
-
-  /* ───────── S6 이메일 ───────── */
+  /* ───────── 제안 카드 (메일 목업) ───────── */
   .mailcard { background:#fff; border:1px solid var(--hair); border-radius:22px; box-shadow:var(--shadow);
     text-align:left; overflow:hidden; }
   .mailcard .mhead { padding:16px 22px; border-bottom:1px solid var(--hair); display:flex; gap:7px; }
@@ -305,50 +260,71 @@
   .mrow .mb .from span { color:var(--ink3); font-weight:500; }
   .mrow .mb .txt { font-size:.88rem; color:var(--ink2); margin-top:3px; }
   .mrow .mb .txt b { color:var(--ink); }
-  .chip { display:inline-flex; align-items:center; gap:6px; margin-top:9px; margin-right:6px;
-    font-size:.74rem; font-weight:700; padding:5px 12px; border-radius:999px;
-    background:rgba(47,107,74,.09); color:var(--green-deep); border:1px solid rgba(47,107,74,.22); }
-  .feat { margin-top:28px; display:flex; flex-direction:column; gap:16px; text-align:left; }
-  .feat .f { display:flex; gap:14px; align-items:flex-start; }
-  .feat .fi { width:38px; height:38px; flex:none; border-radius:12px; background:#fff; border:1px solid var(--hair);
-    box-shadow:var(--shadow); display:flex; align-items:center; justify-content:center; color:var(--green-deep); }
-  .feat h4 { font-size:.95rem; font-weight:800; letter-spacing:-.01em; }
-  .feat p { font-size:.85rem; color:var(--ink2); }
-  .addr { background:rgba(47,107,74,.1); color:var(--green-deep); font-weight:700;
-    border-radius:7px; padding:1px 7px; font-size:.86em; overflow-wrap:anywhere; }
 
-  /* ───────── 3열 카드 그리드 (메커니즘·세 갈래 공용) ───────── */
+  /* ───────── Before / After ───────── */
+  .ba { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+  .ba .b { border:1px solid var(--hair); border-radius:14px; padding:14px 16px; }
+  .ba .b .bt { font-size:.7rem; font-weight:800; letter-spacing:.1em; margin-bottom:4px; }
+  .ba .b .bd { font-size:.86rem; line-height:1.6; }
+  .ba .before { background:rgba(23,33,26,.035); }
+  .ba .before .bt { color:var(--ink3); }
+  .ba .before .bd { color:var(--ink3); }
+  .ba .after { background:rgba(47,107,74,.07); border-color:rgba(47,107,74,.28); }
+  .ba .after .bt { color:var(--green-deep); }
+  .ba .after .bd { color:var(--ink); }
+
+  /* ───────── 타입 (다크) ───────── */
+  .typegrid { display:flex; flex-wrap:wrap; gap:9px; margin-top:30px; max-width:560px; }
+  .tpill { font-size:.82rem; font-weight:600; color:var(--w-ink2);
+    border:1px solid var(--hair-d); background:rgba(255,255,255,.05); border-radius:999px; padding:7px 15px; }
+  .tpill b { color:var(--amber); font-weight:800; letter-spacing:.08em; margin-right:7px; font-size:.74rem; }
+  .tcard {
+    border-radius:24px; padding:28px 26px;
+    background:linear-gradient(165deg, rgba(255,255,255,.1), rgba(255,255,255,.04));
+    border:1px solid var(--hair-d); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    box-shadow:0 30px 60px rgba(0,0,0,.4); text-align:left;
+  }
+  .tcard .code { font-size:.74rem; font-weight:800; letter-spacing:.3em; color:var(--amber); }
+  .tcard h3 { font-size:1.6rem; font-weight:800; letter-spacing:-.03em; color:var(--w-ink); margin:6px 0 4px; }
+  .tcard .td { font-size:.88rem; color:var(--w-ink2); }
+  .tcard .tq { margin-top:16px; padding:12px 15px; border-radius:4px 14px 14px 14px;
+    background:rgba(255,255,255,.07); border:1px solid var(--hair-d);
+    font-size:.88rem; color:var(--w-ink); line-height:1.55; }
+  .tcard .tq b { color:var(--amber); }
+  .tfoot { margin-top:18px; padding-top:16px; border-top:1px solid var(--hair-d); font-size:.82rem; color:var(--w-ink2); }
+  .tfoot b { color:var(--amber); }
+
+  /* ───────── 3열 카드 그리드 (세 갈래) ───────── */
   .tiers { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:44px; align-items:stretch; }
   .tier { background:#fff; border:1px solid var(--hair); border-radius:24px; padding:30px 26px; text-align:left;
     box-shadow:var(--shadow); display:flex; flex-direction:column;
     transition: transform .35s var(--ease), box-shadow .35s; }
   .tier:hover { transform:translateY(-6px); }
-  .tier .tn { font-weight:800; font-size:.95rem; letter-spacing:-.01em; }
+  .tier .tn { font-weight:800; font-size:.95rem; letter-spacing:-.01em; color:var(--ink3); }
   .tier .tp { font-size:1.85rem; font-weight:800; margin:12px 0 2px; letter-spacing:-.03em; }
-  .tier .tp small { font-size:.78rem; font-weight:500; color:var(--ink3); }
-  .tier .td { font-size:.8rem; color:var(--ink2); margin-bottom:14px; }
-  .tier ul { list-style:none; margin-top:auto; }
-  .tier li { font-size:.86rem; color:var(--ink2); padding:5px 0 5px 26px; position:relative; }
-  .tier li::before { content:""; position:absolute; left:0; top:11px; width:15px; height:15px; border-radius:50%;
-    background: rgba(47,107,74,.12) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232F6B4A' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4 10-10'/%3E%3C/svg%3E") center/9px no-repeat; }
+  .tier .td { font-size:.84rem; color:var(--ink2); margin-bottom:14px; }
+  .tier .say { margin-top:auto; padding:12px 15px; border-radius:4px 14px 14px 14px;
+    background:rgba(47,107,74,.06); border:1px solid rgba(47,107,74,.2);
+    font-size:.86rem; color:var(--ink); line-height:1.55; }
+  .tier .say b { color:var(--green-deep); }
   .tier.hot { background:linear-gradient(170deg,#1E4733,#12301F); border-color:transparent; color:var(--w-ink);
     box-shadow:0 26px 54px rgba(30,71,51,.38); }
-  .tier.hot .td, .tier.hot li { color:var(--w-ink2); }
-  .tier.hot li::before { background-color:rgba(255,255,255,.12);
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D89A5B' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4 10-10'/%3E%3C/svg%3E"); }
+  .tier.hot .tn { color:var(--w-ink3); }
+  .tier.hot .td { color:var(--w-ink2); }
+  .tier.hot .say { background:rgba(255,255,255,.08); border-color:var(--hair-d); color:var(--w-ink); }
+  .tier.hot .say b { color:var(--amber); }
   .tier .hotbadge { align-self:flex-start; font-size:.68rem; font-weight:800; letter-spacing:.1em; color:#2A1708;
     background:linear-gradient(135deg,#E5AC6C,#D08A4E); padding:4px 12px; border-radius:999px; margin-bottom:14px; }
 
-  /* ───────── S8 CTA ───────── */
-  #s8 { text-align:center; }
-  #s8 h2 { font-size:clamp(2rem,4.6vw,3.3rem); color:var(--w-ink); }
-  #s8 footer { margin-top:72px; font-size:.8rem; color:var(--w-ink3); }
-  #s8 footer a { color:var(--w-ink2); }
+  /* ───────── 마지막 CTA (다크) ───────── */
+  #s9 { text-align:center; }
+  #s9 h2 { font-size:clamp(2rem,4.6vw,3.3rem); color:var(--w-ink); }
+  #s9 footer { margin-top:72px; font-size:.8rem; color:var(--w-ink3); }
+  #s9 footer a { color:var(--w-ink2); }
 
-  /* ───────── 페이지 3D 전환 (소개 ↔ 라이브 데모) ─────────
+  /* ───────── 페이지 3D 전환 (소개 ↔ 데모) ─────────
      클릭 즉시 페이지 전체가 카드처럼 회전하며 빠지고(.52s), 그 사이에
-     다음 문서를 미리 받아(fetch 캐시 워밍) 도착 직후 끊김이 없게 한다.
-     데모에서 돌아올 때는 같은 포즈에서 역방향으로 들어온다. */
+     다음 문서를 미리 받아(fetch 캐시 워밍) 도착 직후 끊김이 없게 한다. */
   html.pt, html.pt-enter { background: var(--dark0); }
   body.pt-leave { animation: ptLeave .52s var(--ease) both; pointer-events:none; }
   html.pt-enter body { animation: ptEnter .6s var(--ease) both; }
@@ -368,46 +344,40 @@
        snap area가 스냅포트보다 크면 내부 자유 스크롤이 허용되므로(mandatory 유지)
        끝까지 읽은 뒤 다음 섹션 시작점에 스냅된다. */
     section { padding: 88px 6vw 48px; }
-    .cols, .steps, .tiers { grid-template-columns:1fr; }
+    .cols, .tiers { grid-template-columns:1fr; }
     .cols { gap:26px; }
-    /* 스택 시 읽는 순서 보정: 글(제목·설명)이 먼저, 차트·카드가 다음.
-       s5 패널의 inline order:0(PC에선 차트가 왼쪽)을 뒤집는다 */
+    /* 스택 시 읽는 순서 보정: 글(제목·설명)이 먼저, 카드·차트가 다음 */
     .cols > .panel, .cols > .tcard, .cols > .mailcard { order:2 !important; }
     .rail { display:none; }
     .scroll-hint { display:none; }
 
-    /* 타이틀 정렬 통일 — PC의 중앙 정렬 섹션(히어로·메커니즘·세 갈래·CTA)도
-       모바일 단일 컬럼에서는 전부 왼쪽 정렬 (인라인 스타일까지 오버라이드) */
-    section, #s1, #s8 { text-align:left; }
+    /* 타이틀 정렬 통일 — PC의 중앙 정렬 섹션도 모바일 단일 컬럼에선 왼쪽 정렬 */
+    section, #s1, #s9 { text-align:left; }
     section .wrap { text-align:left !important; }
     .eyebrow { justify-content:flex-start !important; }
     section .lead { margin-left:0 !important; margin-right:0 !important; }
-    .hero-cta, .proof { justify-content:flex-start; }
     .journey { margin-left:0; }
 
     /* 다크(그린)↔라이트 섹션 전환 지연 수정 — blur 오로라와 backdrop-filter는
-       모바일 GPU 합성 비용이 커서 다크 섹션 진입·이탈 시 프레임이 끊긴다.
-       다크 그라디언트 배경은 유지하고 장식 블러만 제거한다 */
-    .aurora, .horizon { display:none; }
-    .pcard, .tcard, .hero-pill, .btn-glass, header .nav-cta {
+       모바일 GPU 합성 비용이 커서 프레임이 끊긴다. 장식 블러만 제거 */
+    .aurora { display:none; }
+    .tcard, .btn-glass, header .nav-cta {
       backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
     }
-    .pcard, .tcard { background:rgba(255,255,255,.08); }
-    .hero-pill, .btn-glass { background:rgba(255,255,255,.1); }
+    .tcard { background:rgba(255,255,255,.08); }
+    .btn-glass { background:rgba(255,255,255,.1); }
 
-    .proof { gap:12px; }
-    .pcard { width:min(340px,100%); animation:none; }
-    .pcard:nth-child(1), .pcard:nth-child(2), .pcard:nth-child(3) { transform:none; }
-    .pcard:nth-child(3) { display:none; }
+    .thumbs { margin-top:36px; }
+    .thumb { width:150px; height:84px; padding:8px 10px; }
+    .thumb .tl { font-size:.66rem; }
     .tier:hover { transform:none; }
-    /* 스냅 이동은 순간적 — 리빌이 길면 빈 화면이 로딩처럼 보인다.
-       모바일은 이동량·시간·지연을 절반 이하로 줄인다 */
+    .ba { grid-template-columns:1fr; }
+    /* 스냅 이동은 순간적 — 리빌이 길면 빈 화면이 로딩처럼 보인다 */
     .rv { transform:translateY(12px); transition-duration:.4s, .4s; }
     .in .rv.d1 { transition-delay:.03s; } .in .rv.d2 { transition-delay:.07s; }
     .in .rv.d3 { transition-delay:.11s; } .in .rv.d4 { transition-delay:.15s; }
 
-    /* 3D 전환 — 좁은 화면에선 기본 포즈(9%·12°)가 안 읽힌다.
-       포즈를 키우고 템포를 당겨 "회전했다"가 분명히 보이게 */
+    /* 3D 전환 — 좁은 화면에선 포즈를 키우고 템포를 당겨 "회전"이 분명히 보이게 */
     body.pt-leave { animation-duration:.4s; }
     html.pt-enter body { animation-duration:.5s; }
     @keyframes ptLeave {
@@ -419,7 +389,6 @@
   }
   @media (max-width: 560px) {
     section { padding: 76px 20px 40px; }
-    /* 긴 한글 제목의 가로 넘침 방지 — 최소 크기를 화면 폭 기준으로 */
     h1 { font-size:clamp(1.85rem, 8vw, 2.4rem); }
     h2 { font-size:clamp(1.42rem, 6.6vw, 1.9rem); }
     .lead br, h2 br { display:none; }  /* PC 기준 강제 줄바꿈은 좁은 화면에서 해제 */
@@ -428,14 +397,10 @@
     header .logo { font-size:1rem; }
     header > div { gap:7px !important; }
     header .nav-cta { font-size:.74rem; padding:7px 11px; }
-    .hero-pill { font-size:.74rem; padding:6px 14px; margin-bottom:18px; }
-    .hero-cta { margin-top:24px; }
-    .hero-cta .btn { width:100%; justify-content:center; }
-    .btn { padding:14px 22px; font-size:.92rem; }
-    /* 첫 화면이 폰 한 화면에 들어오도록: 카드는 완료 사례 1장만 */
-    .proof { margin-top:28px; }
-    .pcard:nth-child(1) { display:none; }
-    .pcard { padding:15px 16px 14px; }
+    .btn { padding:14px 22px; font-size:.92rem; width:100%; justify-content:center; }
+    .thumbs { margin-top:28px; }
+    .thumb { width:132px; height:74px; }
+    .thumb .tplay { width:28px; height:20px; }
     .stat .num { font-size:2.6rem; }
     .panel { padding:22px 18px 20px; }
     .brow { grid-template-columns:82px 1fr 42px; gap:8px; padding:9px 0; }
@@ -454,19 +419,19 @@
     .tpill { font-size:.76rem; padding:6px 12px; }
     .mrow { padding:14px 16px; }
     .tier { padding:24px 20px; }
-    #s8 footer { margin-top:48px; }
+    #s9 footer { margin-top:48px; }
   }
-  /* 노트북(맥북 1440×900 ≈ 뷰포트 790px 등)에서 가장 긴 섹션(s3b)도
-     한 화면 스냅에 들어오도록 — 세로가 넉넉한 FHD+에서만 기본 여백 유지 */
+  /* 노트북(맥북 1440×900 등)에서 긴 섹션도 한 화면 스냅에 들어오도록 */
   @media (max-height: 860px) {
     section { padding-top: 78px; padding-bottom: 40px; }
     .journey { margin-top: 18px; }
     .jt { padding-bottom: 8px; }
     .jt .jm { font-size: .84rem; }
     .jtag { margin-top: 4px; }
+    .thumbs { margin-top: 30px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .aurora, .pcard, .scroll-hint::after { animation:none !important; }
+    .aurora, .scroll-hint::after, .trow { animation:none !important; }
     .rv { transition:none; opacity:1; transform:none; }
     main { scroll-behavior:auto; }
     body.pt-leave, html.pt-enter body { animation:none; }
@@ -500,143 +465,194 @@ addEventListener("DOMContentLoaded", () => {
   <a class="logo" href="#s1">un<i>plugin</i></a>
   <div style="display:flex; align-items:center; gap:10px;">
     <a class="nav-cta" href="demo.html">1분 데모</a>
-    <a class="nav-cta" href="test.html">내 타입 알아보기</a>
+    <a class="nav-cta" href="test.html">내 성향 알아보기</a>
   </div>
 </header>
 
 <nav class="rail" id="rail" aria-label="섹션 이동">
-  <a href="#s1" aria-label="처음"></a><a href="#s2" aria-label="문제"></a>
-  <a href="#s3" aria-label="커뮤니티"></a><a href="#s3b" aria-label="메커니즘"></a><a href="#s4" aria-label="타입"></a>
-  <a href="#s5" aria-label="세 갈래"></a><a href="#s6" aria-label="장치"></a>
-  <a href="#s7" aria-label="성장"></a><a href="#s8" aria-label="시작"></a>
+  <a href="#s1" aria-label="저녁 8시"></a><a href="#s2" aria-label="문제"></a>
+  <a href="#s3" aria-label="비서"></a><a href="#s4" aria-label="1주차"></a>
+  <a href="#s5" aria-label="3주차"></a><a href="#s6" aria-label="8주"></a>
+  <a href="#s7" aria-label="성향"></a><a href="#s8" aria-label="세 갈래"></a>
+  <a href="#s9" aria-label="시작"></a>
 </nav>
 
 <main id="main">
 
-  <!-- 1 ── 히어로 -->
+  <!-- 1 ── 훅: AI가 벌어준 저녁 8시 -->
   <section id="s1" data-theme="dark">
-    <div class="aurora au1"></div><div class="aurora au2"></div><div class="horizon"></div><div class="grain"></div>
+    <div class="aurora au1"></div><div class="aurora au2"></div><div class="grain"></div>
     <div class="wrap">
-      <div class="hero-pill rv">온라인-오프라인 다리 — <b>지금 베타 · 무료</b></div>
-      <h1 class="rv d1">일은 AI에게, <br><span class="serif">시간은 삶으로</span></h1>
-      <p class="lead rv d2">일은 이미 <span class="roll" aria-label="Muze 등 여러 비서 에이전트"><span class="roll-track" aria-hidden="true"><span class="roll-i">Muze</span><span class="roll-i">Dots</span><span class="roll-i">ChatGPT</span><span class="roll-i">Claude</span><span class="roll-i">Gemini</span></span></span>가 합니다. Unplugin은 그렇게 벌어진 시간을 다음 무브먼트로 옮기는 다리입니다 — 같은 일을 맡긴 사람들과, 화면 밖에서 만나세요.</p>
-      <div class="hero-cta rv d3">
-        <a class="btn btn-accent" href="test.html">1분 만에 내 타입 알아보기 <span class="arr">→</span></a>
-        <a class="btn btn-glass" href="demo.html">▶ 1분 데모 — 제품 필름</a>
-      </div>
-      <div class="proof rv d4" aria-hidden="true">
-        <div class="pcard">
-          <div class="ph"><span class="dot"></span><span class="who">시간 배당 잔고</span></div>
-          <div class="msg">+4시간 20분 — <b>무브먼트行 티켓</b>이 됐어요.</div>
-          <div class="meta">완료 보고 자동 적립 · 수동 기록 0</div>
-          <span class="tag time">티켓 1장</span>
+      <h1 class="rv">AI가 벌어준 저녁 8시 — <br><span class="serif">지금 뭘 보고 계세요?</span></h1>
+      <p class="lead rv d1">메일도, 환불도, 장보기도 에이전트가 끝냈습니다. 그런데 나는 — 또 썸네일을 넘기고 있네요.</p>
+      <div class="thumbs rv d2" aria-hidden="true">
+        <div class="trow">
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">알고리즘 추천 #412</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">다음 화 자동재생 3·2·1</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">인기 급상승 — 지금 7위</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">한 편만 더…</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">조회수 310만 · 12시간 전</span></div>
+          <div class="thumb hot"><span class="tplay">▶</span><span class="tl">저녁 8시 — 오늘도 이렇게?</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">알고리즘 추천 #412</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">다음 화 자동재생 3·2·1</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">인기 급상승 — 지금 7위</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">한 편만 더…</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">조회수 310만 · 12시간 전</span></div>
+          <div class="thumb hot"><span class="tplay">▶</span><span class="tl">저녁 8시 — 오늘도 이렇게?</span></div>
         </div>
-        <div class="pcard">
-          <div class="ph"><span class="dot"></span><span class="who">환불 전사단 · 번개</span></div>
-          <div class="msg">토 10:00 연남 ☕ — <b>같은 일을 맡긴 4명</b>이 모여요.</div>
-          <div class="meta">참석 RSVP · 캘린더(.ics) 예약됨</div>
-          <span class="tag done">✓ 오프라인 확정</span>
-        </div>
-        <div class="pcard">
-          <div class="ph"><span class="dot"></span><span class="who">성장 기록</span></div>
-          <div class="msg">스탬프 12개 · <b>레벨 3 — 산책자</b></div>
-          <div class="meta">관계 5 · 배움 4 · 오감 3</div>
-          <span class="tag run">사람으로서 성장 중</span>
+        <div class="trow">
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">이어서 시청하기 73%</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">숏츠 — 벌써 47개째</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">새 피드 36개</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">맞춤 추천이 갱신되었습니다</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">다음 추천 로딩 중…</span></div>
+          <div class="thumb hot"><span class="tplay">▶</span><span class="tl">…그만 볼까?</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">이어서 시청하기 73%</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">숏츠 — 벌써 47개째</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">새 피드 36개</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">맞춤 추천이 갱신되었습니다</span></div>
+          <div class="thumb"><span class="tplay">▶</span><span class="tl">다음 추천 로딩 중…</span></div>
+          <div class="thumb hot"><span class="tplay">▶</span><span class="tl">…그만 볼까?</span></div>
         </div>
       </div>
     </div>
     <div class="scroll-hint">SCROLL</div>
   </section>
 
-  <!-- 2 ── 문제 -->
+  <!-- 2 ── 문제의 정체: 결정 피로 -->
   <section id="s2">
     <div class="wrap cols">
       <div>
-        <div class="eyebrow rv">The Problem</div>
-        <h2 class="rv d1">AI가 벌어준 시간은 <br>어디로 갔을까요?</h2>
-        <p class="lead rv d2">주문도, 예약도, 환불도 이미 에이전트가 합니다. 문제는 그다음입니다 — 그렇게 번 시간을 받아주는 곳이 없어, 대부분 다시 화면 속으로 사라집니다. 나태해지거나, "다 AI가 해준다"는 막연한 불안만 남거나.</p>
-        <div class="stat rv d3"><span class="num">5.4</span><span class="unit">시간 / 매주 AI가 벌어주는 시간</span></div>
+        <div class="eyebrow rv">The Real Problem</div>
+        <h2 class="rv d1">시간이 없던 게 아니라, <br><span class="serif">생각해내는 게</span> 어려웠습니다</h2>
+        <p class="lead rv d2">"오늘 저녁 뭐 하지?"를 고민할 힘이 남아 있지 않았습니다. 그래서 빈 시간은 늘 기본값인 화면으로 흘러갔죠. 일은 AI한테 넘겼는데, 정작 <b>남은 시간을 쓰는 결정</b>은 아무도 도와주지 않았으니까요.</p>
+        <div class="stat rv d3"><span class="num">5.4</span><span class="unit">시간 / 매주 AI가 내게 벌어주는 시간</span></div>
         <p class="fineprint rv d3">Unplugin 베타 설계 추정치 · 실측 데이터로 교체 예정</p>
       </div>
       <div class="panel rv d2">
-        <div class="pt">AI가 벌어준 시간, 일주일 뒤의 행방</div>
+        <div class="pt">그 시간, 나는 어디에 썼나</div>
         <div class="ps">주당 시간 · 예시</div>
-        <div class="bars" role="img" aria-label="AI가 벌어준 주당 5.4시간의 행방: 다시 스크롤과 피드로 3.4시간, 어디 갔는지 모름 1.2시간, 삶을 위해 씀 0.8시간">
-          <div class="brow hl"><span class="bl">다시 스크롤 · 피드로</span><span class="btrack"><span class="bfill" style="--w:80%"></span></span><span class="bv">3.4h</span></div>
-          <div class="brow"><span class="bl">어디 갔는지 모름</span><span class="btrack"><span class="bfill" style="--w:28%"></span></span><span class="bv">1.2h</span></div>
-          <div class="brow"><span class="bl">삶을 위해 씀</span><span class="btrack"><span class="bfill" style="--w:19%"></span></span><span class="bv">0.8h</span></div>
+        <div class="bars" role="img" aria-label="AI가 벌어준 주당 5.4시간의 행방: 또 틀어놓은 영상 3.4시간, 뭐 하지 검색만 하다가 1.2시간, 정말 하고 싶던 것 0.8시간">
+          <div class="brow hl"><span class="bl">또 틀어놓은 영상</span><span class="btrack"><span class="bfill" style="--w:80%"></span></span><span class="bv">3.4h</span></div>
+          <div class="brow"><span class="bl">"뭐 하지" 검색만</span><span class="btrack"><span class="bfill" style="--w:28%"></span></span><span class="bv">1.2h</span></div>
+          <div class="brow"><span class="bl">정말 하고 싶던 것</span><span class="btrack"><span class="bfill" style="--w:19%"></span></span><span class="bv">0.8h</span></div>
         </div>
-        <div class="conv"><span class="pct">15%</span><span class="pd">번 시간 중 삶으로 돌아간 비율. 측정하지 않으면, 번 시간은 번 적이 없는 시간이 됩니다.</span></div>
+        <div class="conv"><span class="pct">15%</span><span class="pd">내가 정말 쓰고 싶던 곳으로 간 시간. 부족한 건 시간이 아니라, 대신 고민해 줄 사람이었습니다.</span></div>
       </div>
     </div>
   </section>
 
-  <!-- 3 ── 무브먼트 커뮤니티 -->
+  <!-- 3 ── 등장: 남은 시간의 비서 -->
   <section id="s3">
     <div class="wrap cols">
       <div>
-        <div class="eyebrow rv">Movement Clubs</div>
-        <h2 class="rv d1">같은 일을 맡긴 사람들이, <br><span class="serif">같은 테이블</span>에 모입니다</h2>
-        <p class="lead rv d2">환불을 맡긴 사람들의 '환불 전사단', 장보기를 끊은 '장보기 해방 클럽'. 온라인에 모여 있으려고 만든 클럽이 아닙니다 — <b>화면 밖에서 만나기 위한 출발선</b>입니다. 클럽은 내 위임 패턴에서 자동으로 추천됩니다.</p>
-        <div class="rv d3" style="margin-top:20px;">
-          <span class="chip">환불 전사단</span><span class="chip">장보기 해방 클럽</span><span class="chip">메일 제로 클럽</span><span class="chip">구독 다이어트 클럽</span><span class="chip">여행 준비 해방단</span><span class="chip">건강 챙김 클럽</span>
-        </div>
-        <p class="fineprint rv d3">클럽 가입·커뮤니티 활동·번개 참가는 영구 무료입니다.</p>
+        <div class="eyebrow rv">Your Second Assistant</div>
+        <h2 class="rv d1">일을 해주는 비서는 많습니다. <br>우리는 <span class="serif">남은 시간의 비서</span>입니다</h2>
+        <p class="lead rv d2">내 일은 이미 <span class="roll" aria-label="Muze 등 여러 비서 에이전트"><span class="roll-track" aria-hidden="true"><span class="roll-i">Muze</span><span class="roll-i">Dots</span><span class="roll-i">ChatGPT</span><span class="roll-i">Claude</span><span class="roll-i">Gemini</span></span></span>가 하고 있어요. Unplugin은 그렇게 비워진 내 시간에, 내 성향을 아는 비서처럼 <b>이번 주 딱 하나</b>를 내밉니다. 고르는 피로까지 맡기는 거예요 — 대안은 두 개뿐.</p>
+        <p class="fineprint rv d3">관계 · 배움 · 오감 중 지금의 나에게 맞는 것부터, 문턱이 가장 낮은 것부터.</p>
       </div>
-      <div class="journey rv d2" role="img" aria-label="커뮤니티 예시: 클럽에 번개 제안 → 참석 → 캘린더 확정" style="margin-top:0;">
+      <div class="mailcard rv d2" aria-hidden="true">
+        <div class="mhead"><i></i><i></i><i></i></div>
+        <div class="mrow">
+          <span class="av ag">U</span>
+          <div class="mb">
+            <div class="from">Unplugin <span>· 이번 주 제안</span></div>
+            <div class="txt"><b>토요일 아침, 망원시장 산책 코스 ☀️</b> — 집에서 10분, 45분이면 충분해요. 참기름집 앞은 꼭 지나치세요.</div>
+            <span class="chip">내 타입 SFRA 기준</span><span class="chip">혼자 · 문턱 최저</span>
+          </div>
+        </div>
+        <div class="mrow">
+          <span class="av ag">U</span>
+          <div class="mb">
+            <div class="from">대안은 두 개만 <span>· 더 고민하지 않도록</span></div>
+            <div class="txt">비가 오면 — 동네 책방 북토크 · 기운이 없으면 — 집 앞 공원 벤치 15분</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 ── 여정 1주차: 오감 -->
+  <section id="s4">
+    <div class="wrap cols">
+      <div>
+        <div class="eyebrow rv">Week 1 — 지수의 기록</div>
+        <h2 class="rv d1">토요일 아침, <br><span class="serif">시장 냄새</span>를 맡고 왔다</h2>
+        <p class="lead rv d2">제안은 딱 하나였다. 고를 것도 없이 나갔다 — 혼자여도 부담이 없는 걸로 비서가 먼저 골라줬으니까. 45분 걷고 왔을 뿐인데, 오후가 이상하게 길었다. 참기름 냄새는 화면으로 못 맡는 거였다.</p>
+      </div>
+      <div class="journey rv d2" role="img" aria-label="1주차: 비서의 시장 산책 제안과 첫 스탬프" style="margin-top:0;">
         <div class="jt"><span class="av ag">U</span>
-          <div class="jb"><div class="jw">UNPLUGIN → 환불 전사단 · 수요일</div>
-            <div class="jm">이번 주 전사단에 완료 보고 3건 🎉 — <b>토 10:00 연남</b>에서 번개 어때요? 전리품 자랑 환영 ☕</div>
-            <span class="jtag g">같은 일을 맡긴 사람들</span><span class="jtag o">번개 자동 매칭</span></div></div>
+          <div class="jb"><div class="jw">UNPLUGIN · 토 08:30</div>
+            <div class="jm">오늘이에요. 입구 왼쪽부터 돌면 <b>참기름집 → 손두부 → 꽈배기</b> 순서예요. 사진은 안 찍어도 돼요 — 냄새가 기록이니까.</div>
+            <span class="jtag o">오감 · 혼자 · 45분</span></div></div>
         <div class="jt me"><span class="av me">나</span>
-          <div class="jb"><div class="jw">나 · 수요일</div><div class="jm"><b>참석!</b></div></div></div>
+          <div class="jb"><div class="jw">나 · 토 09:40</div><div class="jm">다녀왔어요. 꽈배기는 두 개 샀어요.</div></div></div>
+        <div class="jt"><span class="av ag">U</span>
+          <div class="jb"><div class="jw">UNPLUGIN · 토 09:41</div>
+            <div class="jm">첫 스탬프 🏅 — <b>오감 +1</b>. 다음 주엔 조금 다른 걸 내밀어 볼게요.</div>
+            <span class="jtag g">스탬프 1 · 레벨 1</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 ── 여정 3주차: 관계 -->
+  <section id="s5">
+    <div class="wrap cols">
+      <div>
+        <div class="eyebrow rv">Week 3 — 지수의 기록</div>
+        <h2 class="rv d1">환불을 맡긴 사람들끼리, <br><span class="serif">처음 만났다</span></h2>
+        <p class="lead rv d2">나처럼 실랑이를 에이전트에 넘긴 사람들이 '환불 전사단'이라는 클럽으로 묶여 있었다. 토요일 10시 연남 카페, 넷. 환급 문자 자랑으로 시작한 수다가 두 시간을 갔다. 모르는 사람을 만나러 나간 게 얼마 만인지 — 참가비는 없었다.</p>
+      </div>
+      <div class="journey rv d2" role="img" aria-label="3주차: 환불 전사단 번개 제안과 참석 확정" style="margin-top:0;">
+        <div class="jt"><span class="av ag">U</span>
+          <div class="jb"><div class="jw">UNPLUGIN · 수요일</div>
+            <div class="jm">이번 주 전사단에 승전보가 3건 🎉 — <b>토 10:00 연남</b>에서 번개 어때요? 전리품 자랑 환영 ☕</div>
+            <span class="jtag g">같은 걸 맡긴 이웃들</span><span class="jtag o">관계 · 참가 무료</span></div></div>
+        <div class="jt me"><span class="av me">나</span>
+          <div class="jb"><div class="jw">나 · 수요일</div><div class="jm"><b>참석!</b> 나 87,000원 받아낸 거 자랑해도 되나요</div></div></div>
         <div class="jt"><span class="av ag">U</span>
           <div class="jb"><div class="jw">UNPLUGIN · 목요일</div>
-            <div class="jm"><b>4/6명 확정</b> — 캘린더 초대(.ics)를 보냈어요. 토요일 오전은 이제 화면이 못 뺏는 약속입니다.</div>
-            <span class="jtag g">✓ 오프라인 확정</span><span class="jtag o">잔고에서 티켓 차감</span></div></div>
+            <div class="jm"><b>4명 확정</b> — 캘린더 초대(.ics)를 보냈어요. 토요일 오전은 이제 화면이 못 뺏는 약속입니다.</div>
+            <span class="jtag g">✓ 오프라인 확정</span></div></div>
       </div>
     </div>
   </section>
 
-  <!-- 3.5 ── 무브먼트 메커니즘 -->
-  <section id="s3b">
-    <div class="wrap" style="text-align:center;">
-      <div class="eyebrow rv" style="justify-content:center;">How the Bridge Works</div>
-      <h2 class="rv d1">만남이 <span class="serif">성사되는 장치</span>들</h2>
-      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">"언젠가 가야지"는 무브먼트가 아닙니다. 매칭하고, 짝을 붙이고, 캘린더를 먼저 잠급니다 — 전부 실제로 돌아가는 메커니즘입니다.</p>
-      <div class="tiers">
-        <div class="tier rv d1">
-          <span class="tn">MECHANISM 01</span>
-          <div class="tp">번개 ⚡</div>
-          <p class="td">클럽 × 지역으로 자동 매칭되는 번개 모임</p>
-          <ul><li>이번 주 완료 보고가 모이면 제안</li><li>RSVP로 성사 · 성사율 추적</li><li>참가 무료</li></ul>
-        </div>
-        <div class="tier hot rv d2">
-          <span class="hotbadge">혼자면 안 나가게 되니까</span>
-          <span class="tn">MECHANISM 02</span>
-          <div class="tp">짝꿍 🤝</div>
-          <p class="td">같은 코스를 함께 걷는 1:1 매칭</p>
-          <ul><li>타입·동네 기준 짝 매칭</li><li>출석을 서로 확인</li><li>스탬프도 함께 적립</li></ul>
-        </div>
-        <div class="tier rv d3">
-          <span class="tn">MECHANISM 03</span>
-          <div class="tp">시간 잠금 📅</div>
-          <p class="td">잔고 티켓으로 그 시간을 먼저 예약</p>
-          <ul><li>캘린더 초대(.ics) 자동 발급</li><li>잔고에서 시간 차감</li><li>동네 코스 추천 포함</li></ul>
-        </div>
+  <!-- 6 ── 여정 8주: 배움, 그리고 두 달 전의 나 -->
+  <section id="s6">
+    <div class="wrap cols">
+      <div>
+        <div class="eyebrow rv">Week 8 — 지수의 기록</div>
+        <h2 class="rv d1">도자기 클래스 4주차 — <br><span class="serif">두 달 전의 나</span>와 다른 나</h2>
+        <p class="lead rv d2">번개에서 만난 이웃이 "같이 하자"던 8주 도자기 시즌. 손은 아직 엉망인데 선반엔 컵이 두 개 생겼다. 두 달 전의 토요일에 내가 뭘 봤는지는 기억도 안 난다 — 지금은 기억이 물레 위에 쌓인다.</p>
+        <div class="rv d3" style="margin-top:14px;"><span class="chip">🏅 스탬프 12</span><span class="chip">레벨 3 — 산책자</span><span class="chip">관계 5 · 배움 4 · 오감 3</span></div>
       </div>
-      <p class="fineprint rv d3">그 외 시즌 모임(4주 과정) · 동네 코스 · 타임뱅크 · 시간 선물까지, 무브먼트 실험 10종이 <a href="office.html" style="color:inherit;">운영 콘솔</a>에서 실제로 돌아가고 있습니다.</p>
+      <div class="panel rv d2">
+        <div class="pt">같은 토요일, 두 달의 차이</div>
+        <div class="ps">지수의 기록에서</div>
+        <div class="ba">
+          <div class="b before">
+            <div class="bt">두 달 전 — BEFORE</div>
+            <div class="bd">유튜브 4시간.<br>뭘 봤는지 기억나지 않음.<br>"쉬었는데 왜 피곤하지."</div>
+          </div>
+          <div class="b after">
+            <div class="bt">지금 — AFTER</div>
+            <div class="bd">시장 산책 → 전사단 번개 → 물레 2시간.<br>컵 두 개, 이웃 넷, 스탬프 12개.<br><b>"다음 토요일이 기다려진다."</b></div>
+          </div>
+        </div>
+        <div class="conv"><span class="pct">8주</span><span class="pd">허비가 성장으로 바뀌는 데 걸린 시간 — 거창한 결심 없이, 매주 딱 하나씩.</span></div>
+      </div>
     </div>
   </section>
 
-  <!-- 4 ── 타입 (다크) -->
-  <section id="s4" data-theme="dark">
+  <!-- 7 ── 성향: 타입 테스트 (1차 CTA, 다크) -->
+  <section id="s7" data-theme="dark">
     <div class="aurora au2" style="right:-240px; top:-200px; bottom:auto;"></div><div class="grain"></div>
     <div class="wrap cols">
       <div>
         <div class="eyebrow rv">Unplug Type</div>
-        <h2 class="rv d1" style="color:var(--w-ink);">나는 어떤 <br><span class="serif">언플러그 타입</span>일까?</h2>
-        <p class="lead rv d2">시간이 새는 곳 × 맡기는 방식 × 오프라인 취향 × 혼자/함께. <br>네 가지 축이 만드는 16가지 타입 — 테스트가 끝나면 <b style="color:var(--w-ink);">나와 비슷한 사람들이 배당을 어디에 썼는지</b> 보여드립니다.</p>
+        <h2 class="rv d1" style="color:var(--w-ink);">나에게 맞는 제안은 <br><span class="serif">내 성향</span>에서 나옵니다</h2>
+        <p class="lead rv d2">같은 토요일이라도 누군가에겐 시장이고, 누군가에겐 온천 독서입니다. 1분 테스트로 내 언플러그 타입을 찾으면 — <b style="color:var(--w-ink);">첫 제안이 따라옵니다.</b></p>
         <div class="typegrid rv d3">
           <span class="tpill"><b>SFRA</b>숲길 산책자</span>
           <span class="tpill"><b>TCMP</b>쿠킹 스터디장</span>
@@ -645,130 +661,59 @@ addEventListener("DOMContentLoaded", () => {
           <span class="tpill" style="color:var(--w-ink3);">+ 12가지 타입</span>
         </div>
         <div class="rv d4" style="margin-top:34px;">
-          <a class="btn btn-accent" href="test.html">타입 테스트 시작 — 8문항 · 1분 <span class="arr">→</span></a>
+          <a class="btn btn-accent" href="test.html">내 성향부터 알아보기 — 1분 <span class="arr">→</span></a>
         </div>
       </div>
       <div class="tcard rv d2" aria-hidden="true">
         <span class="code">S · F · R · A</span>
         <h3>숲길 산책자</h3>
-        <p class="td">스크롤로 쉬는 척했지만, 한 번도 쉰 적 없는 사람. 피드 정리는 에이전트에 시키세요 — 당신에게 필요한 건 그냥 바람입니다.</p>
-        <div class="mbar">
-          <div class="row"><span>콘텐츠·피드 탐색</span><b>3.1h</b></div>
-          <div class="track"><span class="fill" style="--w:86%;"></span></div>
-          <div class="row"><span>쇼핑 비교</span><b>1.5h</b></div>
-          <div class="track"><span class="fill" style="--w:42%;"></span></div>
-          <div class="row"><span>뉴스 정리</span><b>1.0h</b></div>
-          <div class="track"><span class="fill" style="--w:28%;"></span></div>
-        </div>
-        <div class="tfoot">이 타입은 주당 약 <b>4.5시간</b>의 배당을 해질녘 숲길 산책으로 바꿨습니다.</div>
+        <p class="td">스크롤로 쉬는 척했지만, 한 번도 쉰 적 없는 사람. 당신에게 필요한 건 계획이 아니라 그냥 바람입니다.</p>
+        <div class="tq">이 타입이 받는 첫 제안 — <b>"해 질 녘, 집에서 가장 가까운 천변 30분. 이어폰은 두고 가세요."</b></div>
+        <div class="tfoot">이 타입의 이웃들은 주로 <b>해질녘 산책</b>과 <b>북토크</b>로 토요일을 바꿨습니다.</div>
       </div>
     </div>
   </section>
 
-  <!-- 5 ── 세 갈래 (관계·배움·오감) -->
-  <section id="s5">
+  <!-- 8 ── 세 갈래: 이런 사람에게, 이런 제안 -->
+  <section id="s8">
     <div class="wrap" style="text-align:center;">
       <div class="eyebrow rv" style="justify-content:center;">Three Directions</div>
-      <h2 class="rv d1">다리 건너편의 <span class="serif">세 갈래</span></h2>
-      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">번개도, 짝꿍도, 시즌 모임도 결국 세 방향 중 하나로 갑니다. AI는 나를 나태하게 만드는 게 아니라, 사람으로서 성장할 시간을 벌어주는 것입니다.</p>
+      <h2 class="rv d1">비서의 제안은 <span class="serif">세 갈래</span>에서 옵니다</h2>
+      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">내 성향과 이번 주 컨디션에 따라, 셋 중 지금 필요한 것 하나를 내밉니다.</p>
       <div class="tiers">
         <div class="tier rv d1">
-          <span class="tn">DIRECTION 01</span>
-          <div class="tp">관계</div>
-          <p class="td">사람과의 네트워크로</p>
-          <ul><li>클럽 번개 · 소셜 다이닝</li><li>멀어진 사람에게 먼저 연락</li><li>같은 타입 사람들과의 만남</li></ul>
+          <span class="tn">관계</span>
+          <div class="tp">사람</div>
+          <p class="td">혼자 보내는 주말이 길게 느껴지는 사람에게</p>
+          <div class="say">"같은 클럽 이웃 셋이 <b>토요일 번개</b>를 잡았어요 — 당신 자리 하나 비워뒀어요."</div>
         </div>
         <div class="tier hot rv d2">
-          <span class="hotbadge">잔고가 쌓이면 제안</span>
-          <span class="tn">DIRECTION 02</span>
-          <div class="tp">배움</div>
-          <p class="td">좋아하고 배워보고 싶던 것에</p>
-          <ul><li>원데이 클래스 · 공방</li><li>악기 · 언어 · 운동</li><li>배움이 이어지는 시즌 모임</li></ul>
+          <span class="hotbadge">만남이 배움이 되기도</span>
+          <span class="tn">배움</span>
+          <div class="tp">성장</div>
+          <p class="td">배우고 싶은 건 많은데 시작을 못 하는 사람에게</p>
+          <div class="say">"번개에서 만난 이웃 둘이 <b>8주 도자기 시즌</b>에 들어가요 — 같이 시작할래요?"</div>
         </div>
         <div class="tier rv d3">
-          <span class="tn">DIRECTION 03</span>
-          <div class="tp">오감</div>
-          <p class="td">감각을 온전히 즐기는 곳에</p>
-          <ul><li>해 질 녘 산책 · 시장 탐방</li><li>숲 · 온천 · 바다</li><li>화면 밖의 냄새와 온도</li></ul>
+          <span class="tn">오감</span>
+          <div class="tp">감각</div>
+          <p class="td">쉬어도 쉰 것 같지 않은 사람에게</p>
+          <div class="say">"<b>해 질 녘 천변 30분</b> — 오늘은 이어폰 없이, 물소리만 들어보세요."</div>
         </div>
       </div>
-      <p class="fineprint rv d3">첫 무브먼트는 타입 테스트가 알려드립니다 — 거창할 필요 없습니다. 동네 한 바퀴부터.</p>
+      <p class="fineprint rv d3">거창할 필요 없습니다. 비서는 늘 문턱이 가장 낮은 것부터 내밉니다.</p>
     </div>
   </section>
 
-  <!-- 6 ── 장치 (다리의 받침 — 측정은 수단) -->
-  <section id="s6">
-    <div class="wrap cols">
-      <div>
-        <div class="eyebrow rv">Under the Bridge</div>
-        <h2 class="rv d1">받침은 <span class="serif">보고 한 줄</span>. <br>목적은 건너가는 것</h2>
-        <p class="lead rv d2">일은 에이전트에게 맡겨두세요. 시킬 때 "— 끝나면 <span class="addr">jisoo.k7x2@unplugin.me</span> 로 완료 보고" 한 줄만 붙이면, 벌어진 시간이 자동으로 적립되고 잔고는 무브먼트行 티켓이 됩니다. 측정은 다리의 받침이지, 목적이 아닙니다.</p>
-        <div class="feat">
-          <div class="f rv d2">
-            <span class="fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></span>
-            <div><h4>어떤 에이전트든 같은 한 줄</h4><p>Muze · Dots · ChatGPT · Claude · Gemini — 보고 메일을 보낼 수 있다면 무엇이든, 계속 추가됩니다.</p></div>
-          </div>
-          <div class="f rv d3">
-            <span class="fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></span>
-            <div><h4>자동 적립 — 수동 기록 0</h4><p>완료 보고 한 통이 절약 시간과 아낀 감정으로 바뀝니다. 업무 유형 100여 종으로 자동 분류.</p></div>
-          </div>
-          <div class="f rv d4">
-            <span class="fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-            <div><h4>잔고는 티켓이 됩니다</h4><p>쌓인 잔고는 번개·클래스·짝꿍 산책의 예약으로 바뀝니다 — 쌓아두는 포인트가 아닙니다.</p></div>
-          </div>
-        </div>
-      </div>
-      <div class="mailcard rv d2" aria-hidden="true">
-        <div class="mhead"><i></i><i></i><i></i></div>
-        <div class="mrow">
-          <span class="av me">M</span>
-          <div class="mb">
-            <div class="from"><span class="roll" aria-label="Muze 등 여러 비서 에이전트"><span class="roll-track" aria-hidden="true"><span class="roll-i">Muze</span><span class="roll-i">Dots</span><span class="roll-i">ChatGPT</span><span class="roll-i">Claude</span><span class="roll-i">Gemini</span></span></span> <span>→ jisoo.k7x2@unplugin.me</span></div>
-            <div class="txt">완료 보고: [○○보험] 보험료 이의신청 — <b>34,000원 환급 접수</b></div>
-          </div>
-        </div>
-        <div class="mrow">
-          <span class="av ag">U</span>
-          <div class="mb">
-            <div class="from">Unplugin <span>· 방금</span></div>
-            <div class="txt">적립 — <b>+1시간 40분 · 아낀 감정 ●●●●○</b>. 잔고 4시간 20분이 <b>티켓 1장</b>이 됐어요. 토요일 환불 전사단 번개에 쓸까요?</div>
-            <span class="chip">자동 분류: 보험·민원</span><span class="chip">티켓 발급</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 7 ── 성장 기록 -->
-  <section id="s7">
-    <div class="wrap cols">
-      <div class="panel rv d2" style="order:0;">
-        <div class="pt">한 주의 다리 건너기 — 예시</div>
-        <div class="ps">베타 수집 전 예상 시나리오</div>
-        <div class="bars" role="img" aria-label="AI가 벌어준 시간 4.0시간 중 3.1시간이 무브먼트로 건너감, 전환율 78%">
-          <div class="brow"><span class="bl">AI가 벌어준 시간</span><span class="btrack"><span class="bfill" style="--w:100%"></span></span><span class="bv">4.0h</span></div>
-          <div class="brow hl"><span class="bl">무브먼트로 건너간 시간</span><span class="btrack"><span class="bfill alt" style="--w:78%"></span></span><span class="bv">3.1h</span></div>
-        </div>
-        <div class="conv"><span class="pct">78%</span><span class="pd">벌어준 시간이 삶으로 건너간 비율 — 이 숫자 하나만 올립니다. <br>쌓인 잔고가 아니라, 건너간 시간만 셉니다.</span></div>
-        <div style="margin-top:12px;"><span class="chip">🏅 스탬프 12</span><span class="chip">레벨 3 — 산책자</span><span class="chip">관계 5 · 배움 4 · 오감 3</span></div>
-      </div>
-      <div>
-        <div class="eyebrow rv">Growth</div>
-        <h2 class="rv d1">쌓이는 건 시간이 아니라, <br><span class="serif">사람으로서의 성장</span></h2>
-        <p class="lead rv d2">무브먼트에 다녀올 때마다 스탬프가 찍히고 레벨이 오릅니다. 관계·배움·오감 세 갈래의 기록이 "AI 때문에 나태해질까"라는 불안을 "사람으로서 자라고 있다"는 증거로 바꿉니다. 체류시간을 줄이는 것이 우리의 성공입니다.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 8 ── CTA -->
-  <section id="s8" data-theme="dark">
+  <!-- 9 ── 준비는 한 줄 + 무료 원칙 + CTA (다크) -->
+  <section id="s9" data-theme="dark">
     <div class="aurora au1" style="left:50%; top:auto; bottom:-320px; transform:translateX(-50%);"></div><div class="grain"></div>
     <div class="wrap">
       <div class="eyebrow rv" style="justify-content:center;">Begin — Free</div>
-      <h2 class="rv d1">오늘 번 시간, <br><span class="serif">누구와 건너시겠어요?</span></h2>
-      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">측정·커뮤니티·번개 참가는 영구 무료입니다. 유료는 시즌 모임처럼 더해지는 가치에만. 1분 테스트로 당신의 타입과 첫 무브먼트를 받아보세요.</p>
+      <h2 class="rv d1">다음 토요일, 뭘 할지는 <br><span class="serif">저희가 고민할게요</span></h2>
+      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">내가 할 준비는 한 줄뿐 — 에이전트에 일을 시킬 때 "끝나면 내 Unplugin 주소로 보고"만 붙이면, 벌어진 시간이 제안을 받는 티켓이 됩니다. 성향 테스트 · 커뮤니티 · 번개 참가는 영구 무료, 유료는 시즌 모임 같은 더해지는 가치뿐입니다.</p>
       <div class="rv d3" style="margin-top:36px;">
-        <a class="btn btn-accent" href="test.html">언플러그 타입 테스트 시작 <span class="arr">→</span></a>
+        <a class="btn btn-accent" href="test.html">내 성향부터 알아보기 — 1분 <span class="arr">→</span></a>
       </div>
       <footer class="rv d4">© 2026 Unplugin — 일은 AI에게, 시간은 삶으로 &nbsp;·&nbsp; <a href="demo.html">1분 데모</a> &nbsp;·&nbsp; <a href="office.html">운영 콘솔</a> &nbsp;·&nbsp; <a href="https://github.com/kyj5482/unplugin">GitHub</a></footer>
     </div>
@@ -786,8 +731,7 @@ const dots = [...rail.querySelectorAll('a')];
 
 // 리빌과 테마 갱신을 분리한다.
 // ① 리빌(.in): 섹션이 "도착하기 전"에 미리 발동 — 루트를 상하 20% 확장해
-//    인접 섹션이 접근하는 순간 트리거하고 1회성으로 해제한다. 스냅으로 휙
-//    넘어왔을 때 빈 화면(로딩처럼 보이는 지연)이 생기지 않는다.
+//    인접 섹션이 접근하는 순간 트리거하고 1회성으로 해제한다.
 // ② 헤더 테마·활성 도트: 섹션이 화면을 점유했을 때 — 섹션이 화면보다 길어도
 //    발동하도록 높이에 비례한 동적 임계값을 쓴다.
 
@@ -830,7 +774,7 @@ if ('IntersectionObserver' in window) {
   sections.forEach(s => s.classList.add('in'));
 }
 
-// ───── 에이전트 이름 수직 롤 — Muze는 예시일 뿐, 어떤 에이전트든 같은 한 줄 ─────
+// ───── 에이전트 이름 수직 롤 — Muze는 예시일 뿐, 어떤 에이전트든 ─────
 // reduced-motion·JS 실패 시엔 CSS가 첫 항목(Muze)만 보여준다(.roll:not(.go)).
 if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
   document.querySelectorAll('.roll').forEach(r => {
@@ -839,18 +783,12 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
     if (items.length < 2) return;
     track.appendChild(items[0].cloneNode(true));   // 한 바퀴 끝 → Muze로 끊김 없이 복귀
     r.classList.add('go');
-    const av = r.closest('.mrow') && r.closest('.mrow').querySelector('.av');  // 메일 목업은 아바타 이니셜 동기화
-    // 폭은 CSS(.roll::after 최장 이름)로 고정 — JS는 이름 교체·아바타만 담당
-    const setTo = el => {
-      if (av) av.textContent = el.textContent.trim()[0];
-    };
-    setTo(items[0]);
+    // 폭은 CSS(.roll::after 최장 이름)로 고정 — JS는 이름 교체만 담당
     let i = 0;
     setInterval(() => {
       if (document.hidden) return;
       i++;
       track.style.transform = 'translateY(' + (-i * items[0].offsetHeight) + 'px)';
-      setTo(items[i % items.length]);
       if (i === items.length) setTimeout(() => {   // 복제본 도착 후 무트랜지션 스냅백
         track.style.transition = 'none';
         track.style.transform = 'translateY(0)';
@@ -868,10 +806,9 @@ main.addEventListener('scroll', () => {
   pbar.style.width = (p * 100).toFixed(2) + '%';
 }, { passive: true });
 
-// ───── 소개 → 라이브 데모 3D 전환 ─────
+// ───── 소개 → 데모 3D 전환 ─────
 // 나가는 연출(.52s)이 곧 로딩 시간: 클릭 즉시 demo.html을 fetch로 미리 받아
 // HTTP 캐시를 데우고, 연출과 다운로드가 모두 끝난 시점에 이동한다.
-// 호버(데스크톱) 시점부터 선로딩하면 클릭 때는 대부분 캐시 히트다.
 const PT_MOBILE = matchMedia('(max-width: 880px)').matches;
 const PT_MS = PT_MOBILE ? 400 : 520, PT_CAP = 1200;  // 연출 길이(CSS와 일치) / 네트워크 대기 상한
 const ptReduce = matchMedia('(prefers-reduced-motion: reduce)').matches;

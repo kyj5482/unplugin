@@ -801,6 +801,148 @@ const MOVEMENT = (() => {
 if (typeof module !== "undefined") module.exports.MOVEMENT = MOVEMENT;
 /* ══════════ [MOVEMENT-PURE-END] ══════════ */
 
+/* ══════════ [GROWTH-PURE-BEGIN] 성장 추천 엔진 — 결정적 규칙 기반.
+   "빈 시간에 뭘 할지"를 성향(언플러그 타입 4축)·잔고·이력·주차로 골라준다.
+   입력이 같으면 출력이 같다(Date 사용 금지). 검증: node tests/growth_tests.js ══════════ */
+const GROWTH = (() => {
+  function emptyGrowth() { return { proposals: {} }; }
+  function migrate(g) { return Object.assign(emptyGrowth(), g || {}); }
+  const axes = type => ({ st: (type || "")[0] || "S", fc: (type || "")[1] || "F",
+                          mr: (type || "")[2] || "R", pa: (type || "")[3] || "A" });
+
+  // ── 후보 생성 — 무브먼트 메커니즘·동네 코스·클럽을 재사용 ──
+  function candidates(state, D, cid, groupsArg) {
+    const prof = state.customers[cid] || {};
+    const region = prof.region;
+    const list = [];
+    for (const c of (region && D.local_courses[region]) || []) {
+      list.push({ id: "course:" + c.id, mech: "local-course",
+        kind: c.kind === "공방" ? "배움" : "오감", mode: "solo",
+        minutes: c.duration_min, title: c.title, place: region });
+    }
+    // 기본 후보 — 코스가 없어도 항상 존재하는 최저 문턱
+    list.push({ id: "rest:walk30", mech: "time-lock", kind: "오감", mode: "solo",
+      minutes: 30, title: "화면 없는 30분 동네 산책", place: region || "집 근처" });
+    const groups = groupsArg || {};
+    for (const g of Object.keys(groups)) {
+      const members = groups[g];
+      if (!members.some(m => m.customer === cid)) continue;
+      const sameRegion = members.filter(m =>
+        (state.customers[m.customer] || {}).region === region && region);
+      if (sameRegion.length >= 2)
+        list.push({ id: "lightning:" + g, mech: "lightning", kind: "관계",
+          mode: "together", minutes: 90,
+          title: `${D.group_names[g] || g} 번개 (${region})`, place: region });
+      if (members.length >= 2)
+        list.push({ id: "buddy:" + g, mech: "buddy", kind: "관계",
+          mode: "together", minutes: 60, buddy: true,
+          title: `${D.group_names[g] || g} 짝꿍 약속`, place: region || "온라인 조율" });
+    }
+    for (const s of ((state.movement || {}).seasons || []))
+      if (s.applicants.length < s.capacity)
+        list.push({ id: "season:" + s.id, mech: "season", kind: "배움",
+          mode: "together", minutes: 120, title: `시즌 모임 — ${s.name}`, place: "시즌" });
+    list.push({ id: "gift-time", mech: "gift-time", kind: "관계", mode: "together",
+      minutes: 90, title: "지인에게 시간 선물 (초대장+ICS)", place: "지인과" });
+    return list;
+  }
+
+  // ── 점수 규칙 — 모든 가중은 정수·결정적 ──
+  function score(c, ax, balance, week, history) {
+    let s = 50;
+    const why = [];
+    if (c.minutes > balance) return { s: -999, why: ["잔고 부족"] };
+    // P/A — 함께·혼자
+    if (ax.pa === "P") {
+      if (c.mode === "together") { s += 20; why.push("함께할 때 살아나는 타입"); }
+      else s -= 5;
+    } else {
+      if (c.mode === "solo") { s += 20; why.push("혼자 몰입할 때 충전되는 타입"); }
+      else s -= (c.buddy ? 4 : 10);   // 혼자형도 짝꿍(1:1)은 문턱이 낮다
+    }
+    // M/R — 만들기·감각
+    if (ax.mr === "M") { if (c.kind === "배움") { s += 15; why.push("손을 움직이는 배움 취향"); } }
+    else { if (c.kind === "오감") { s += 15; why.push("감각·휴식 취향"); } else if (c.kind === "배움") s -= 5; }
+    // S/T — 가벼운 보정 (탐색형은 쉼, 처리형은 몰입 취미)
+    if (ax.st === "S" && c.kind === "오감") s += 4;
+    if (ax.st === "T" && c.kind === "배움") s += 4;
+    // F/C — 확인형은 구조화된 자리(시즌·클래스) 선호
+    if (ax.fc === "C" && (c.mech === "season" || c.kind === "배움")) s += 3;
+    if (ax.fc === "F" && c.mech === "time-lock") s += 2;
+    // 구체적 동네 코스는 범용 산책보다 설득력이 높다 (동점 방지 포함)
+    if (c.mech === "local-course") s += 3;
+    // 잔고 문턱 — 작으면 가벼운 것부터
+    if (balance < 60 && c.minutes <= 30) { s += 15; why.push("잔고가 작아 가볍게 시작"); }
+    // 점진 설계 — 초반 주차엔 관계 문턱을 낮춘다 (혼자→함께)
+    if (week <= 2 && c.mode === "together") s -= (c.buddy ? 8 : 15);
+    if (week >= 3 && c.mode === "together") { s += 8; if (ax.pa === "A" && c.buddy) { s += 4; why.push("3주차 — 1:1 짝꿍으로 관계 문턱을 낮춰요"); } }
+    // 반복 회피 — 직전과 같은 것/같은 결 연속 금지
+    if (history.length) {
+      const last = history[history.length - 1];
+      if (last.id === c.id) { s -= 40; why.push("지난주와 같은 활동 회피"); }
+      else if (last.kind === c.kind) s -= 12;
+    }
+    return { s, why };
+  }
+
+  function weekOf(state, cid) {
+    const g = state.growth || emptyGrowth();
+    return ((g.proposals[cid] || []).length) + 1;
+  }
+  function historyOf(state, cid) {
+    const g = state.growth || emptyGrowth();
+    const hist = (g.proposals[cid] || [])
+      .filter(p => p.status === "수락" || p.status === "실행" || p.status === "발송")
+      .map(p => ({ id: p.primary.id, kind: p.primary.kind }));
+    return hist.slice(-3);
+  }
+
+  function mailBody(state, D, cid, week, primary, alts) {
+    const prof = state.customers[cid] || {};
+    const tname = D.type_names[prof.type] || prof.type || "";
+    return [
+      `${prof.name || cid}님, ${week}주차 무브먼트를 골라봤어요${tname ? ` — '${tname}' 타입에 맞춰서요` : ""}.`,
+      "",
+      `★ ${primary.title} (${primary.minutes}분 · ${primary.kind})`,
+      `   ${primary.why.join(" · ") || "이번 주의 추천"}`,
+      "",
+      "다른 선택지도 있어요:",
+      ...alts.map(a => `- ${a.title} (${a.minutes}분 · ${a.kind})`),
+      "",
+      "마음에 드는 걸 회신으로 알려주세요 — 자리·일정은 저희가 잡아드려요.",
+      "잔고는 보고 메일이 올 때마다 계속 쌓입니다.",
+    ].join("\n");
+  }
+
+  // ── 추천 — {primary, alternatives[2], mail} (결정적) ──
+  function recommend(state, D, cid, groupsArg, weekArg) {
+    const prof = state.customers[cid] || {};
+    const ax = axes(prof.type);
+    const balance = MOVEMENT.balanceOf(state, cid);
+    const week = weekArg || weekOf(state, cid);
+    const history = historyOf(state, cid);
+    const scored = candidates(state, D, cid, groupsArg)
+      .map(c => { const r = score(c, ax, balance, week, history);
+                  return Object.assign({}, c, { score: r.s, why: r.why }); })
+      .filter(c => c.score > -999)
+      .sort((a, b) => b.score - a.score || a.minutes - b.minutes ||
+                      (a.id < b.id ? -1 : 1));
+    const primary = scored[0] || null;
+    const alternatives = scored.slice(1, 3);
+    return { week, balance, type: prof.type, primary, alternatives,
+             mail: primary ? {
+               to: cid,
+               subject: `이번 주 무브먼트 — ${primary.title}`,
+               body: mailBody(state, D, cid, week, primary, alternatives),
+             } : null };
+  }
+
+  return { emptyGrowth, migrate, axes, candidates, score, weekOf, historyOf,
+           recommend, mailBody };
+})();
+if (typeof module !== "undefined") module.exports.GROWTH = GROWTH;
+/* ══════════ [GROWTH-PURE-END] ══════════ */
+
 /* ───────── UI — 상태는 localStorage(unplugin-office-v1), 서버 전송 없음 ───────── */
 (() => {
   if (typeof window === "undefined") return;   // node 패리티 로드 시 UI 생략
@@ -813,14 +955,18 @@ if (typeof module !== "undefined") module.exports.MOVEMENT = MOVEMENT;
     for (const p of D.demo_customers) customers[p.id] = JSON.parse(JSON.stringify(p));
     return { v: 1, customers, ledgers: {}, outbox: [], log: [],
              community: { groups: {} }, processed: {}, demoCursor: 0,
-             movement: MOVEMENT.emptyMovement() };
+             movement: MOVEMENT.emptyMovement(), growth: GROWTH.emptyGrowth() };
   }
   function load() {
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) {
         const s = JSON.parse(raw);
-        if (s && s.v === 1) { s.movement = MOVEMENT.migrate(s.movement); return s; }
+        if (s && s.v === 1) {
+          s.movement = MOVEMENT.migrate(s.movement);
+          s.growth = GROWTH.migrate(s.growth);
+          return s;
+        }
       }
     } catch (_) {}
     return seedState();
@@ -858,13 +1004,21 @@ if (typeof module !== "undefined") module.exports.MOVEMENT = MOVEMENT;
   }
 
   /* ── 탭 구성 ── */
+  // 성장 비서 콘솔 IA — 중심은 '고객 한 명의 성장 여정'(성장 보드).
+  // 메일·적립·팁·커뮤니티·미매칭은 그 여정을 돌리는 '장치'로 뒤에 묶는다.
   const TABS = [
-    ["dash", "대시보드"], ["inbox", "수신함"], ["feed", "적립 피드"],
-    ["tips", "팁 생성기"], ["community", "커뮤니티"],
-    ["movement", "무브먼트 실험"], ["customers", "고객"],
-    ["backlog", "미매칭 백로그"], ["data", "데이터"],
+    ["board", "성장 보드"], ["movement", "무브먼트 실험"], ["ops", "장치"],
+    ["customers", "고객"], ["data", "데이터"],
   ];
-  let cur = location.hash.slice(1) || "dash";
+  const OPS_SUBS = [["inbox", "수신함"], ["feed", "적립 피드"], ["tips", "팁 생성기"],
+    ["community", "커뮤니티"], ["backlog", "미매칭 백로그"]];
+  let cur = location.hash.slice(1) || "board";
+  if (!TABS.some(([id]) => id === cur)) cur = "board";
+  let opsSub = "inbox";
+  addEventListener("hashchange", () => {   // 보드의 "장치에서 실행 →" 앵커 등
+    const h = location.hash.slice(1);
+    if (TABS.some(([id]) => id === h) && h !== cur) { cur = h; render(); }
+  });
 
   function render() {
     save();
@@ -872,7 +1026,7 @@ if (typeof module !== "undefined") module.exports.MOVEMENT = MOVEMENT;
     const backlogN = allEvents().filter(e => !e.matched).length;
     tabs.innerHTML = TABS.map(([id, name]) =>
       `<button class="${cur === id ? "on" : ""}" data-tab="${id}">${name}` +
-      (id === "backlog" && backlogN ? `<span class="n">${backlogN}</span>` : "") +
+      (id === "ops" && backlogN ? `<span class="n">${backlogN}</span>` : "") +
       `</button>`).join("");
     tabs.querySelectorAll("button").forEach(b =>
       b.onclick = () => { cur = b.dataset.tab; location.hash = cur; render(); });
@@ -881,41 +1035,92 @@ if (typeof module !== "undefined") module.exports.MOVEMENT = MOVEMENT;
   }
 
   const VIEWS = {
-    /* ① 대시보드 */
-    dash() {
+    /* ① 성장 보드 — 콘솔의 중심: 고객 한 명의 성장 여정.
+       운영자는 여기서 "이 고객에게 이번 주 무엇을 제안할까"를 수행한다. */
+    board() {
       const cids = Object.keys(S.customers).sort();
-      let tot = 0, emo = 0, cnt = 0;
-      const cards = cids.map(cid => {
-        const l = S.ledgers[cid] || OFFICE.emptyLedger(cid);
+      const groups = OFFICE.memberships(S, D);
+      let tot = 0, spentAll = 0, emo = 0;
+      cids.forEach(cid => { const l = S.ledgers[cid] || OFFICE.emptyLedger(cid);
+        tot += l.totals.saved_minutes; spentAll += l.totals.spent_minutes || 0;
+        emo += l.totals.emotion_saved; });
+      const props = Object.values(S.growth.proposals).flat();
+      const executed = props.filter(p => p.status === "실행").length;
+
+      const axisTxt = type => {
+        const ax = GROWTH.axes(type);
+        return [D.unplug_axes["2"][ax.mr], D.unplug_axes["3"][ax.pa]]
+          .map(t => (t || "").split(" — ")[0]).join(" · ");
+      };
+      const panels = cids.map(cid => {
         const p = S.customers[cid];
-        tot += l.totals.saved_minutes; emo += l.totals.emotion_saved; cnt += l.totals.events_count;
-        const th = p.movement_threshold_minutes || D.constants.default_threshold;
-        const seg = l.totals.saved_minutes % th;
-        const pct = Math.min(100, Math.round(seg / th * 100));
-        const spent = l.totals.spent_minutes || 0;
-        const stamps = (S.movement.stamps[cid] || []).length;
-        return `<div class="card">
-          <h3>${esc(p.name)} <span class="rg">${esc(p.region || "지역 미등록")} · ×${p.time_factor ?? 1}</span></h3>
-          <div class="big">${fmtHM(MOVEMENT.balanceOf(S, cid))}</div>
-          <div class="mut">적립 ${fmtHM(l.totals.saved_minutes)} · 오프라인 전환 ${fmtHM(spent)}</div>
-          <div class="mut">아낀 감정 <span class="emo">${l.totals.emotion_saved}</span> · 적립 ${l.totals.events_count}건
-            · <span class="pill ok">🏅 ${esc(MOVEMENT.levelOf(stamps))}</span></div>
-          <div class="meter"><i style="width:${pct}%"></i></div>
-          <div class="mut">다음 무브먼트 제안까지 ${th - seg}분 (임계치 ${th}분)</div>
+        const l = S.ledgers[cid] || OFFICE.emptyLedger(cid);
+        const balance = MOVEMENT.balanceOf(S, cid);
+        const stamps = S.movement.stamps[cid] || [];
+        const myProps = S.growth.proposals[cid] || [];
+        const lastProp = myProps[myProps.length - 1];
+        const lastMove = stamps[stamps.length - 1];
+        // Before 신호 — 마지막 제안 이후 경과
+        let signal = "", warn = false;
+        if (!myProps.length) { signal = "제안 이력 없음 — 첫 제안을 만들어 주세요"; warn = balance > 0; }
+        else {
+          const days = Math.floor((Date.now() - Date.parse(lastProp.t)) / 86400e3);
+          warn = days >= 7 && lastProp.status !== "실행";
+          signal = `마지막 제안 ${days}일 전 (${lastProp.status})`;
+        }
+        // 타임라인 — 주차별 성장 시나리오 (제안+실행 실측)
+        const timeline = myProps.map(pr =>
+          `<li><span class="t">${pr.week}주차</span>${esc(pr.primary.title)}
+            <span class="pill ${pr.status === "실행" ? "ok" : pr.status === "수락" ? "warn" : ""}">${esc(pr.status)}</span></li>`).join("")
+          + stamps.map(st => `<li><span class="t">${esc(st.day)}</span>🏅 실행 — ${esc(st.label)} <span class="mut">(${esc(st.source)})</span></li>`).join("");
+        return `<div class="panel">
+          <h3 style="font-size:1rem">${esc(p.name)}
+            <span class="pill ok">${esc(D.type_names[p.type] || p.type || "타입 미지정")}</span>
+            <span class="rg">${esc(p.type || "")} — ${esc(axisTxt(p.type))} · ${esc(p.region || "지역 미등록")}</span></h3>
+          <div class="row" style="gap:18px">
+            <div><div class="mut">시간 티켓(잔고)</div><div class="big">${fmtHM(balance)}</div></div>
+            <div><div class="mut">성장 단계</div><div><b>🏅 ${esc(MOVEMENT.levelOf(stamps.length))}</b> <span class="mut">스탬프 ${stamps.length}</span></div></div>
+            <div><div class="mut">최근 무브먼트</div><div>${lastMove ? esc(`${lastMove.day} ${lastMove.label}`) : '<span class="mut">아직 없음</span>'}</div></div>
+            <div><div class="mut">신호</div><div class="${warn ? "" : "mut"}" style="${warn ? "color:var(--amber-deep);font-weight:700" : ""}">${esc(signal)}</div></div>
+          </div>
+          <div class="row">
+            <button class="act pri" data-propose="${cid}">이번 주 제안 만들기 (${GROWTH.weekOf(S, cid)}주차)</button>
+          </div>
+          ${lastProp ? `<div class="card tipcard" style="margin-top:6px">
+            <b>★ ${esc(lastProp.primary.title)}</b>
+            <span class="pill">${lastProp.primary.minutes}분 · ${esc(lastProp.primary.kind)}</span>
+            <span class="pill ${lastProp.status === "실행" ? "ok" : ""}">${esc(lastProp.status)}</span>
+            <div class="mut">${esc((lastProp.primary.why || []).join(" · "))}</div>
+            <div class="mut">대안: ${lastProp.alts.map(a => esc(`${a.title}(${a.minutes}분)`)).join(" / ") || "-"}</div>
+            <details><summary>제안 메일 문안</summary><pre class="mailprev">${esc(lastProp.mail.body)}</pre></details>
+            <div class="row">
+              ${lastProp.status === "제안" ? `<button class="act pri" data-gsend="${cid}">발송 기록</button>` : ""}
+              ${lastProp.status === "발송" ? `<button class="act" data-gaccept="${cid}">수락 기록</button>` : ""}
+              ${(lastProp.status === "발송" || lastProp.status === "수락") ?
+                `<button class="act pri" data-gexec="${cid}">실행 기록 (스탬프)</button>` : ""}
+              <a href="#movement" class="mut" style="font-size:.76rem">장치에서 직접 실행 → ${esc(lastProp.primary.mech)}</a>
+            </div></div>` : ""}
+          ${timeline ? `<details style="margin-top:8px"><summary>성장 타임라인</summary>
+            <ul class="log">${timeline}</ul></details>` : ""}
         </div>`;
       }).join("");
-      return `<h2>시간 배당 대시보드</h2>
-        <p class="sub">보고 메일 수신 → 자동 적립 → 임계치마다 무브먼트 제안. 수동 기록 0.</p>
-        <div class="sum"><div><b>${fmtHM(tot)}</b> <span>전체 절약</span></div>
+
+      return `<h2>성장 보드 — 고객의 다음 한 주를 설계</h2>
+        <p class="sub">고객은 빈 시간에 뭘 할지 떠올리는 것 자체가 어렵다 — 성향(언플러그 타입)에
+        맞춰 관계·배움·오감을 골라 제안하고, 제안→발송→수락→실행을 여기서 기록합니다.</p>
+        <div class="sum"><div><b>${fmtHM(tot)}</b> <span>전체 적립</span></div>
+          <div><b>${fmtHM(spentAll)}</b> <span>오프라인 전환</span></div>
           <div><b>${emo}</b> <span>아낀 감정</span></div>
-          <div><b>${cnt}</b> <span>적립 건수</span></div>
-          <div><b>${S.outbox.length}</b> <span>발송 메일</span></div></div>
-        <div class="cards">${cards || '<div class="empty">고객이 없습니다 — 고객 탭에서 온보딩하세요.</div>'}</div>
-        ${S.outbox.length ? `<div class="panel" style="margin-top:14px"><h3 style="font-size:.9rem">최근 발송</h3>
-          <ul class="log">${S.outbox.slice(0, 5).map(m =>
-            `<li><span class="t">${esc(m.t)}</span><b>→ ${esc(m.to)}</b> ${esc(m.subject)}
-             <details><summary>본문</summary><pre class="mailprev">${esc(m.body)}</pre></details></li>`).join("")}
-          </ul></div>` : ""}`;
+          <div><b>${props.length}</b> <span>제안</span></div>
+          <div><b>${executed}</b> <span>실행</span></div></div>
+        ${panels || '<div class="empty">고객이 없습니다 — 고객 탭에서 온보딩하세요.</div>'}`;
+    },
+
+    /* ② 장치 — 여정을 돌리는 운영 장치 묶음 (수신함·적립·팁·커뮤니티·미매칭) */
+    ops() {
+      const bar = OPS_SUBS.map(([id, name]) =>
+        `<button class="act ${opsSub === id ? "pri" : ""}" data-ops="${id}">${name}</button>`).join("");
+      return `<div class="row" style="margin-bottom:12px">${bar}</div>` + VIEWS[opsSub]();
     },
 
     /* ② 수신함 */
@@ -1337,7 +1542,49 @@ if (typeof module !== "undefined") module.exports.MOVEMENT = MOVEMENT;
       rd.readAsText(f);
     };
     on("#resetBtn", () => { S = seedState(); render(); });
+    bindGrowth();
     bindMovement(on);
+  }
+
+  /* ── 성장 보드·장치 핸들러 ── */
+  function bindGrowth() {
+    document.querySelectorAll("[data-ops]").forEach(b =>
+      b.onclick = () => { opsSub = b.dataset.ops; render(); });
+    const slim = c => ({ id: c.id, mech: c.mech, kind: c.kind, minutes: c.minutes,
+                         title: c.title, why: c.why || [] });
+    document.querySelectorAll("[data-propose]").forEach(b => b.onclick = () => {
+      const cid = b.dataset.propose;
+      const rec = GROWTH.recommend(S, D, cid, OFFICE.memberships(S, D));
+      if (!rec.primary) {
+        pushLog("growth", `${S.customers[cid].name} — 제안 불가(잔고 ${rec.balance}분)`);
+        render(); return;
+      }
+      (S.growth.proposals[cid] = S.growth.proposals[cid] || []).push({
+        week: rec.week, t: nowIso(), primary: slim(rec.primary),
+        alts: rec.alternatives.map(slim), mail: rec.mail, status: "제안" });
+      pushLog("growth", `${S.customers[cid].name} ${rec.week}주차 제안 — ${rec.primary.title}`);
+      render();
+    });
+    const lastProp = cid => { const a = S.growth.proposals[cid] || []; return a[a.length - 1]; };
+    document.querySelectorAll("[data-gsend]").forEach(b => b.onclick = () => {
+      const cid = b.dataset.gsend, pr = lastProp(cid);
+      if (!pr) return;
+      pr.status = "발송"; pushOutbox([pr.mail]);
+      pushLog("growth", `제안 발송 — ${S.customers[cid].name}: ${pr.primary.title}`);
+      render();
+    });
+    document.querySelectorAll("[data-gaccept]").forEach(b => b.onclick = () => {
+      const pr = lastProp(b.dataset.gaccept);
+      if (pr) { pr.status = "수락"; save(); render(); }
+    });
+    document.querySelectorAll("[data-gexec]").forEach(b => b.onclick = () => {
+      const cid = b.dataset.gexec, pr = lastProp(cid);
+      if (!pr) return;
+      pr.status = "실행";
+      MOVEMENT.stampAdd(S.movement, cid, "growth", pr.primary.title, MOVEMENT.isoDay(Date.now()));
+      pushLog("growth", `실행 기록 🏅 — ${S.customers[cid].name}: ${pr.primary.title}`);
+      render();
+    });
   }
 
   /* ── 무브먼트 실험 핸들러 ── */
