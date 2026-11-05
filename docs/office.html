@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unplugin Office — 백오피스</title>
+<meta name="description" content="Unplugin 백오피스 — 시간 배당 측정·팁·커뮤니티 운영판 (브라우저 로컬 실행).">
+<meta name="robots" content="noindex">
+<style>
+  :root {
+    --bg0:#FBF8F3; --bg1:#F3EDE1; --ink:#141D16; --ink2:#46514A; --ink3:#79847C;
+    --green:#2F6B4A; --green-deep:#1E4733; --green-soft:#7FC79B;
+    --amber:#D89A5B; --amber-deep:#C97840;
+    --brand:#1c7544; --hair:rgba(23,33,26,.1);
+    --shadow:0 1px 2px rgba(23,33,26,.05), 0 12px 32px rgba(23,33,26,.09);
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+    "Noto Sans KR", system-ui, sans-serif; background:var(--bg0); color:var(--ink);
+    line-height:1.6; -webkit-font-smoothing:antialiased; }
+  a { color:var(--green); }
+  header { position:sticky; top:0; z-index:10; background:rgba(251,248,243,.92);
+    backdrop-filter:blur(8px); border-bottom:1px solid var(--hair); }
+  .hwrap { max-width:1060px; margin:0 auto; padding:12px 18px;
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .logo { font-weight:800; letter-spacing:-.02em; }
+  .logo b { color:var(--brand); }
+  .logo .tag { font-size:.72rem; font-weight:700; color:var(--amber-deep);
+    border:1px solid var(--amber-deep); border-radius:999px; padding:1px 8px; margin-left:8px;
+    vertical-align:2px; }
+  .privacy { font-size:.74rem; color:var(--ink3); margin-left:auto; }
+  nav.tabs { max-width:1060px; margin:0 auto; padding:0 12px; display:flex; gap:2px;
+    overflow-x:auto; scrollbar-width:none; }
+  nav.tabs::-webkit-scrollbar { display:none; }
+  nav.tabs button { appearance:none; border:0; background:none; cursor:pointer;
+    font:inherit; font-size:.86rem; font-weight:600; color:var(--ink2);
+    padding:9px 12px; border-bottom:2px solid transparent; white-space:nowrap; }
+  nav.tabs button.on { color:var(--green-deep); border-bottom-color:var(--brand); font-weight:800; }
+  nav.tabs button .n { font-size:.7rem; color:var(--amber-deep); font-weight:800; margin-left:3px; }
+  main { max-width:1060px; margin:0 auto; padding:20px 18px 80px; }
+  .pane { display:none; }
+  .pane.on { display:block; animation:fade .25s var(--ease); }
+  @keyframes fade { from { opacity:0; transform:translateY(4px); } }
+  h2 { font-size:1.12rem; letter-spacing:-.01em; margin:4px 0 4px; }
+  .sub { color:var(--ink3); font-size:.84rem; margin-bottom:16px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:12px; }
+  .card { background:#fff; border:1px solid var(--hair); border-radius:14px;
+    padding:14px 16px; box-shadow:var(--shadow); }
+  .card h3 { font-size:.95rem; display:flex; align-items:baseline; gap:8px; }
+  .card h3 .rg { font-size:.72rem; color:var(--ink3); font-weight:600; }
+  .big { font-size:1.5rem; font-weight:800; letter-spacing:-.02em; color:var(--green-deep); }
+  .big small { font-size:.8rem; color:var(--ink3); font-weight:600; }
+  .emo { color:var(--amber-deep); letter-spacing:1px; }
+  .meter { height:6px; background:var(--bg1); border-radius:999px; overflow:hidden; margin:8px 0 4px; }
+  .meter i { display:block; height:100%; background:linear-gradient(90deg,var(--brand),var(--green-soft)); border-radius:999px; transition:width .4s var(--ease); }
+  .mut { color:var(--ink3); font-size:.76rem; }
+  .sum { margin:0 0 14px; padding:12px 16px; background:var(--green-deep); color:#F6F4EC;
+    border-radius:14px; display:flex; gap:22px; flex-wrap:wrap; align-items:baseline; }
+  .sum b { font-size:1.25rem; }
+  .sum span { font-size:.8rem; opacity:.85; }
+  table { width:100%; border-collapse:collapse; font-size:.84rem; background:#fff;
+    border:1px solid var(--hair); border-radius:12px; overflow:hidden; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--hair); vertical-align:top; }
+  th { background:var(--bg1); font-size:.76rem; color:var(--ink2); }
+  tr:last-child td { border-bottom:0; }
+  .pill { display:inline-block; font-size:.7rem; font-weight:700; border-radius:999px;
+    padding:1px 8px; background:var(--bg1); color:var(--ink2); }
+  .pill.ok { background:#E3F0E8; color:var(--green-deep); }
+  .pill.warn { background:#F6E8DC; color:var(--amber-deep); }
+  .pill.bad { background:#F3DEDE; color:#8C3B3B; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:10px 0; }
+  button.act { appearance:none; cursor:pointer; font:inherit; font-size:.84rem; font-weight:700;
+    border-radius:10px; border:1px solid var(--hair); background:#fff; padding:8px 14px;
+    transition:transform .15s var(--ease); }
+  button.act:hover { transform:translateY(-1px); }
+  button.act.pri { background:var(--brand); border-color:var(--brand); color:#fff; }
+  button.act.warn { color:#8C3B3B; }
+  input[type=text], input[type=number], textarea, select {
+    font:inherit; font-size:.86rem; border:1px solid var(--hair); border-radius:10px;
+    padding:8px 10px; background:#fff; color:var(--ink); width:100%; }
+  textarea { min-height:90px; resize:vertical; }
+  label.f { display:block; font-size:.76rem; font-weight:700; color:var(--ink2); margin:8px 0 3px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media (max-width:640px){ .grid2 { grid-template-columns:1fr; } }
+  .panel { background:#fff; border:1px solid var(--hair); border-radius:14px; padding:16px; box-shadow:var(--shadow); margin-bottom:14px; }
+  .log { font-size:.8rem; }
+  .log li { list-style:none; padding:7px 0; border-bottom:1px dashed var(--hair); }
+  .log .t { color:var(--ink3); font-size:.72rem; margin-right:8px; }
+  pre.mailprev { white-space:pre-wrap; background:var(--bg1); border-radius:10px;
+    padding:10px 12px; font:inherit; font-size:.8rem; margin-top:6px; }
+  details summary { cursor:pointer; color:var(--green); font-size:.76rem; }
+  .tipcard { border-left:4px solid var(--amber-deep); }
+  .tipcard pre { white-space:pre-wrap; background:var(--bg1); border-radius:10px; padding:12px; font:inherit; font-size:.86rem; }
+  footer { max-width:1060px; margin:30px auto 0; padding:14px 18px; color:var(--ink3);
+    font-size:.78rem; border-top:1px solid var(--hair); }
+  .empty { padding:26px; text-align:center; color:var(--ink3); background:#fff;
+    border:1px dashed var(--hair); border-radius:14px; font-size:.86rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div class="logo"><b>un</b>plugin <span class="tag">OFFICE</span></div>
+    <div class="privacy">데이터는 이 브라우저에만 저장됩니다 — 서버 전송 없음</div>
+  </div>
+  <nav class="tabs" id="tabs" aria-label="백오피스 탭"></nav>
+</header>
+<main id="main"></main>
+<footer>
+  Unplugin Office v1 — 코어(core/)와 같은 측정 규칙으로 동작하는 브라우저 백오피스.
+  산정 근거: <code>ops/research-time-baselines.md</code> ·
+  <a href="index.html">제품 소개로 돌아가기</a>
+</footer>
+
+<script src="office-data.js"></script>
+<script>
+/* ══════════ [OFFICE-PURE-BEGIN] 측정 엔진 — DOM·localStorage 무관 순수 블록.
+   core(파이썬)의 classify/stress/dividend/tips/community 의미론을 그대로 포팅.
+   검증: node tests/office_parity.js (파이썬 결과와 고객별 합계 완전 일치) ══════════ */
+const OFFICE = (() => {
+  // 파이썬 round()는 뱅커스 라운딩(동률 짝수) — Math.round(반올림)와 다르다.
+  function pyRound(x) {
+    const f = Math.floor(x), d = x - f;
+    if (Math.abs(d - 0.5) < 1e-9) return f % 2 === 0 ? f : f + 1;
+    return Math.round(x);
+  }
+  function clampFactor(f) {
+    const n = parseFloat(f);
+    if (!isFinite(n)) return 1.0;
+    return Math.min(2.0, Math.max(0.5, n));
+  }
+  function emotionDots(load) {
+    const n = Math.min(Math.max(Math.trunc(load), 0), 5);
+    return "●".repeat(n) + "○".repeat(5 - n);
+  }
+  function gistOf(text) {  // 파이썬 " ".join(text.split())[:80]
+    return (text || "").split(/\s+/).filter(Boolean).join(" ").slice(0, 80) || "이 일";
+  }
+
+  // ── 보고 판정 (core/dividend.is_report) ──
+  function isReport(mail, C) {
+    if ((mail.subject || "").includes(C.report_marker)) return true;
+    if (mail.thread) return false;
+    const low = (mail.body || "").toLowerCase();
+    return C.done_words.some(w => low.includes(w));
+  }
+
+  // ── 분류 (core/classify.match — 일치 수 → status 랭크 → 특이도, 동점은 선순위 유지) ──
+  function classifyMatch(text, D) {
+    const low = (text || "").toLowerCase();
+    let best = null, bestPl = null, bestScore = 0;
+    for (const pl of D.catalog) {
+      const trig = pl.triggers || [];
+      let score = 0;
+      for (const t of trig) if (low.includes(t.toLowerCase())) score++;
+      if (!score) continue;
+      const rank = [score, D.constants.status_rank[pl.status ?? "planned"] ?? 0, -trig.length];
+      if (best === null || rank[0] > best[0]
+          || (rank[0] === best[0] && (rank[1] > best[1]
+          || (rank[1] === best[1] && rank[2] > best[2])))) {
+        best = rank; bestPl = pl; bestScore = score;
+      }
+    }
+    return bestPl ? { plugin: bestPl, score: bestScore } : null;
+  }
+
+  // ── 스트레스 (core/stress.detect — 복합구 최다 일치, 없으면 키워드 폴백 순서) ──
+  function stressDetect(text, D) {
+    const low = (text || "").toLowerCase();
+    let best = null, bestScore = 0;
+    for (const pb of D.playbooks) {
+      let score = 0;
+      for (const t of pb.triggers || []) if (low.includes(t.toLowerCase())) score++;
+      if (score > bestScore) { best = pb; bestScore = score; }
+    }
+    if (best !== null) return best;
+    const byId = Object.fromEntries(D.playbooks.map(pb => [pb.id, pb]));
+    for (const [kw, pid] of D.keyword_fallback) if (low.includes(kw)) return byId[pid] || null;
+    return null;
+  }
+
+  // ── 유형→기준치 (core/dividend._match_task) ──
+  function matchTask(text, D) {
+    const C = D.constants;
+    const hit = classifyMatch(text, D);
+    const pb = stressDetect(text, D);
+    let task, pluginId, matched, minutes, emotion, evidence;
+    if (hit) {
+      const pl = hit.plugin;
+      task = pl.name; pluginId = pl.id; matched = true;
+      minutes = Math.trunc(pl.baseline_minutes ?? C.default_baseline);
+      emotion = Math.trunc(pl.emotion_load ?? C.default_emotion);
+      evidence = pl.evidence ?? C.default_evidence;
+    } else {
+      task = ""; pluginId = null; matched = false;
+      minutes = C.default_baseline; emotion = C.default_emotion;
+      evidence = C.default_evidence;
+    }
+    if (pb) {
+      task = task || pb.name;
+      pluginId = pluginId || ("stress:" + pb.id);
+      minutes = Math.max(minutes, Math.trunc(pb.baseline_minutes ?? 90));
+      emotion = Math.max(emotion, Math.trunc(pb.emotion_load ?? 4));
+      evidence = pb.evidence ?? evidence;
+    }
+    return { task, plugin_id: pluginId, matched, saved_minutes: minutes,
+             emotion_load: emotion, evidence };
+  }
+
+  // ── 팁 (core/tips.make_tip — 문구 동일) ──
+  function makeTip(text, customer, D) {
+    const C = D.constants;
+    text = (text || "").trim();
+    const addr = (customer && customer.address) || C.placeholder_addr;
+    const reportLine = C.report_line.replace("{addr}", addr);
+    const gist = gistOf(text);
+    const hit = classifyMatch(text, D);
+    const pb = stressDetect(text, D);
+    const pl = hit ? hit.plugin : null;
+    if (pb) {
+      const minutes = Math.max(Math.trunc((pl || {}).baseline_minutes ?? 0),
+                               Math.trunc(pb.baseline_minutes ?? 120));
+      const emotion = Math.max(Math.trunc((pl || {}).emotion_load ?? 0),
+                               Math.trunc(pb.emotion_load ?? 4));
+      const prompt = `${gist} — ${pb.opener}. ` +
+        "접수만 하고 끝내지 말고 실제 입금(결과) 확인까지 진행해줘. " +
+        "상대가 회신하지 않으면 2회까지 재촉하고, 그래도 안 되면 " +
+        `${pb.escalation} 단계로 넘어가 줘. ` +
+        `진행 상황이 바뀔 때마다 알려줘. ${reportLine}`;
+      return { task: pb.name, plugin_id: (pl || {}).id || ("stress:" + pb.id),
+               matched: true, stress: true, saved_minutes_est: minutes,
+               emotion_load: emotion, muze_prompt: prompt };
+    }
+    if (pl) {
+      const prompt = `${gist} — 필요한 조건(예산·기한·선호)을 먼저 확인하고 진행해줘. ` +
+        "결제나 확정이 필요한 지점에서는 진행 전에 물어봐줘. " + reportLine;
+      return { task: pl.name, plugin_id: pl.id, matched: true, stress: false,
+               saved_minutes_est: Math.trunc(pl.baseline_minutes ?? C.default_baseline),
+               emotion_load: Math.trunc(pl.emotion_load ?? C.default_emotion),
+               muze_prompt: prompt };
+    }
+    const prompt = `${gist} — 단계를 나눠 진행하고, 애매한 지점은 임의로 정하지 말고 ` +
+      `물어봐줘. ${reportLine}`;
+    return { task: gist, plugin_id: null, matched: false, stress: false,
+             saved_minutes_est: C.default_baseline, emotion_load: C.default_emotion,
+             muze_prompt: prompt };
+  }
+  function tipCardBody(card) {  // core/tips.card_body
+    const lines = [
+      "이 일은 직접 맡아드리는 대신, 쓰고 계신 AI 에이전트(Muze 등)에 이렇게 시켜보세요:",
+      "", "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄", card.muze_prompt, "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄", "",
+      `- 예상 절약: 약 ${card.saved_minutes_est}분 (직접 하실 때 기준)`,
+      `- 아끼는 감정: ${emotionDots(card.emotion_load)}`,
+    ];
+    if (card.stress) lines.push(
+      "- 이런 일은 '접수'가 아니라 '입금 확인'까지 시키는 게 핵심이에요 — 위 프롬프트에 그 지시가 들어 있어요.");
+    lines.push("- 마지막 [보고] 한 줄은 꼭 그대로 두세요 — 보고 메일이 도착하는 순간 " +
+      "절약 시간이 자동으로 적립됩니다. 직접 기록하실 건 없어요.");
+    return lines.join("\n");
+  }
+
+  // ── 커뮤니티 (core/community — 고객당 상위 2유형, 같은 그룹+지역 ≥2) ──
+  function groupOfEvent(ev, catMap, C) {
+    const pid = ev.plugin || "";
+    if (pid.startsWith("stress:")) return C.stress_group;
+    return catMap[pid] || null;
+  }
+  function memberships(state, D) {
+    const C = D.constants;
+    const catMap = Object.fromEntries(D.catalog.map(pl => [pl.id, pl.category || ""]));
+    const groups = new Map();
+    for (const cid of Object.keys(state.ledgers).sort()) {
+      const perCat = new Map();
+      for (const e of state.ledgers[cid].events) {
+        const g = groupOfEvent(e, catMap, C);
+        if (!g) continue;
+        if (!perCat.has(g)) perCat.set(g, { events: 0, minutes: 0 });
+        const row = perCat.get(g);
+        row.events++; row.minutes += e.saved_minutes;
+      }
+      const top = [...perCat.entries()].sort((a, b) => b[1].events - a[1].events).slice(0, 2);
+      for (const [g, row] of top) {
+        if (!groups.has(g)) groups.set(g, new Map());
+        groups.get(g).set(cid, { customer: cid, ...row });
+      }
+    }
+    const out = {};
+    for (const [g, rows] of groups)
+      out[g] = [...rows.values()].sort((a, b) => a.customer < b.customer ? -1 : 1);
+    return out;
+  }
+  function nickname(state, cid, idx) {
+    const prof = state.customers[cid] || {};
+    return ((prof.name || cid)[0] || "?") + (idx + 1);
+  }
+  function regionsOf(state, members) {
+    const by = {};
+    for (const m of members) {
+      const r = (state.customers[m.customer] || {}).region;
+      if (r) (by[r] = by[r] || []).push(m.customer);
+    }
+    return by;
+  }
+  function meetupSection(state, cid, D) {
+    const C = D.constants;
+    const region = (state.customers[cid] || {}).region;
+    if (!region) return "";
+    const lines = [];
+    const groups = memberships(state, D);
+    for (const g of Object.keys(groups)) {
+      const members = groups[g];
+      const ids = members.map(m => m.customer);
+      if (!ids.includes(cid)) continue;
+      const same = regionsOf(state, members)[region] || [];
+      if (!same.includes(cid) || same.length < C.min_group) continue;
+      const others = same.length - 1;
+      lines.push(`- **${D.group_names[g] || g}** — ${region}에 같은 일을 ` +
+        `맡기는 이웃이 ${others}명 더 있어요. 이번 무브먼트, ` +
+        "같이 움직여볼까요? 회신 주시면 자리를 만들어 드려요.");
+    }
+    if (!lines.length) return "";
+    return "🧑‍🤝‍🧑 같은 그룹 모임 제안\n" + lines.join("\n");
+  }
+  function digestBody(state, D, g, members, weekMinutes) {
+    const names = members.map((m, i) => nickname(state, m.customer, i)).join(", ");
+    const h = Math.floor(weekMinutes / 60), mm = weekMinutes % 60;
+    return [
+      `'${D.group_names[g] || g}' 멤버가 ${members.length}명이 됐어요 (${names}).`,
+      `그룹이 함께 벌어둔 시간: ${h}시간 ${mm}분.`, "",
+      `이번 주 그룹 팁 — ${D.group_tips[g] || "팁 카드의 [보고] 한 줄을 잊지 마세요."}`, "",
+      "같은 일을 맡기는 사람들이라 통하는 게 많아요. 나누고 싶은 팁이 있으면 " +
+      "회신해 주세요 — 익명으로 다음 다이제스트에 실어 드려요.",
+    ].join("\n");
+  }
+  function communityTick(state, D, nowMs, force) {
+    const C = D.constants;
+    const results = [], groups = memberships(state, D);
+    state.community = state.community || { groups: {} };
+    for (const g of Object.keys(groups)) {
+      const members = groups[g];
+      if (members.length < C.min_group) {
+        results.push({ group: g, members: members.length, sent: false, detail: "인원 미달" });
+        continue;
+      }
+      const last = (state.community.groups[g] || {}).last_digest;
+      if (last && !force && nowMs - Date.parse(last) < C.digest_days * 86400e3) {
+        results.push({ group: g, members: members.length, sent: false, detail: "주기 미도래" });
+        continue;
+      }
+      const minutes = members.reduce((a, m) => a + m.minutes, 0);
+      const body = digestBody(state, D, g, members, minutes);
+      for (const m of members)
+        results.push({ group: g, members: members.length, sent: true,
+          mail: { to: m.customer, subject: `${D.group_names[g] || g} — 이번 주 다이제스트`, body } });
+      state.community.groups[g] = { last_digest: new Date(nowMs).toISOString(), members: members.length };
+    }
+    return results;
+  }
+
+  // ── 적립 (core/dividend.accrue / _maybe_suggest) ──
+  function emptyLedger(cid) {
+    return { customer: cid,
+      totals: { saved_minutes: 0, emotion_saved: 0, events_count: 0 },
+      last_suggested_at_minutes: 0, events: [] };
+  }
+  function maybeSuggest(state, cid, D) {
+    const C = D.constants;
+    const prof = state.customers[cid] || {};
+    const threshold = Math.trunc(prof.movement_threshold_minutes ?? C.default_threshold);
+    const ledger = state.ledgers[cid];
+    const total = ledger.totals.saved_minutes;
+    if (Math.floor(total / threshold) <= Math.floor((ledger.last_suggested_at_minutes || 0) / threshold))
+      return null;
+    ledger.last_suggested_at_minutes = total;
+    const h = Math.floor(total / 60), mm = total % 60;
+    const lines = [`쌓인 시간 배당이 ${h}시간 ${mm}분이 됐어요. ` +
+      "잔고에 잠들게 두지 말고, 다음 무브먼트에 투자해 보세요:\n"];
+    for (const [axis, desc] of C.movements) lines.push(`- **${axis}** — ${desc}`);
+    const meetup = meetupSection(state, cid, D);
+    if (meetup) { lines.push(""); lines.push(meetup); }
+    lines.push("\n하나를 고르셨다면 이 메일에 회신으로 알려주세요 — " +
+      "다녀온 이야기가 다음 추천을 더 좋게 만들어요.");
+    return { to: cid, subject: `잔고 ${h}시간 ${mm}분 — 다음 무브먼트를 고를 시간이에요`,
+             body: lines.join("\n"), meetup: !!meetup };
+  }
+  function accrue(state, cid, mail, D, nowIso) {
+    const C = D.constants;
+    const subject = (mail.subject || "").split(C.report_marker).join(" ").trim();
+    const text = `${subject} ${mail.body || ""}`;
+    const m = matchTask(text, D);
+    const task = m.task || (subject.slice(0, 40) || "이름 없는 일");
+    const prof = state.customers[cid] || {};
+    const factor = clampFactor(prof.time_factor ?? 1.0);
+    const saved = Math.max(1, pyRound(m.saved_minutes * factor));
+    if (!state.ledgers[cid]) state.ledgers[cid] = emptyLedger(cid);
+    const ledger = state.ledgers[cid];
+    const event = {
+      id: `${(nowIso || new Date().toISOString())}-${ledger.totals.events_count + 1}`,
+      date: mail.date || nowIso || new Date().toISOString(),
+      task, plugin: m.plugin_id, matched: m.matched,
+      saved_minutes: saved, emotion_load: m.emotion_load,
+      basis: { baseline: m.saved_minutes, factor, evidence: m.evidence },
+      subject, from: mail.from || "",
+    };
+    ledger.events.push(event);
+    const t = ledger.totals;
+    t.saved_minutes += saved; t.emotion_saved += m.emotion_load; t.events_count += 1;
+    const h = Math.floor(t.saved_minutes / 60), mm = t.saved_minutes % 60;
+    const factorTxt = factor === 1.0 ? "" : ` × 개인 보정 ×${factor}`;
+    const confirm = {
+      to: cid, subject: `시간 배당 적립: ${task} · +${saved}분`,
+      body: `${task} · +${saved}분 · 감정 ${emotionDots(m.emotion_load)}\n` +
+        `누적 잔고: ${h}시간 ${mm}분 (아낀 감정 ${t.emotion_saved})\n\n` +
+        "이 적립은 에이전트의 완료 보고 메일에서 자동 계산됐어요 — 직접 기록하실 건 없어요.\n" +
+        `산정 근거: 업무 유형 기준치 ${m.saved_minutes}분${factorTxt} — 출처 ${m.evidence}`,
+    };
+    const suggestion = maybeSuggest(state, cid, D);
+    return { event, saved_minutes: saved, emotion_load: m.emotion_load,
+             matched: m.matched, total_saved_minutes: t.saved_minutes,
+             suggested: !!suggestion, mails: suggestion ? [confirm, suggestion] : [confirm] };
+  }
+
+  // ── 수신 라우팅 (core/mailbox._process_one 의 피벗 분기) ──
+  function customerByAddress(state, addr) {
+    addr = (addr || "").trim().toLowerCase();
+    for (const prof of Object.values(state.customers)) {
+      if ((prof.address || "").toLowerCase() === addr) return prof;
+      if ((prof.aliases || []).some(a => a.toLowerCase() === addr)) return prof;
+    }
+    return null;
+  }
+  function routeMail(state, mail, D, nowIso) {
+    const sender = (mail.from || "").trim().toLowerCase();
+    const customer = customerByAddress(state, mail.to);
+    if (!customer)
+      return { action: "bounce", detail: `미발급 주소 ${mail.to} — 수신 거부·격리` };
+    const authOk = (mail.auth || "pass") === "pass";
+    const isOwner = authOk && sender === (customer.contact || "").trim().toLowerCase();
+    const isTrusted = authOk &&
+      (customer.trusted_senders || []).map(s => s.trim().toLowerCase()).includes(sender);
+    if (!isOwner && !isTrusted)
+      return { action: "quarantined", customer: customer.id,
+               detail: `미등록 발신 ${sender} — 격리(검토함)` };
+    if (isReport(mail, D.constants)) {
+      const r = accrue(state, customer.id, mail, D, nowIso);
+      return { action: "report_accrued", customer: customer.id, result: r,
+               detail: `완료 보고 자동 적립 — +${r.saved_minutes}분 (감정 ${r.emotion_load})` +
+                 ` / 누적 ${r.total_saved_minutes}분` + (r.suggested ? " / 무브먼트 제안 발송" : "") };
+    }
+    if (isOwner) {
+      const card = makeTip(`${mail.subject || ""} ${mail.body || ""}`, customer, D);
+      return { action: "tip_sent", customer: customer.id, card,
+               mails: [{ to: customer.id,
+                 subject: `위임 팁: ${card.task} · 약 ${card.saved_minutes_est}분 절약`,
+                 body: tipCardBody(card) }],
+               detail: `팁 카드 회신 — ${card.plugin_id || "범용"} / ` +
+                 `예상 절약 ${card.saved_minutes_est}분` };
+    }
+    return { action: "archived", customer: customer.id,
+             detail: "등록 시스템 발신(비보고) — 보관" };
+  }
+
+  // ── 온보딩 (주소 발급 — common.slug 축약판 + 4자리 접미) ──
+  function slugId(name) {
+    const s = (name || "").normalize("NFKC").replace(/[^\w가-힣]+/g, "-")
+      .replace(/^-+|-+$/g, "").toLowerCase();
+    return s.slice(0, 32) || "user";
+  }
+  function newAddress(id, suffix) {
+    return `${id}.${suffix}@unplugin.me`;
+  }
+
+  return { pyRound, clampFactor, emotionDots, isReport, classifyMatch, stressDetect,
+           matchTask, makeTip, tipCardBody, memberships, nickname, regionsOf,
+           meetupSection, digestBody, communityTick, emptyLedger, maybeSuggest,
+           accrue, customerByAddress, routeMail, slugId, newAddress };
+})();
+if (typeof module !== "undefined") module.exports = OFFICE;
+/* ══════════ [OFFICE-PURE-END] ══════════ */
+
+/* ───────── UI — 상태는 localStorage(unplugin-office-v1), 서버 전송 없음 ───────── */
+(() => {
+  if (typeof window === "undefined") return;   // node 패리티 로드 시 UI 생략
+  const D = window.OFFICE_DATA;
+  const KEY = "unplugin-office-v1";
+  const $ = s => document.querySelector(s);
+
+  function seedState() {
+    const customers = {};
+    for (const p of D.demo_customers) customers[p.id] = JSON.parse(JSON.stringify(p));
+    return { v: 1, customers, ledgers: {}, outbox: [], log: [],
+             community: { groups: {} }, processed: {}, demoCursor: 0 };
+  }
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) { const s = JSON.parse(raw); if (s && s.v === 1) return s; }
+    } catch (_) {}
+    return seedState();
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} }
+  let S = load();
+
+  const fmtHM = min => `${Math.floor(min / 60)}시간 ${min % 60}분`;
+  const esc = s => String(s ?? "").replace(/[&<>"]/g,
+    c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const nowIso = () => new Date().toISOString().slice(0, 19);
+  function pushLog(action, detail, mailprev) {
+    S.log.unshift({ t: nowIso(), action, detail, mailprev: mailprev || "" });
+    if (S.log.length > 400) S.log.length = 400;
+  }
+  function pushOutbox(mails) {
+    for (const m of mails || []) S.outbox.unshift({ t: nowIso(), ...m });
+    if (S.outbox.length > 300) S.outbox.length = 300;
+  }
+  function allEvents() {
+    const rows = [];
+    for (const cid of Object.keys(S.ledgers))
+      for (const e of S.ledgers[cid].events) rows.push({ cid, ...e });
+    return rows.sort((a, b) => (a.date < b.date ? 1 : -1));
+  }
+
+  /* ── 수신 처리 공통 ── */
+  function processMail(mail, label) {
+    const r = OFFICE.routeMail(S, mail, D, nowIso());
+    const mails = (r.result && r.result.mails) || r.mails || [];
+    pushOutbox(mails);
+    pushLog(r.action, `${label || mail.subject || "(제목 없음)"} → ${r.detail}`,
+            mails.map(m => `[→ ${m.to}] ${m.subject}\n${m.body}`).join("\n\n"));
+    return r;
+  }
+
+  /* ── 탭 구성 ── */
+  const TABS = [
+    ["dash", "대시보드"], ["inbox", "수신함"], ["feed", "적립 피드"],
+    ["tips", "팁 생성기"], ["community", "커뮤니티"], ["customers", "고객"],
+    ["backlog", "미매칭 백로그"], ["data", "데이터"],
+  ];
+  let cur = location.hash.slice(1) || "dash";
+
+  function render() {
+    save();
+    const tabs = $("#tabs");
+    const backlogN = allEvents().filter(e => !e.matched).length;
+    tabs.innerHTML = TABS.map(([id, name]) =>
+      `<button class="${cur === id ? "on" : ""}" data-tab="${id}">${name}` +
+      (id === "backlog" && backlogN ? `<span class="n">${backlogN}</span>` : "") +
+      `</button>`).join("");
+    tabs.querySelectorAll("button").forEach(b =>
+      b.onclick = () => { cur = b.dataset.tab; location.hash = cur; render(); });
+    $("#main").innerHTML = `<section class="pane on">${VIEWS[cur]()}</section>`;
+    bind();
+  }
+
+  const VIEWS = {
+    /* ① 대시보드 */
+    dash() {
+      const cids = Object.keys(S.customers).sort();
+      let tot = 0, emo = 0, cnt = 0;
+      const cards = cids.map(cid => {
+        const l = S.ledgers[cid] || OFFICE.emptyLedger(cid);
+        const p = S.customers[cid];
+        tot += l.totals.saved_minutes; emo += l.totals.emotion_saved; cnt += l.totals.events_count;
+        const th = p.movement_threshold_minutes || D.constants.default_threshold;
+        const seg = l.totals.saved_minutes % th;
+        const pct = Math.min(100, Math.round(seg / th * 100));
+        return `<div class="card">
+          <h3>${esc(p.name)} <span class="rg">${esc(p.region || "지역 미등록")} · ×${p.time_factor ?? 1}</span></h3>
+          <div class="big">${fmtHM(l.totals.saved_minutes)}</div>
+          <div class="mut">아낀 감정 <span class="emo">${l.totals.emotion_saved}</span> · 적립 ${l.totals.events_count}건</div>
+          <div class="meter"><i style="width:${pct}%"></i></div>
+          <div class="mut">다음 무브먼트 제안까지 ${th - seg}분 (임계치 ${th}분)</div>
+        </div>`;
+      }).join("");
+      return `<h2>시간 배당 대시보드</h2>
+        <p class="sub">보고 메일 수신 → 자동 적립 → 임계치마다 무브먼트 제안. 수동 기록 0.</p>
+        <div class="sum"><div><b>${fmtHM(tot)}</b> <span>전체 절약</span></div>
+          <div><b>${emo}</b> <span>아낀 감정</span></div>
+          <div><b>${cnt}</b> <span>적립 건수</span></div>
+          <div><b>${S.outbox.length}</b> <span>발송 메일</span></div></div>
+        <div class="cards">${cards || '<div class="empty">고객이 없습니다 — 고객 탭에서 온보딩하세요.</div>'}</div>
+        ${S.outbox.length ? `<div class="panel" style="margin-top:14px"><h3 style="font-size:.9rem">최근 발송</h3>
+          <ul class="log">${S.outbox.slice(0, 5).map(m =>
+            `<li><span class="t">${esc(m.t)}</span><b>→ ${esc(m.to)}</b> ${esc(m.subject)}
+             <details><summary>본문</summary><pre class="mailprev">${esc(m.body)}</pre></details></li>`).join("")}
+          </ul></div>` : ""}`;
+    },
+
+    /* ② 수신함 */
+    inbox() {
+      const remain = D.demo_mails.filter(m => !S.processed[m.id]).length;
+      return `<h2>수신함 — 보고·포워딩 처리</h2>
+        <p class="sub">전용 주소로 온 메일을 코어와 같은 규칙으로 처리합니다:
+        [보고]/완료 키워드 → 적립 · 본인 포워딩 → 팁 카드 회신 · 미등록 발신 → 격리.</p>
+        <div class="panel">
+          <div class="row">
+            <button class="act pri" id="demoAll">데모 ${remain}통 일괄 처리</button>
+            <button class="act" id="demoOne">한 통씩 처리</button>
+            <button class="act" id="demoReset">데모 진행 초기화</button>
+          </div>
+          <div class="mut">데모 85통 = 에이전트 보고 60 · 포워딩 20 · 미매칭 보고 5 (Muze·Dots·ChatGPT·Claude·Gemini 발신 교차)</div>
+        </div>
+        <div class="panel">
+          <h3 style="font-size:.9rem">메일 직접 투입</h3>
+          <div class="grid2">
+            <div><label class="f">from (발신)</label><input type="text" id="mFrom" placeholder="muze@agentmail.example"></div>
+            <div><label class="f">to (전용주소)</label><input type="text" id="mTo" placeholder="jisoo.d3m0@unplugin.me"></div>
+          </div>
+          <label class="f">subject</label><input type="text" id="mSubj" placeholder="[보고] 항공권 환불 완료">
+          <label class="f">body</label><textarea id="mBody" placeholder="항공권 환불 처리했어. 입금까지 확인 완료."></textarea>
+          <div class="row"><button class="act pri" id="mSend">처리</button></div>
+        </div>
+        <div class="panel"><h3 style="font-size:.9rem">처리 로그</h3>
+          <ul class="log">${S.log.slice(0, 40).map(l =>
+            `<li><span class="t">${esc(l.t)}</span><span class="pill ${
+               l.action === "report_accrued" ? "ok" : l.action === "tip_sent" ? "warn"
+               : l.action === "quarantined" || l.action === "bounce" ? "bad" : ""
+             }">${esc(l.action)}</span> ${esc(l.detail)}${
+             l.mailprev ? `<details><summary>발송 메일</summary><pre class="mailprev">${esc(l.mailprev)}</pre></details>` : ""
+            }</li>`).join("") || "<li class='mut'>아직 처리한 메일이 없습니다.</li>"}
+          </ul></div>`;
+    },
+
+    /* ③ 적립 피드 */
+    feed() {
+      const rows = allEvents();
+      if (!rows.length) return `<h2>적립 피드</h2><div class="empty">아직 적립이 없습니다 — 수신함에서 데모 메일을 처리해 보세요.</div>`;
+      return `<h2>적립 피드</h2><p class="sub">이벤트마다 산정 근거(기준치 × 개인 보정, 출처)가 남습니다.</p>
+        <table><tr><th>일시</th><th>고객</th><th>업무</th><th>절약</th><th>감정</th><th>발신 에이전트</th><th>산정 근거</th></tr>
+        ${rows.slice(0, 80).map(e => `<tr>
+          <td class="mut">${esc(String(e.date).slice(0, 10))}</td>
+          <td>${esc(S.customers[e.cid]?.name || e.cid)}</td>
+          <td>${esc(e.task)}${e.matched ? "" : ' <span class="pill bad">미매칭</span>'}</td>
+          <td><b>+${e.saved_minutes}분</b></td>
+          <td class="emo">${OFFICE.emotionDots(e.emotion_load)}</td>
+          <td class="mut">${esc((e.from || "").split("@")[0] || "-")}</td>
+          <td class="mut">${e.basis.baseline}분 × ${e.basis.factor}<br><span style="font-size:.7rem">${esc(e.basis.evidence)}</span></td>
+        </tr>`).join("")}</table>`;
+    },
+
+    /* ④ 팁 생성기 */
+    tips() {
+      const opts = Object.keys(S.customers).sort().map(cid =>
+        `<option value="${cid}">${esc(S.customers[cid].name)} (${esc(S.customers[cid].address)})</option>`).join("");
+      return `<h2>위임 팁 생성기</h2>
+        <p class="sub">업무를 적으면 "에이전트에 이렇게 시키세요" 카드를 만듭니다 — 보고 한 줄 포함(실행되면 자동 적립).</p>
+        <div class="panel">
+          <label class="f">업무 설명</label>
+          <textarea id="tipText" placeholder="예) 결항된 제주 항공권 환불 받아줘 / 이번 주 생필품 주문"></textarea>
+          <label class="f">고객 (전용주소 삽입)</label>
+          <select id="tipCustomer"><option value="">— 플레이스홀더(&lt;내 전용주소&gt;) —</option>${opts}</select>
+          <div class="row"><button class="act pri" id="tipMake">팁 카드 생성</button></div>
+        </div>
+        <div id="tipOut"></div>`;
+    },
+
+    /* ⑤ 커뮤니티 */
+    community() {
+      const groups = OFFICE.memberships(S, D);
+      const keys = Object.keys(groups);
+      const table = keys.length ? keys.sort((a, b) => groups[b].length - groups[a].length).map(g => {
+        const members = groups[g];
+        const regions = OFFICE.regionsOf(S, members);
+        const rtxt = Object.keys(regions).sort().map(r => `${r} ${regions[r].length}명`).join(" · ") || "지역 미등록";
+        const ok = members.length >= D.constants.min_group;
+        return `<tr><td><b>${esc(D.group_names[g] || g)}</b><br><span class="mut">${esc(g)}</span></td>
+          <td>${members.length}명 ${ok ? '<span class="pill ok">성립</span>' : '<span class="pill">인원 미달</span>'}</td>
+          <td class="mut">${esc(rtxt)}</td>
+          <td class="mut">${members.map((m, i) =>
+            `${esc(OFFICE.nickname(S, m.customer, i))}(${esc(m.customer)}) ${m.minutes}분`).join("<br>")}</td></tr>`;
+      }).join("") : "";
+      const digests = S.community && S.community.groups ? Object.entries(S.community.groups) : [];
+      return `<h2>커뮤니티 — 같은 일을 위임하는 사람들</h2>
+        <p class="sub">적립 이력에서 자동 편성(고객당 상위 2유형). 같은 그룹 + 같은 지역 2인 이상이면 무브먼트 제안에 모임 섹션이 붙습니다.</p>
+        <div class="row">
+          <button class="act pri" id="digestRun">다이제스트 발송 (주 1회)</button>
+          <button class="act" id="digestForce">강제 발송</button>
+        </div>
+        ${keys.length ? `<table><tr><th>그룹</th><th>인원</th><th>지역</th><th>멤버(익명 닉네임)</th></tr>${table}</table>`
+          : '<div class="empty">아직 그룹이 없습니다 — 적립이 쌓이면 자동 편성됩니다.</div>'}
+        ${digests.length ? `<div class="panel" style="margin-top:14px"><h3 style="font-size:.9rem">다이제스트 발송 기록</h3>
+          <ul class="log">${digests.map(([g, v]) =>
+            `<li><span class="t">${esc(String(v.last_digest).slice(0, 19))}</span>${esc(D.group_names[g] || g)} — ${v.members}명</li>`).join("")}</ul></div>` : ""}`;
+    },
+
+    /* ⑥ 고객 */
+    customers() {
+      const rows = Object.keys(S.customers).sort().map(cid => {
+        const p = S.customers[cid];
+        const l = S.ledgers[cid] || OFFICE.emptyLedger(cid);
+        return `<tr><td><b>${esc(p.name)}</b><br><span class="mut">${esc(cid)}</span></td>
+          <td class="mut">${esc(p.address)}<br>연락: ${esc(p.contact || "-")}</td>
+          <td>${esc(p.region || "-")}</td>
+          <td><input type="number" step="0.1" min="0.5" max="2" value="${p.time_factor ?? 1}"
+               data-cal="${cid}" style="width:74px"></td>
+          <td>${fmtHM(l.totals.saved_minutes)}</td>
+          <td class="mut" style="font-size:.72rem">${(p.trusted_senders || []).map(esc).join("<br>")}</td></tr>`;
+      }).join("");
+      return `<h2>고객 — 온보딩·보정</h2>
+        <p class="sub">온보딩하면 전용 주소가 자동 발급됩니다. 개인 보정(time_factor 0.5~2.0)은 "같은 일도 사람마다 걸리는 시간이 다르다"의 Admin 조정값(calibrate)입니다.</p>
+        <div class="panel"><h3 style="font-size:.9rem">새 고객 온보딩</h3>
+          <div class="grid2">
+            <div><label class="f">이름</label><input type="text" id="obName" placeholder="지수"></div>
+            <div><label class="f">연락 이메일 (본인 발신 식별)</label><input type="text" id="obContact" placeholder="jisoo@example.com"></div>
+            <div><label class="f">지역 (모임 매칭, 선택)</label><input type="text" id="obRegion" placeholder="성수동"></div>
+            <div><label class="f">신뢰 에이전트 발신 주소 (쉼표 구분)</label><input type="text" id="obTrusted" placeholder="muze@agentmail.example"></div>
+          </div>
+          <div class="row"><button class="act pri" id="obGo">온보딩 — 전용주소 발급</button><span class="mut" id="obOut"></span></div>
+        </div>
+        <table><tr><th>고객</th><th>전용주소</th><th>지역</th><th>보정 ×</th><th>잔고</th><th>신뢰 발신</th></tr>${rows}</table>
+        <div class="row"><button class="act" id="calSave">보정 계수 저장 (calibrate)</button></div>`;
+    },
+
+    /* ⑦ 미매칭 백로그 */
+    backlog() {
+      const rows = allEvents().filter(e => !e.matched);
+      if (!rows.length) return `<h2>미매칭 백로그</h2><div class="empty">미매칭 보고가 없습니다 — 모든 보고가 유형에 매칭됐어요.</div>`;
+      return `<h2>미매칭 백로그</h2>
+        <p class="sub">유형 미매칭 보고는 기본값(${D.constants.default_baseline}분/감정 ${D.constants.default_emotion})으로 적립됩니다 — 카탈로그 트리거 보강 대상.</p>
+        <table><tr><th>일시</th><th>고객</th><th>제목(마스킹)</th><th>적립</th><th>개선 메모</th></tr>
+        ${rows.map(e => `<tr><td class="mut">${esc(String(e.date).slice(0, 10))}</td>
+          <td>${esc(S.customers[e.cid]?.name || e.cid)}</td><td>${esc(e.subject)}</td>
+          <td>+${e.saved_minutes}분</td>
+          <td class="mut">core/plugins 카탈로그에 트리거 추가 → python3 -m core.export_office 재생성</td></tr>`).join("")}
+        </table>`;
+    },
+
+    /* ⑧ 데이터 */
+    data() {
+      return `<h2>데이터</h2>
+        <p class="sub">모든 상태는 이 브라우저의 localStorage(<code>unplugin-office-v1</code>)에만 저장됩니다.</p>
+        <div class="panel">
+          <div class="row">
+            <button class="act" id="expBtn">JSON 내보내기</button>
+            <label class="act" style="display:inline-block">JSON 가져오기<input type="file" id="impFile" accept=".json" style="display:none"></label>
+            <button class="act warn" id="resetBtn">초기화 (데모 고객으로 리셋)</button>
+          </div>
+          <textarea id="dataIO" placeholder="내보내기를 누르면 여기에 JSON이 표시됩니다. 붙여넣고 '텍스트에서 가져오기'도 가능합니다."></textarea>
+          <div class="row"><button class="act" id="impText">텍스트에서 가져오기</button></div>
+        </div>`;
+    },
+  };
+
+  /* ── 이벤트 바인딩 ── */
+  function bind() {
+    const on = (sel, fn) => { const el = $(sel); if (el) el.onclick = fn; };
+    on("#demoAll", () => {
+      let n = 0;
+      for (const m of D.demo_mails) {
+        if (S.processed[m.id]) continue;
+        processMail(m, m.id); S.processed[m.id] = true; n++;
+      }
+      pushLog("batch", `데모 일괄 처리 ${n}통 완료`);
+      render();
+    });
+    on("#demoOne", () => {
+      const m = D.demo_mails.find(x => !S.processed[x.id]);
+      if (!m) { pushLog("batch", "남은 데모 메일 없음"); render(); return; }
+      processMail(m, m.id); S.processed[m.id] = true; render();
+    });
+    on("#demoReset", () => { S.processed = {}; S.demoCursor = 0; pushLog("batch", "데모 진행 초기화"); render(); });
+    on("#mSend", () => {
+      const mail = { from: $("#mFrom").value, to: $("#mTo").value,
+                     subject: $("#mSubj").value, body: $("#mBody").value };
+      processMail(mail, "직접 투입"); render();
+    });
+    on("#tipMake", () => {
+      const cid = $("#tipCustomer").value;
+      const card = OFFICE.makeTip($("#tipText").value, cid ? S.customers[cid] : null, D);
+      $("#tipOut").innerHTML = `<div class="panel tipcard">
+        <h3 style="font-size:.95rem">${esc(card.task)}
+          <span class="pill ${card.stress ? "warn" : card.matched ? "ok" : ""}">${
+            card.stress ? "스트레스 — 고급 팁" : card.matched ? "유형 매칭" : "범용"}</span></h3>
+        <div class="mut">예상 절약 약 ${card.saved_minutes_est}분 · 감정 <span class="emo">${OFFICE.emotionDots(card.emotion_load)}</span></div>
+        <pre id="tipPrompt">${esc(card.muze_prompt)}</pre>
+        <div class="row"><button class="act pri" id="tipCopy">프롬프트 복사</button>
+        ${cid ? `<button class="act" id="tipSend" data-cid="${cid}">팁 카드 발송 기록</button>` : ""}</div></div>`;
+      on("#tipCopy", () => {
+        navigator.clipboard && navigator.clipboard.writeText(card.muze_prompt);
+        $("#tipCopy").textContent = "복사됨 ✓";
+      });
+      on("#tipSend", () => {
+        pushOutbox([{ to: cid, subject: `위임 팁: ${card.task} · 약 ${card.saved_minutes_est}분 절약`,
+                      body: OFFICE.tipCardBody(card) }]);
+        pushLog("tip_sent", `팁 생성기 발송 — ${card.task} (${S.customers[cid].name})`);
+        render();
+      });
+    });
+    on("#digestRun", () => runDigest(false));
+    on("#digestForce", () => runDigest(true));
+    function runDigest(force) {
+      const rs = OFFICE.communityTick(S, D, Date.now(), force);
+      const sent = rs.filter(r => r.sent);
+      pushOutbox(sent.map(r => r.mail));
+      const skipped = rs.filter(r => !r.sent).map(r => `${D.group_names[r.group] || r.group}(${r.detail})`);
+      pushLog("digest", `다이제스트 ${sent.length}통 발송` + (skipped.length ? ` · 건너뜀: ${skipped.join(", ")}` : ""));
+      render();
+    }
+    on("#obGo", () => {
+      const name = $("#obName").value.trim();
+      if (!name) { $("#obOut").textContent = "이름을 입력하세요"; return; }
+      let id = OFFICE.slugId(name), n = 2;
+      while (S.customers[id]) id = OFFICE.slugId(name) + n++;
+      const suffix = Math.random().toString(36).slice(2, 6);
+      S.customers[id] = {
+        id, name, address: OFFICE.newAddress(id, suffix),
+        contact: $("#obContact").value.trim(),
+        region: $("#obRegion").value.trim() || undefined,
+        time_factor: 1.0,
+        movement_threshold_minutes: D.constants.default_threshold,
+        trusted_senders: $("#obTrusted").value.split(",").map(s => s.trim()).filter(Boolean),
+        onboarded: true,
+      };
+      pushLog("onboard", `온보딩 — ${name} → ${S.customers[id].address}`);
+      render();
+    });
+    on("#calSave", () => {
+      document.querySelectorAll("input[data-cal]").forEach(inp => {
+        const cid = inp.dataset.cal;
+        S.customers[cid].time_factor = OFFICE.clampFactor(inp.value);
+      });
+      pushLog("calibrate", "개인 보정 계수 저장 (0.5~2.0 클램프)");
+      render();
+    });
+    on("#expBtn", () => { $("#dataIO").value = JSON.stringify(S, null, 2); });
+    on("#impText", () => {
+      try { const s = JSON.parse($("#dataIO").value); if (s && s.v === 1) { S = s; render(); } }
+      catch (_) { alert("JSON 형식이 올바르지 않습니다."); }
+    });
+    const impFile = $("#impFile");
+    if (impFile) impFile.onchange = e => {
+      const f = e.target.files[0]; if (!f) return;
+      const rd = new FileReader();
+      rd.onload = () => { try { const s = JSON.parse(rd.result); if (s && s.v === 1) { S = s; render(); } } catch (_) {} };
+      rd.readAsText(f);
+    };
+    on("#resetBtn", () => { S = seedState(); render(); });
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
