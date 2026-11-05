@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unplugin — AI가 벌어준 시간, 당신의 삶으로</title>
-<meta name="description" content="Unplugin은 일을 대신하지 않습니다. Muze·ChatGPT 등 어떤 비서 에이전트든 — 벌어준 시간과 아낀 감정을 자동으로 측정하고, 관계·배움·오감으로 되돌리는 시간 배당 코치.">
+<title>Unplugin — 일은 AI에게, 시간은 삶으로</title>
+<meta name="description" content="일은 AI에게, 시간은 삶으로. Unplugin은 Muze·ChatGPT 등 에이전트가 벌어준 시간을 번개 모임·짝꿍·클래스 같은 다음 무브먼트로 옮기는 온라인-오프라인 다리입니다. 측정·커뮤니티·번개 참가는 무료.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   :root {
@@ -317,7 +317,7 @@
   .addr { background:rgba(47,107,74,.1); color:var(--green-deep); font-weight:700;
     border-radius:7px; padding:1px 7px; font-size:.86em; overflow-wrap:anywhere; }
 
-  /* ───────── S7 무브먼트 카드 (구 요금제 그리드 재사용) ───────── */
+  /* ───────── 3열 카드 그리드 (메커니즘·세 갈래 공용) ───────── */
   .tiers { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:44px; align-items:stretch; }
   .tier { background:#fff; border:1px solid var(--hair); border-radius:24px; padding:30px 26px; text-align:left;
     box-shadow:var(--shadow); display:flex; flex-direction:column;
@@ -364,7 +364,7 @@
 
   /* ───────── 반응형 ───────── */
   @media (max-width: 880px) {
-    /* 모바일도 PC처럼 한 섹션 = 한 화면 스냅. 화면보다 긴 섹션(요금제 등)은
+    /* 모바일도 PC처럼 한 섹션 = 한 화면 스냅. 화면보다 긴 섹션(카드 그리드 등)은
        snap area가 스냅포트보다 크면 내부 자유 스크롤이 허용되므로(mandatory 유지)
        끝까지 읽은 뒤 다음 섹션 시작점에 스냅된다. */
     section { padding: 88px 6vw 48px; }
@@ -376,7 +376,7 @@
     .rail { display:none; }
     .scroll-hint { display:none; }
 
-    /* 타이틀 정렬 통일 — PC의 중앙 정렬 섹션(히어로·How it works·요금제·CTA)도
+    /* 타이틀 정렬 통일 — PC의 중앙 정렬 섹션(히어로·메커니즘·세 갈래·CTA)도
        모바일 단일 컬럼에서는 전부 왼쪽 정렬 (인라인 스타일까지 오버라이드) */
     section, #s1, #s8 { text-align:left; }
     section .wrap { text-align:left !important; }
@@ -506,9 +506,9 @@ addEventListener("DOMContentLoaded", () => {
 
 <nav class="rail" id="rail" aria-label="섹션 이동">
   <a href="#s1" aria-label="처음"></a><a href="#s2" aria-label="문제"></a>
-  <a href="#s3" aria-label="방법"></a><a href="#s3b" aria-label="팁"></a><a href="#s4" aria-label="타입"></a>
-  <a href="#s5" aria-label="데이터"></a><a href="#s6" aria-label="수신함"></a>
-  <a href="#s7" aria-label="무브먼트"></a><a href="#s8" aria-label="시작"></a>
+  <a href="#s3" aria-label="커뮤니티"></a><a href="#s3b" aria-label="메커니즘"></a><a href="#s4" aria-label="타입"></a>
+  <a href="#s5" aria-label="세 갈래"></a><a href="#s6" aria-label="장치"></a>
+  <a href="#s7" aria-label="성장"></a><a href="#s8" aria-label="시작"></a>
 </nav>
 
 <main id="main">
@@ -517,31 +517,31 @@ addEventListener("DOMContentLoaded", () => {
   <section id="s1" data-theme="dark">
     <div class="aurora au1"></div><div class="aurora au2"></div><div class="horizon"></div><div class="grain"></div>
     <div class="wrap">
-      <div class="hero-pill rv">시간 배당 코치 — <b>지금 베타 · 무료</b></div>
-      <h1 class="rv d1">AI가 벌어준 시간, <br><span class="serif">당신의 삶</span>으로</h1>
-      <p class="lead rv d2">Unplugin은 일을 대신하지 않습니다. <span class="roll" aria-label="Muze 등 여러 비서 에이전트"><span class="roll-track" aria-hidden="true"><span class="roll-i">Muze</span><span class="roll-i">Dots</span><span class="roll-i">ChatGPT</span><span class="roll-i">Claude</span><span class="roll-i">Gemini</span></span></span> 같은 에이전트가 벌어준 시간과 아낀 감정을 자동으로 측정하고, 관계·배움·오감으로 되돌립니다.</p>
+      <div class="hero-pill rv">온라인-오프라인 다리 — <b>지금 베타 · 무료</b></div>
+      <h1 class="rv d1">일은 AI에게, <br><span class="serif">시간은 삶으로</span></h1>
+      <p class="lead rv d2">일은 이미 <span class="roll" aria-label="Muze 등 여러 비서 에이전트"><span class="roll-track" aria-hidden="true"><span class="roll-i">Muze</span><span class="roll-i">Dots</span><span class="roll-i">ChatGPT</span><span class="roll-i">Claude</span><span class="roll-i">Gemini</span></span></span>가 합니다. Unplugin은 그렇게 벌어진 시간을 다음 무브먼트로 옮기는 다리입니다 — 같은 일을 맡긴 사람들과, 화면 밖에서 만나세요.</p>
       <div class="hero-cta rv d3">
         <a class="btn btn-accent" href="test.html">1분 만에 내 타입 알아보기 <span class="arr">→</span></a>
-        <a class="btn btn-glass" href="demo.html">▶ 1분 데모 — 잔고가 쌓이는 모습</a>
+        <a class="btn btn-glass" href="demo.html">▶ 1분 데모 — 제품 필름</a>
       </div>
       <div class="proof rv d4" aria-hidden="true">
         <div class="pcard">
-          <div class="ph"><span class="dot"></span><span class="who">자동 적립</span></div>
-          <div class="msg">메일 정리 · <b>+45분</b></div>
-          <div class="meta">ChatGPT 완료 보고 수신 · 방금</div>
-          <span class="tag done">✓ 수동 기록 0</span>
+          <div class="ph"><span class="dot"></span><span class="who">시간 배당 잔고</span></div>
+          <div class="msg">+4시간 20분 — <b>무브먼트行 티켓</b>이 됐어요.</div>
+          <div class="meta">완료 보고 자동 적립 · 수동 기록 0</div>
+          <span class="tag time">티켓 1장</span>
         </div>
         <div class="pcard">
-          <div class="ph"><span class="dot"></span><span class="who">자동 적립</span></div>
-          <div class="msg">항공권 환불 · <b>+2시간 10분</b></div>
-          <div class="meta">아낀 감정 ●●●●● — 실랑이는 당신 몫이 아니었어요</div>
-          <span class="tag done">✓ 자동 측정</span>
+          <div class="ph"><span class="dot"></span><span class="who">환불 전사단 · 번개</span></div>
+          <div class="msg">토 10:00 연남 ☕ — <b>같은 일을 맡긴 4명</b>이 모여요.</div>
+          <div class="meta">참석 RSVP · 캘린더(.ics) 예약됨</div>
+          <span class="tag done">✓ 오프라인 확정</span>
         </div>
         <div class="pcard">
-          <div class="ph"><span class="dot"></span><span class="who">이번 주 시간 배당 잔고</span></div>
-          <div class="msg">+4시간 20분 — 토요일 오후가 비었어요.</div>
-          <div class="meta">다음 무브먼트: 해 질 무렵 한강 노을 산책 🌇</div>
-          <span class="tag time">삶의 시간으로</span>
+          <div class="ph"><span class="dot"></span><span class="who">성장 기록</span></div>
+          <div class="msg">스탬프 12개 · <b>레벨 3 — 산책자</b></div>
+          <div class="meta">관계 5 · 배움 4 · 오감 3</div>
+          <span class="tag run">사람으로서 성장 중</span>
         </div>
       </div>
     </div>
@@ -554,7 +554,7 @@ addEventListener("DOMContentLoaded", () => {
       <div>
         <div class="eyebrow rv">The Problem</div>
         <h2 class="rv d1">AI가 벌어준 시간은 <br>어디로 갔을까요?</h2>
-        <p class="lead rv d2">에이전트가 주문하고, 예약하고, 환불까지 받아줍니다. 그런데 그렇게 번 시간을 챙겨주는 사람은 없습니다 — 대부분 다시 화면 속으로 사라집니다. 나태해지거나, "다 AI가 해준다"는 막연한 불안만 남거나.</p>
+        <p class="lead rv d2">주문도, 예약도, 환불도 이미 에이전트가 합니다. 문제는 그다음입니다 — 그렇게 번 시간을 받아주는 곳이 없어, 대부분 다시 화면 속으로 사라집니다. 나태해지거나, "다 AI가 해준다"는 막연한 불안만 남거나.</p>
         <div class="stat rv d3"><span class="num">5.4</span><span class="unit">시간 / 매주 AI가 벌어주는 시간</span></div>
         <p class="fineprint rv d3">Unplugin 베타 설계 추정치 · 실측 데이터로 교체 예정</p>
       </div>
@@ -571,60 +571,61 @@ addEventListener("DOMContentLoaded", () => {
     </div>
   </section>
 
-  <!-- 3 ── 작동 방식 -->
+  <!-- 3 ── 무브먼트 커뮤니티 -->
   <section id="s3">
-    <div class="wrap" style="text-align:center;">
-      <div class="eyebrow rv" style="justify-content:center;">How it works</div>
-      <h2 class="rv d1">설정은 <span class="serif">한 줄</span>, 측정은 자동</h2>
-      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">연동도, 권한도, 설치도 없습니다. <span class="roll" aria-label="Muze 등 여러 비서 에이전트"><span class="roll-track" aria-hidden="true"><span class="roll-i">Muze</span><span class="roll-i">Dots</span><span class="roll-i">ChatGPT</span><span class="roll-i">Claude</span><span class="roll-i">Gemini</span></span></span>에 시킬 때 보고 한 줄만 붙이세요 — 나머지는 Unplugin이 받아 적습니다.</p>
-      <div class="journey" role="img" aria-label="작동 예시: Muze에 요청하며 보고 한 줄 추가 → Muze가 전용 주소로 완료 보고 → 자동 적립 → 잔고와 무브먼트 제안">
-        <div class="jt me rv d1"><span class="av me">나</span>
-          <div class="jb"><div class="jw">나 → MUZE · 10:02</div>
-            <div class="jm">항공권 취소 수수료 환불받아줘. <b>— 끝나면 jisoo.k7x2@unplugin.me 로 완료 보고 보내줘</b></div>
-            <span class="jtag o">이 한 줄이 설정의 전부</span><span class="jtag g">어떤 에이전트든 같은 한 줄</span></div></div>
-        <div class="jt rv d2"><span class="av me">M</span>
-          <div class="jb"><div class="jw">MUZE → 내 UNPLUGIN 주소 · 14:40</div>
-            <div class="jm">완료 보고: 항공권 환불 — <b>89,000원 환불 접수</b>했습니다.</div></div></div>
-        <div class="jt rv d3"><span class="av ag">U</span>
-          <div class="jb"><div class="jw">UNPLUGIN · 14:40</div>
-            <div class="jm">자동 적립 — <b>+2시간 10분 · 아낀 감정 ●●●●●</b>. 콜센터 대기도, 실랑이도 당신 몫이 아니었어요.</div>
-            <span class="jtag g">업무 유형 자동 분류</span><span class="jtag o">수동 기록 0</span></div></div>
-        <div class="jt rv d4"><span class="av ag">U</span>
-          <div class="jb"><div class="jw">UNPLUGIN · 금요일</div>
-            <div class="jm">이번 주 잔고 <b>4시간 20분</b> — 토요일 오후, 미뤄둔 목공 클래스 어때요? 🪵</div>
-            <span class="jtag g">넥스트 무브먼트 제안</span></div></div>
+    <div class="wrap cols">
+      <div>
+        <div class="eyebrow rv">Movement Clubs</div>
+        <h2 class="rv d1">같은 일을 맡긴 사람들이, <br><span class="serif">같은 테이블</span>에 모입니다</h2>
+        <p class="lead rv d2">환불을 맡긴 사람들의 '환불 전사단', 장보기를 끊은 '장보기 해방 클럽'. 온라인에 모여 있으려고 만든 클럽이 아닙니다 — <b>화면 밖에서 만나기 위한 출발선</b>입니다. 클럽은 내 위임 패턴에서 자동으로 추천됩니다.</p>
+        <div class="rv d3" style="margin-top:20px;">
+          <span class="chip">환불 전사단</span><span class="chip">장보기 해방 클럽</span><span class="chip">메일 제로 클럽</span><span class="chip">구독 다이어트 클럽</span><span class="chip">여행 준비 해방단</span><span class="chip">건강 챙김 클럽</span>
+        </div>
+        <p class="fineprint rv d3">클럽 가입·커뮤니티 활동·번개 참가는 영구 무료입니다.</p>
       </div>
-      <div class="rv d4" style="margin-top:22px;">
-        <a class="btn btn-dark" href="demo.html">▶ 적립이 쌓이는 모습 — 1분 데모</a>
+      <div class="journey rv d2" role="img" aria-label="커뮤니티 예시: 클럽에 번개 제안 → 참석 → 캘린더 확정" style="margin-top:0;">
+        <div class="jt"><span class="av ag">U</span>
+          <div class="jb"><div class="jw">UNPLUGIN → 환불 전사단 · 수요일</div>
+            <div class="jm">이번 주 전사단에 완료 보고 3건 🎉 — <b>토 10:00 연남</b>에서 번개 어때요? 전리품 자랑 환영 ☕</div>
+            <span class="jtag g">같은 일을 맡긴 사람들</span><span class="jtag o">번개 자동 매칭</span></div></div>
+        <div class="jt me"><span class="av me">나</span>
+          <div class="jb"><div class="jw">나 · 수요일</div><div class="jm"><b>참석!</b></div></div></div>
+        <div class="jt"><span class="av ag">U</span>
+          <div class="jb"><div class="jw">UNPLUGIN · 목요일</div>
+            <div class="jm"><b>4/6명 확정</b> — 캘린더 초대(.ics)를 보냈어요. 토요일 오전은 이제 화면이 못 뺏는 약속입니다.</div>
+            <span class="jtag g">✓ 오프라인 확정</span><span class="jtag o">잔고에서 티켓 차감</span></div></div>
       </div>
-      <p class="fineprint rv d4" style="margin-top:14px;">지원: Muze · Dots · ChatGPT · Claude · Gemini — 보고 메일을 보낼 수 있는 에이전트라면 무엇이든, 계속 추가됩니다</p>
     </div>
   </section>
 
-  <!-- 3.5 ── 위임 팁 엔진 -->
+  <!-- 3.5 ── 무브먼트 메커니즘 -->
   <section id="s3b">
     <div class="wrap" style="text-align:center;">
-      <div class="eyebrow rv" style="justify-content:center;">Delegation Tips</div>
-      <h2 class="rv d1">무엇을 시킬지 모르겠다면, <span class="serif">팁부터</span></h2>
-      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">"이 일은 내 에이전트에 이렇게 시키면 약 2시간 절약" — 보고 한 줄까지 들어간 프롬프트를 그대로 복사해, 쓰던 에이전트 아무 데나 붙여넣으세요. 실행되면 자동으로 적립됩니다.</p>
-      <div class="journey" role="img" aria-label="팁 엔진 예시: 환불 분쟁 팁 카드와 프롬프트 수신 → Muze에 붙여넣기 → 완료 보고 수신과 자동 적립">
-        <div class="jt rv d1"><span class="av ag">U</span>
-          <div class="jb"><div class="jw">UNPLUGIN 팁 · 월요일</div>
-            <div class="jm">3주째 미뤄둔 <b>'공방 클래스 환불 거부'</b> — Muze에 시키면 약 <b>2시간 10분 + 감정 ●●●●●</b>를 아낍니다.</div>
-            <span class="jtag g">환불·분쟁 고급 팁</span><span class="jtag o">예상 절약치 포함</span></div></div>
-        <div class="jt rv d2"><span class="av ag">U</span>
-          <div class="jb"><div class="jw">복사해 쓰는 프롬프트</div>
-            <div class="jm">"환불 규정과 소비자분쟁해결기준을 근거로 전액 환불을 요구하고, <b>접수가 아니라 입금 확인까지</b> 추적해줘. 끝나면 jisoo.k7x2@unplugin.me 로 보고."</div>
-            <span class="jtag o">끝까지 시키는 법</span></div></div>
-        <div class="jt me rv d3"><span class="av me">나</span>
-          <div class="jb"><div class="jw">나 → MUZE · 09:12</div>
-            <div class="jm">→ 그대로 붙여넣기. <b>내가 한 일의 전부입니다.</b></div></div></div>
-        <div class="jt rv d4"><span class="av ag">U</span>
-          <div class="jb"><div class="jw">UNPLUGIN · 6일 뒤</div>
-            <div class="jm">보고 메일 도착 — <b>89,000원 입금 확인</b>. +2시간 10분 적립, 묵은 숙제 하나가 잔고가 됐어요.</div>
-            <span class="jtag g">✓ 자동 적립</span><span class="jtag o">감정 ●●●●● 아낌</span></div></div>
+      <div class="eyebrow rv" style="justify-content:center;">How the Bridge Works</div>
+      <h2 class="rv d1">만남이 <span class="serif">성사되는 장치</span>들</h2>
+      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">"언젠가 가야지"는 무브먼트가 아닙니다. 매칭하고, 짝을 붙이고, 캘린더를 먼저 잠급니다 — 전부 실제로 돌아가는 메커니즘입니다.</p>
+      <div class="tiers">
+        <div class="tier rv d1">
+          <span class="tn">MECHANISM 01</span>
+          <div class="tp">번개 ⚡</div>
+          <p class="td">클럽 × 지역으로 자동 매칭되는 번개 모임</p>
+          <ul><li>이번 주 완료 보고가 모이면 제안</li><li>RSVP로 성사 · 성사율 추적</li><li>참가 무료</li></ul>
+        </div>
+        <div class="tier hot rv d2">
+          <span class="hotbadge">혼자면 안 나가게 되니까</span>
+          <span class="tn">MECHANISM 02</span>
+          <div class="tp">짝꿍 🤝</div>
+          <p class="td">같은 코스를 함께 걷는 1:1 매칭</p>
+          <ul><li>타입·동네 기준 짝 매칭</li><li>출석을 서로 확인</li><li>스탬프도 함께 적립</li></ul>
+        </div>
+        <div class="tier rv d3">
+          <span class="tn">MECHANISM 03</span>
+          <div class="tp">시간 잠금 📅</div>
+          <p class="td">잔고 티켓으로 그 시간을 먼저 예약</p>
+          <ul><li>캘린더 초대(.ics) 자동 발급</li><li>잔고에서 시간 차감</li><li>동네 코스 추천 포함</li></ul>
+        </div>
       </div>
-      <p class="fineprint rv d4" style="margin-top:18px;">환불·분쟁·해지처럼 감정이 소모되는 일일수록 아끼는 것이 큽니다 — 업무 유형 100여 종의 팁 카탈로그로 예상 절약치를 계산합니다.</p>
+      <p class="fineprint rv d3">그 외 시즌 모임(4주 과정) · 동네 코스 · 타임뱅크 · 시간 선물까지, 무브먼트 실험 10종이 <a href="office.html" style="color:inherit;">운영 콘솔</a>에서 실제로 돌아가고 있습니다.</p>
     </div>
   </section>
 
@@ -664,45 +665,56 @@ addEventListener("DOMContentLoaded", () => {
     </div>
   </section>
 
-  <!-- 5 ── 전환 데이터 -->
+  <!-- 5 ── 세 갈래 (관계·배움·오감) -->
   <section id="s5">
-    <div class="wrap cols">
-      <div class="panel rv d2" style="order:0;">
-        <div class="pt">시간 배당 잔고 — 한 주 예시</div>
-        <div class="ps">베타 수집 전 예상 시나리오</div>
-        <div class="bars" role="img" aria-label="AI가 벌어준 시간 4.0시간 중 3.1시간이 무브먼트로 전환, 전환율 78%">
-          <div class="brow"><span class="bl">AI가 벌어준 시간</span><span class="btrack"><span class="bfill" style="--w:100%"></span></span><span class="bv">4.0h</span></div>
-          <div class="brow hl"><span class="bl">무브먼트로 쓴 시간</span><span class="btrack"><span class="bfill alt" style="--w:78%"></span></span><span class="bv">3.1h</span></div>
+    <div class="wrap" style="text-align:center;">
+      <div class="eyebrow rv" style="justify-content:center;">Three Directions</div>
+      <h2 class="rv d1">다리 건너편의 <span class="serif">세 갈래</span></h2>
+      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">번개도, 짝꿍도, 시즌 모임도 결국 세 방향 중 하나로 갑니다. AI는 나를 나태하게 만드는 게 아니라, 사람으로서 성장할 시간을 벌어주는 것입니다.</p>
+      <div class="tiers">
+        <div class="tier rv d1">
+          <span class="tn">DIRECTION 01</span>
+          <div class="tp">관계</div>
+          <p class="td">사람과의 네트워크로</p>
+          <ul><li>클럽 번개 · 소셜 다이닝</li><li>멀어진 사람에게 먼저 연락</li><li>같은 타입 사람들과의 만남</li></ul>
         </div>
-        <div class="conv"><span class="pct">78%</span><span class="pd">벌어준 시간이 실제 삶으로 이어진 비율 — 이 숫자 하나만 올립니다. <br>쌓인 잔고가 아니라, 쓰인 시간만 셉니다.</span></div>
+        <div class="tier hot rv d2">
+          <span class="hotbadge">잔고가 쌓이면 제안</span>
+          <span class="tn">DIRECTION 02</span>
+          <div class="tp">배움</div>
+          <p class="td">좋아하고 배워보고 싶던 것에</p>
+          <ul><li>원데이 클래스 · 공방</li><li>악기 · 언어 · 운동</li><li>배움이 이어지는 시즌 모임</li></ul>
+        </div>
+        <div class="tier rv d3">
+          <span class="tn">DIRECTION 03</span>
+          <div class="tp">오감</div>
+          <p class="td">감각을 온전히 즐기는 곳에</p>
+          <ul><li>해 질 녘 산책 · 시장 탐방</li><li>숲 · 온천 · 바다</li><li>화면 밖의 냄새와 온도</li></ul>
+        </div>
       </div>
-      <div>
-        <div class="eyebrow rv">Reclaimed Hours</div>
-        <h2 class="rv d1">벌어준 시간이 아니라, <br><span class="serif">되찾은 시간</span>을 셉니다</h2>
-        <p class="lead rv d2">적립만 하고 끝이 아닙니다. 그 시간이 실제로 화면 밖에서 쓰였는지가 우리의 유일한 성과 지표입니다. 체류시간을 줄이는 것이 우리의 성공입니다.</p>
-      </div>
+      <p class="fineprint rv d3">첫 무브먼트는 타입 테스트가 알려드립니다 — 거창할 필요 없습니다. 동네 한 바퀴부터.</p>
     </div>
   </section>
 
-  <!-- 6 ── 이메일 -->
+  <!-- 6 ── 장치 (다리의 받침 — 측정은 수단) -->
   <section id="s6">
     <div class="wrap cols">
       <div>
-        <div class="eyebrow rv">Your Dividend Inbox</div>
-        <h2 class="rv d1">앱도, 연동도 없이. <br><span class="serif">이메일 한 통</span>이면 됩니다</h2>
-        <p class="lead rv d2">가입하면 <span class="addr">minseo.k7x2@unplugin.me</span> 같은 나만의 보고 주소가 생깁니다. 에이전트의 완료 보고가 이 주소로 오면, 100여 종의 업무 유형으로 자동 분류해 기준 시간과 감정 부하를 매겨 적립합니다. 당신이 기록할 것은 없습니다.</p>
+        <div class="eyebrow rv">Under the Bridge</div>
+        <h2 class="rv d1">받침은 <span class="serif">보고 한 줄</span>. <br>목적은 건너가는 것</h2>
+        <p class="lead rv d2">일은 에이전트에게 맡겨두세요. 시킬 때 "— 끝나면 <span class="addr">jisoo.k7x2@unplugin.me</span> 로 완료 보고" 한 줄만 붙이면, 벌어진 시간이 자동으로 적립되고 잔고는 무브먼트行 티켓이 됩니다. 측정은 다리의 받침이지, 목적이 아닙니다.</p>
         <div class="feat">
           <div class="f rv d2">
             <span class="fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></span>
-            <div><h4>보고가 오면 적립</h4><p>완료 보고 한 통이 절약 시간과 아낀 감정으로 바뀝니다. 수동 기록 0.</p></div>
+            <div><h4>어떤 에이전트든 같은 한 줄</h4><p>Muze · Dots · ChatGPT · Claude · Gemini — 보고 메일을 보낼 수 있다면 무엇이든, 계속 추가됩니다.</p></div>
           </div>
           <div class="f rv d3">
             <span class="fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></span>
-            <div><h4>팁 카드 수신</h4><p>적립 패턴을 보고 "다음은 이 일을 이렇게 시키세요" 팁이 옵니다 — 일을 대신 받는 주소가 아닙니다.</p></div>
+            <div><h4>자동 적립 — 수동 기록 0</h4><p>완료 보고 한 통이 절약 시간과 아낀 감정으로 바뀝니다. 업무 유형 100여 종으로 자동 분류.</p></div>
           </div>
           <div class="f rv d4">
             <span class="fi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-            <div><h4>격리된 나만의 주소</h4><p>당신만 소유하는 창구 — 메일함을 대신 읽거나 계정에 연결하지 않습니다.</p></div>
+            <div><h4>잔고는 티켓이 됩니다</h4><p>쌓인 잔고는 번개·클래스·짝꿍 산책의 예약으로 바뀝니다 — 쌓아두는 포인트가 아닙니다.</p></div>
           </div>
         </div>
       </div>
@@ -719,42 +731,32 @@ addEventListener("DOMContentLoaded", () => {
           <span class="av ag">U</span>
           <div class="mb">
             <div class="from">Unplugin <span>· 방금</span></div>
-            <div class="txt">적립 완료 — <b>+1시간 40분 · 아낀 감정 ●●●●○</b>. 이번 주 잔고 4시간 20분, 금요일 저녁이 비었어요.</div>
-            <span class="chip">자동 분류: 보험·민원</span><span class="chip">수동 기록 0</span>
+            <div class="txt">적립 — <b>+1시간 40분 · 아낀 감정 ●●●●○</b>. 잔고 4시간 20분이 <b>티켓 1장</b>이 됐어요. 토요일 환불 전사단 번개에 쓸까요?</div>
+            <span class="chip">자동 분류: 보험·민원</span><span class="chip">티켓 발급</span>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 7 ── 넥스트 무브먼트 -->
+  <!-- 7 ── 성장 기록 -->
   <section id="s7">
-    <div class="wrap" style="text-align:center;">
-      <div class="eyebrow rv" style="justify-content:center;">Next Movement</div>
-      <h2 class="rv d1">쌓인 잔고는, <span class="serif">무브먼트</span>가 됩니다</h2>
-      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">잔고가 임계치에 닿으면 Unplugin이 다음 움직임을 제안합니다. AI는 나를 나태하게 만드는 게 아니라, 사람으로서 성장할 시간을 벌어주는 것입니다.</p>
-      <div class="tiers">
-        <div class="tier rv d1">
-          <span class="tn">MOVEMENT 01</span>
-          <div class="tp">관계</div>
-          <p class="td">사람과의 네트워크로</p>
-          <ul><li>동네 모임 · 소셜 다이닝</li><li>멀어진 사람에게 먼저 연락</li><li>같은 타입 사람들과의 만남</li></ul>
+    <div class="wrap cols">
+      <div class="panel rv d2" style="order:0;">
+        <div class="pt">한 주의 다리 건너기 — 예시</div>
+        <div class="ps">베타 수집 전 예상 시나리오</div>
+        <div class="bars" role="img" aria-label="AI가 벌어준 시간 4.0시간 중 3.1시간이 무브먼트로 건너감, 전환율 78%">
+          <div class="brow"><span class="bl">AI가 벌어준 시간</span><span class="btrack"><span class="bfill" style="--w:100%"></span></span><span class="bv">4.0h</span></div>
+          <div class="brow hl"><span class="bl">무브먼트로 건너간 시간</span><span class="btrack"><span class="bfill alt" style="--w:78%"></span></span><span class="bv">3.1h</span></div>
         </div>
-        <div class="tier hot rv d2">
-          <span class="hotbadge">잔고가 쌓이면 제안</span>
-          <span class="tn">MOVEMENT 02</span>
-          <div class="tp">배움</div>
-          <p class="td">좋아하고 배워보고 싶던 것에</p>
-          <ul><li>원데이 클래스 · 공방</li><li>악기 · 언어 · 운동</li><li>배움이 이어지는 커뮤니티</li></ul>
-        </div>
-        <div class="tier rv d3">
-          <span class="tn">MOVEMENT 03</span>
-          <div class="tp">오감</div>
-          <p class="td">감각을 온전히 즐기는 곳에</p>
-          <ul><li>해 질 녘 산책 · 시장 탐방</li><li>숲 · 온천 · 바다</li><li>화면 밖의 냄새와 온도</li></ul>
-        </div>
+        <div class="conv"><span class="pct">78%</span><span class="pd">벌어준 시간이 삶으로 건너간 비율 — 이 숫자 하나만 올립니다. <br>쌓인 잔고가 아니라, 건너간 시간만 셉니다.</span></div>
+        <div style="margin-top:12px;"><span class="chip">🏅 스탬프 12</span><span class="chip">레벨 3 — 산책자</span><span class="chip">관계 5 · 배움 4 · 오감 3</span></div>
       </div>
-      <p class="fineprint rv d3">베타 기간 무료 · 정식 요금제는 준비 중입니다.</p>
+      <div>
+        <div class="eyebrow rv">Growth</div>
+        <h2 class="rv d1">쌓이는 건 시간이 아니라, <br><span class="serif">사람으로서의 성장</span></h2>
+        <p class="lead rv d2">무브먼트에 다녀올 때마다 스탬프가 찍히고 레벨이 오릅니다. 관계·배움·오감 세 갈래의 기록이 "AI 때문에 나태해질까"라는 불안을 "사람으로서 자라고 있다"는 증거로 바꿉니다. 체류시간을 줄이는 것이 우리의 성공입니다.</p>
+      </div>
     </div>
   </section>
 
@@ -762,13 +764,13 @@ addEventListener("DOMContentLoaded", () => {
   <section id="s8" data-theme="dark">
     <div class="aurora au1" style="left:50%; top:auto; bottom:-320px; transform:translateX(-50%);"></div><div class="grain"></div>
     <div class="wrap">
-      <div class="eyebrow rv" style="justify-content:center;">Begin</div>
-      <h2 class="rv d1">AI가 벌어준 시간으로, <br><span class="serif">무엇을 하고 싶으세요?</span></h2>
-      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">1분 테스트로 시작하세요. 당신의 타입이 첫 번째 무브먼트를 알려드립니다.</p>
+      <div class="eyebrow rv" style="justify-content:center;">Begin — Free</div>
+      <h2 class="rv d1">오늘 번 시간, <br><span class="serif">누구와 건너시겠어요?</span></h2>
+      <p class="lead rv d2" style="margin-left:auto;margin-right:auto;">측정·커뮤니티·번개 참가는 영구 무료입니다. 유료는 시즌 모임처럼 더해지는 가치에만. 1분 테스트로 당신의 타입과 첫 무브먼트를 받아보세요.</p>
       <div class="rv d3" style="margin-top:36px;">
         <a class="btn btn-accent" href="test.html">언플러그 타입 테스트 시작 <span class="arr">→</span></a>
       </div>
-      <footer class="rv d4">© 2026 Unplugin — AI가 벌어준 시간, 당신의 삶으로 &nbsp;·&nbsp; <a href="demo.html">1분 데모</a> &nbsp;·&nbsp; <a href="office.html">운영 콘솔</a> &nbsp;·&nbsp; <a href="https://github.com/kyj5482/unplugin">GitHub</a></footer>
+      <footer class="rv d4">© 2026 Unplugin — 일은 AI에게, 시간은 삶으로 &nbsp;·&nbsp; <a href="demo.html">1분 데모</a> &nbsp;·&nbsp; <a href="office.html">운영 콘솔</a> &nbsp;·&nbsp; <a href="https://github.com/kyj5482/unplugin">GitHub</a></footer>
     </div>
   </section>
 
