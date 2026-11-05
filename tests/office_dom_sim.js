@@ -1,8 +1,9 @@
-// office.html 탭 렌더 시뮬 — DOM 스텁으로 각 탭의 render() 예외를 재현
+// office.html 탭 렌더 DOM 시뮬 — 각 탭 render()가 예외 없이 그려지는지 검증
+// 사용: node tests/office_dom_sim.js  (2026-11-05 '조용한 백지 탭' 회귀 방지)
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const ROOT = path.resolve(__dirname);
+const ROOT = path.resolve(__dirname, "..");
 const html = fs.readFileSync(path.join(ROOT, "docs/office.html"), "utf8");
 const dataJs = fs.readFileSync(path.join(ROOT, "docs/office-data.js"), "utf8");
 const blocks = [...html.matchAll(/<script(?![^>]*src)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
