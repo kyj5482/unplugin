@@ -131,6 +131,43 @@ def cmd_dividend(args) -> int:
     return 0
 
 
+def cmd_admin(_args) -> int:
+    """피벗 운영판 — 잔고·보고 피드·무브먼트·팁·커뮤니티·미매칭 백로그."""
+    from . import admin
+    path = admin.generate()
+    print(f"Admin 대시보드 생성: {path}")
+    return 0
+
+
+def cmd_calibrate(args) -> int:
+    """고객 개인 보정 계수(time_factor) 조정 — 0.5~2.0 클램프."""
+    from . import admin
+    try:
+        prof = admin.calibrate(args.customer, args.factor)
+    except FileNotFoundError as e:
+        print(e)
+        return 1
+    print(f"{prof['id']} time_factor = ×{prof['time_factor']:g} — "
+          "다음 적립부터 적용 (기준치 × 보정)")
+    return 0
+
+
+def cmd_community(_args) -> int:
+    """커뮤니티 그룹 현황 — 같은 일을 위임하는 사람들."""
+    from . import community
+    print(community.status_text())
+    return 0
+
+
+def cmd_community_run(args) -> int:
+    """커뮤니티 1틱 — 그룹 다이제스트 발송 (주 1회, --force 로 즉시)."""
+    from . import community
+    for r in community.run_tick(force=args.force):
+        mark = "발송" if r["sent"] else "건너뜀"
+        print(f"  · {r['group']} ({r['members']}명) — {mark}: {r['detail']}")
+    return 0
+
+
 def cmd_serve(args) -> int:
     from . import service
     return service.run(interval=args.interval, once=args.once)
@@ -237,12 +274,12 @@ def cmd_demo_list(_args) -> int:
 
 def cmd_demo_run(args) -> int:
     from . import demo
-    return demo.run(args.n, fresh=args.fresh)
+    return demo.run(args.n, fresh=args.fresh, legacy=args.legacy)
 
 
 def cmd_demo_exec(args) -> int:
     from . import demo
-    return demo.exec_scenario(args.n)
+    return demo.exec_scenario(args.n, legacy=args.legacy)
 
 
 def _recent_flows(limit: int = 5) -> list[tuple[str, str, str]]:
@@ -337,6 +374,21 @@ def build_parser() -> argparse.ArgumentParser:
     tp.add_argument("--customer", default="", help="고객 id — 지정 시 팁 카드 메일 발송")
     tp.set_defaults(fn=cmd_tips)
 
+    sub.add_parser("admin", help="피벗 운영판 생성 — data/admin.html (잔고·보고·커뮤니티)"
+                   ).set_defaults(fn=cmd_admin)
+
+    cb = sub.add_parser("calibrate", help="고객 개인 보정 계수(time_factor) 조정")
+    cb.add_argument("customer")
+    cb.add_argument("factor", type=float)
+    cb.set_defaults(fn=cmd_calibrate)
+
+    sub.add_parser("community", help="커뮤니티 그룹 현황 (공통 위임 특성 기반)"
+                   ).set_defaults(fn=cmd_community)
+
+    cr = sub.add_parser("community-run", help="커뮤니티 1틱 — 그룹 다이제스트 발송")
+    cr.add_argument("--force", action="store_true", help="주기 무시하고 즉시 발송")
+    cr.set_defaults(fn=cmd_community_run)
+
     dv = sub.add_parser("dividend", help="시간 배당 잔고 — 자동 적립 현황 (피벗)")
     dv.add_argument("--customer", default="", help="고객 id (생략 시 전체)")
     dv.set_defaults(fn=cmd_dividend)
@@ -371,12 +423,15 @@ def build_parser() -> argparse.ArgumentParser:
                    ).set_defaults(fn=cmd_demo_list)
 
     dm = sub.add_parser("demo-run", help="데모 1건을 격리 환경에서 단계별 실행")
-    dm.add_argument("n", type=int, help="데모 번호 (1~100)")
+    dm.add_argument("n", type=int, help="피벗 여정 번호(1~5) 또는 --legacy 와 1~100")
     dm.add_argument("--fresh", action="store_true", help="demo/runtime 초기화 후 실행")
+    dm.add_argument("--legacy", action="store_true",
+                    help="레거시 스트레스 100통(동결 대행 경로) 재생")
     dm.set_defaults(fn=cmd_demo_run)
 
     dx = sub.add_parser("demo-exec", help="(내부용) 격리 env 안에서 데모 실행")
     dx.add_argument("n", type=int)
+    dx.add_argument("--legacy", action="store_true")
     dx.set_defaults(fn=cmd_demo_exec)
     return p
 

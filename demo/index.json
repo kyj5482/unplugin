@@ -1,1006 +1,732 @@
 {
-  "version": "2026-11-03",
-  "count": 100,
-  "emails": [
+  "version": "pivot-2026-11-04",
+  "journeys": [
     {
       "n": 1,
-      "file": "emails/001-refund-dispute.md",
-      "type": "refund-dispute",
-      "channel": "email",
-      "title": "달빛공방 환불 분쟁",
-      "merchant": "달빛공방",
-      "amount": 89000,
-      "situation": "원데이 클래스 당일 취소했는데 전액 몰수래"
+      "customer": "jisoo",
+      "name": "지수",
+      "region": "성수동",
+      "time_factor": 1.0,
+      "title": "지수의 시간 배당 여정 (성수동)",
+      "situation": "포워딩→팁 카드, 보고→적립, 임계치→무브먼트, 커뮤니티·Admin"
     },
     {
       "n": 2,
-      "file": "emails/002-refund-dispute.md",
-      "type": "refund-dispute",
-      "channel": "email",
-      "title": "한강쿠킹스튜디오 환불 분쟁",
-      "merchant": "한강쿠킹스튜디오",
-      "amount": 120000,
-      "situation": "강사 사정으로 휴강됐는데 환불을 미뤄"
+      "customer": "minho",
+      "name": "민호",
+      "region": "성수동",
+      "time_factor": 1.2,
+      "title": "민호의 시간 배당 여정 (성수동)",
+      "situation": "포워딩→팁 카드, 보고→적립, 임계치→무브먼트, 커뮤니티·Admin"
     },
     {
       "n": 3,
-      "file": "emails/003-refund-dispute.md",
-      "type": "refund-dispute",
-      "channel": "email",
-      "title": "숲속목공방 환불 분쟁",
-      "merchant": "숲속목공방",
-      "amount": 95000,
-      "situation": "재료 불량으로 수업을 못 들었어"
+      "customer": "sora",
+      "name": "소라",
+      "region": "망원동",
+      "time_factor": 0.8,
+      "title": "소라의 시간 배당 여정 (망원동)",
+      "situation": "포워딩→팁 카드, 보고→적립, 임계치→무브먼트, 커뮤니티·Admin"
     },
     {
       "n": 4,
-      "file": "emails/004-refund-dispute.md",
-      "type": "refund-dispute",
-      "channel": "email",
-      "title": "미드나잇베이킹 환불 분쟁",
-      "merchant": "미드나잇베이킹",
-      "amount": 78000,
-      "situation": "2회권 샀는데 1회만 듣고 환불 거부당함"
+      "customer": "yuna",
+      "name": "유나",
+      "region": "망원동",
+      "time_factor": 1.0,
+      "title": "유나의 시간 배당 여정 (망원동)",
+      "situation": "포워딩→팁 카드, 보고→적립, 임계치→무브먼트, 커뮤니티·Admin"
     },
     {
       "n": 5,
-      "file": "emails/005-refund-dispute.md",
-      "type": "refund-dispute",
-      "channel": "email",
-      "title": "어반플라워랩 환불 분쟁",
-      "merchant": "어반플라워랩",
-      "amount": 66000,
-      "situation": "클래스 일정이 일방적으로 변경됐어"
-    },
-    {
-      "n": 6,
-      "file": "emails/006-refund-dispute.md",
-      "type": "refund-dispute",
-      "channel": "email",
-      "title": "세라믹하우스 환불 분쟁",
-      "merchant": "세라믹하우스",
-      "amount": 110000,
-      "situation": "예약금 환불 규정이 계약과 달라"
-    },
-    {
-      "n": 7,
-      "file": "emails/007-refund-dispute.md",
-      "type": "refund-dispute",
-      "channel": "email",
-      "title": "패브릭아틀리에 환불 분쟁",
-      "merchant": "패브릭아틀리에",
-      "amount": 84000,
-      "situation": "강좌 폐강됐는데 환불 대신 포인트만 준대"
-    },
-    {
-      "n": 8,
-      "file": "emails/008-refund-dispute.md",
-      "type": "refund-dispute",
-      "channel": "email",
-      "title": "글라스스튜디오 환불 분쟁",
-      "merchant": "글라스스튜디오",
-      "amount": 132000,
-      "situation": "안전 문제로 수업 중단, 잔여분 환불 요구"
-    },
-    {
-      "n": 9,
-      "file": "emails/009-refund-dispute.md",
-      "type": "refund-dispute",
-      "channel": "email",
-      "title": "키친클래스301 환불 분쟁",
-      "merchant": "키친클래스301",
-      "amount": 99000,
-      "situation": "더블부킹으로 수업을 못 들었어"
-    },
-    {
-      "n": 10,
-      "file": "emails/010-refund-dispute.md",
-      "type": "refund-dispute",
-      "channel": "email",
-      "title": "보태니컬가든 환불 분쟁",
-      "merchant": "보태니컬가든",
-      "amount": 72000,
-      "situation": "우천 취소인데 수수료를 떼겠대"
-    },
-    {
-      "n": 11,
-      "file": "emails/011-edu-refund.md",
-      "type": "edu-refund",
-      "channel": "email",
-      "title": "코드스쿨아카데미 수강료 환불",
-      "merchant": "코드스쿨아카데미",
-      "amount": 450000,
-      "situation": "3개월 중 2주 듣고 그만뒀어"
-    },
-    {
-      "n": 12,
-      "file": "emails/012-edu-refund.md",
-      "type": "edu-refund",
-      "channel": "email",
-      "title": "리딩영어학원 수강료 환불",
-      "merchant": "리딩영어학원",
-      "amount": 380000,
-      "situation": "강사가 바뀌어서 그만두려고"
-    },
-    {
-      "n": 13,
-      "file": "emails/013-edu-refund.md",
-      "type": "edu-refund",
-      "channel": "email",
-      "title": "수학의정석학원 수강료 환불",
-      "merchant": "수학의정석학원",
-      "amount": 420000,
-      "situation": "이사 때문에 더 못 다녀"
-    },
-    {
-      "n": 14,
-      "file": "emails/014-edu-refund.md",
-      "type": "edu-refund",
-      "channel": "email",
-      "title": "키즈발레스튜디오 수강료 환불",
-      "merchant": "키즈발레스튜디오",
-      "amount": 280000,
-      "situation": "아이가 다쳐서 진단서 있어"
-    },
-    {
-      "n": 15,
-      "file": "emails/015-edu-refund.md",
-      "type": "edu-refund",
-      "channel": "email",
-      "title": "온라인인강패스 수강료 환불",
-      "merchant": "온라인인강패스",
-      "amount": 199000,
-      "situation": "연간 패스인데 3강만 들었어"
-    },
-    {
-      "n": 16,
-      "file": "emails/016-edu-refund.md",
-      "type": "edu-refund",
-      "channel": "email",
-      "title": "피아노포르테 수강료 환불",
-      "merchant": "피아노포르테",
-      "amount": 320000,
-      "situation": "레슨 시간이 계속 일방 변경돼"
-    },
-    {
-      "n": 17,
-      "file": "emails/017-edu-refund.md",
-      "type": "edu-refund",
-      "channel": "email",
-      "title": "드로잉클래스온 수강료 환불",
-      "merchant": "드로잉클래스온",
-      "amount": 150000,
-      "situation": "교재비 포함 환불 기준이 이상해"
-    },
-    {
-      "n": 18,
-      "file": "emails/018-edu-refund.md",
-      "type": "edu-refund",
-      "channel": "email",
-      "title": "스피치랩 수강료 환불",
-      "merchant": "스피치랩",
-      "amount": 360000,
-      "situation": "환불 신청했는데 위약금 50%를 요구해"
-    },
-    {
-      "n": 19,
-      "file": "emails/019-edu-refund.md",
-      "type": "edu-refund",
-      "channel": "email",
-      "title": "코딩키즈캠프 수강료 환불",
-      "merchant": "코딩키즈캠프",
-      "amount": 540000,
-      "situation": "캠프 일정이 취소됐는데 환불이 없어"
-    },
-    {
-      "n": 20,
-      "file": "emails/020-edu-refund.md",
-      "type": "edu-refund",
-      "channel": "email",
-      "title": "일본어마스터 수강료 환불",
-      "merchant": "일본어마스터",
-      "amount": 270000,
-      "situation": "레벨이 안 맞아 첫 주에 그만뒀어"
-    },
-    {
-      "n": 21,
-      "file": "emails/021-subscription-refund.md",
-      "type": "subscription-refund",
-      "channel": "portal",
-      "title": "넷플릭스 구독 해지·환불",
-      "merchant": "넷플릭스",
-      "amount": 17000,
-      "situation": "두 달째 안 보는데 결제됐어"
-    },
-    {
-      "n": 22,
-      "file": "emails/022-subscription-refund.md",
-      "type": "subscription-refund",
-      "channel": "portal",
-      "title": "왓챠 구독 해지·환불",
-      "merchant": "왓챠",
-      "amount": 12900,
-      "situation": "중복 결제된 것 같아"
-    },
-    {
-      "n": 23,
-      "file": "emails/023-subscription-refund.md",
-      "type": "subscription-refund",
-      "channel": "portal",
-      "title": "멜론 구독 해지·환불",
-      "merchant": "멜론",
-      "amount": 10900,
-      "situation": "프로모션 끝나고 가격이 올랐어"
-    },
-    {
-      "n": 24,
-      "file": "emails/024-subscription-refund.md",
-      "type": "subscription-refund",
-      "channel": "portal",
-      "title": "클라우드저장소 구독 해지·환불",
-      "merchant": "클라우드저장소",
-      "amount": 11000,
-      "situation": "용량 안 쓰는데 자동결제됐어"
-    },
-    {
-      "n": 25,
-      "file": "emails/025-subscription-refund.md",
-      "type": "subscription-refund",
-      "channel": "portal",
-      "title": "뉴스프리미엄 구독 해지·환불",
-      "merchant": "뉴스프리미엄",
-      "amount": 9900,
-      "situation": "무료 체험 끝나고 바로 결제됐어"
-    },
-    {
-      "n": 26,
-      "file": "emails/026-subscription-refund.md",
-      "type": "subscription-refund",
-      "channel": "portal",
-      "title": "피트니스앱플러스 구독 해지·환불",
-      "merchant": "피트니스앱플러스",
-      "amount": 15000,
-      "situation": "앱이 안드로이드에서 안 열려"
-    },
-    {
-      "n": 27,
-      "file": "emails/027-subscription-refund.md",
-      "type": "subscription-refund",
-      "channel": "portal",
-      "title": "오디오북클럽 구독 해지·환불",
-      "merchant": "오디오북클럽",
-      "amount": 14900,
-      "situation": "가족 계정과 중복이야"
-    },
-    {
-      "n": 28,
-      "file": "emails/028-subscription-refund.md",
-      "type": "subscription-refund",
-      "channel": "portal",
-      "title": "디자인툴프로 구독 해지·환불",
-      "merchant": "디자인툴프로",
-      "amount": 29000,
-      "situation": "회사 계정 생겨서 개인 건 해지"
-    },
-    {
-      "n": 29,
-      "file": "emails/029-subscription-refund.md",
-      "type": "subscription-refund",
-      "channel": "portal",
-      "title": "게임패스 구독 해지·환불",
-      "merchant": "게임패스",
-      "amount": 16500,
-      "situation": "아이 공부 때문에 해지하려고"
-    },
-    {
-      "n": 30,
-      "file": "emails/030-subscription-refund.md",
-      "type": "subscription-refund",
-      "channel": "portal",
-      "title": "요리레시피박스 구독 해지·환불",
-      "merchant": "요리레시피박스",
-      "amount": 13900,
-      "situation": "구성이 광고와 달라"
-    },
-    {
-      "n": 31,
-      "file": "emails/031-app-refund.md",
-      "type": "app-refund",
-      "channel": "portal",
-      "title": "구글플레이 인앱 결제 환불",
-      "merchant": "구글플레이",
-      "amount": 99000,
-      "situation": "아이가 게임 보석을 질렀어"
-    },
-    {
-      "n": 32,
-      "file": "emails/032-app-refund.md",
-      "type": "app-refund",
-      "channel": "portal",
-      "title": "애플앱스토어 인앱 결제 환불",
-      "merchant": "애플앱스토어",
-      "amount": 129000,
-      "situation": "유아 앱에서 연속 결제됐어"
-    },
-    {
-      "n": 33,
-      "file": "emails/033-app-refund.md",
-      "type": "app-refund",
-      "channel": "portal",
-      "title": "구글플레이 인앱 결제 환불",
-      "merchant": "구글플레이",
-      "amount": 33000,
-      "situation": "구독인 줄 모르고 눌렀대"
-    },
-    {
-      "n": 34,
-      "file": "emails/034-app-refund.md",
-      "type": "app-refund",
-      "channel": "portal",
-      "title": "애플앱스토어 인앱 결제 환불",
-      "merchant": "애플앱스토어",
-      "amount": 45000,
-      "situation": "같은 아이템이 두 번 결제됨"
-    },
-    {
-      "n": 35,
-      "file": "emails/035-app-refund.md",
-      "type": "app-refund",
-      "channel": "portal",
-      "title": "구글플레이 인앱 결제 환불",
-      "merchant": "구글플레이",
-      "amount": 66000,
-      "situation": "잠금 안 해둔 사이에 결제"
-    },
-    {
-      "n": 36,
-      "file": "emails/036-app-refund.md",
-      "type": "app-refund",
-      "channel": "portal",
-      "title": "애플앱스토어 인앱 결제 환불",
-      "merchant": "애플앱스토어",
-      "amount": 25000,
-      "situation": "체험판인 줄 알았는데 유료였어"
-    },
-    {
-      "n": 37,
-      "file": "emails/037-app-refund.md",
-      "type": "app-refund",
-      "channel": "portal",
-      "title": "구글플레이 인앱 결제 환불",
-      "merchant": "구글플레이",
-      "amount": 110000,
-      "situation": "게임 패키지 중복 구매"
-    },
-    {
-      "n": 38,
-      "file": "emails/038-app-refund.md",
-      "type": "app-refund",
-      "channel": "portal",
-      "title": "애플앱스토어 인앱 결제 환불",
-      "merchant": "애플앱스토어",
-      "amount": 19000,
-      "situation": "앱이 실행도 안 돼"
-    },
-    {
-      "n": 39,
-      "file": "emails/039-app-refund.md",
-      "type": "app-refund",
-      "channel": "portal",
-      "title": "구글플레이 인앱 결제 환불",
-      "merchant": "구글플레이",
-      "amount": 54000,
-      "situation": "환불 버튼이 안 보여"
-    },
-    {
-      "n": 40,
-      "file": "emails/040-app-refund.md",
-      "type": "app-refund",
-      "channel": "portal",
-      "title": "애플앱스토어 인앱 결제 환불",
-      "merchant": "애플앱스토어",
-      "amount": 88000,
-      "situation": "아이 계정 결제 제한 걸기 전 사고"
-    },
-    {
-      "n": 41,
-      "file": "emails/041-telecom-dispute.md",
-      "type": "telecom-dispute",
-      "channel": "hybrid",
-      "title": "SK텔레콤 요금 이의신청",
-      "merchant": "SK텔레콤",
-      "amount": 58000,
-      "situation": "해지한 부가서비스가 계속 청구돼"
-    },
-    {
-      "n": 42,
-      "file": "emails/042-telecom-dispute.md",
-      "type": "telecom-dispute",
-      "channel": "hybrid",
-      "title": "KT 요금 이의신청",
-      "merchant": "KT",
-      "amount": 72000,
-      "situation": "로밍 요금이 이중 청구됐어"
-    },
-    {
-      "n": 43,
-      "file": "emails/043-telecom-dispute.md",
-      "type": "telecom-dispute",
-      "channel": "hybrid",
-      "title": "LG유플러스 요금 이의신청",
-      "merchant": "LG유플러스",
-      "amount": 64000,
-      "situation": "약정 할인 누락된 것 같아"
-    },
-    {
-      "n": 44,
-      "file": "emails/044-telecom-dispute.md",
-      "type": "telecom-dispute",
-      "channel": "hybrid",
-      "title": "알뜰모바일 요금 이의신청",
-      "merchant": "알뜰모바일",
-      "amount": 32000,
-      "situation": "번호이동 후에도 요금이 나가"
-    },
-    {
-      "n": 45,
-      "file": "emails/045-telecom-dispute.md",
-      "type": "telecom-dispute",
-      "channel": "hybrid",
-      "title": "SK브로드밴드 요금 이의신청",
-      "merchant": "SK브로드밴드",
-      "amount": 41000,
-      "situation": "해지한 인터넷 요금 청구"
-    },
-    {
-      "n": 46,
-      "file": "emails/046-telecom-dispute.md",
-      "type": "telecom-dispute",
-      "channel": "hybrid",
-      "title": "KT인터넷 요금 이의신청",
-      "merchant": "KT인터넷",
-      "amount": 38500,
-      "situation": "속도 저하 보상 약속 미이행"
-    },
-    {
-      "n": 47,
-      "file": "emails/047-telecom-dispute.md",
-      "type": "telecom-dispute",
-      "channel": "hybrid",
-      "title": "헬로모바일 요금 이의신청",
-      "merchant": "헬로모바일",
-      "amount": 29000,
-      "situation": "데이터 추가 과금 이상"
-    },
-    {
-      "n": 48,
-      "file": "emails/048-telecom-dispute.md",
-      "type": "telecom-dispute",
-      "channel": "hybrid",
-      "title": "SK텔레콤 요금 이의신청",
-      "merchant": "SK텔레콤",
-      "amount": 95000,
-      "situation": "소액결제 차단했는데 결제됨"
-    },
-    {
-      "n": 49,
-      "file": "emails/049-telecom-dispute.md",
-      "type": "telecom-dispute",
-      "channel": "hybrid",
-      "title": "LG유플러스 요금 이의신청",
-      "merchant": "LG유플러스",
-      "amount": 47000,
-      "situation": "위약금 계산이 안 맞아"
-    },
-    {
-      "n": 50,
-      "file": "emails/050-telecom-dispute.md",
-      "type": "telecom-dispute",
-      "channel": "hybrid",
-      "title": "KT 요금 이의신청",
-      "merchant": "KT",
-      "amount": 52000,
-      "situation": "가족결합 할인 빠짐"
-    },
-    {
-      "n": 51,
-      "file": "emails/051-delivery-refund.md",
-      "type": "delivery-refund",
-      "channel": "portal",
-      "title": "쿠팡 오배송 환불",
-      "merchant": "쿠팡",
-      "amount": 42000,
-      "situation": "다른 색상이 왔어"
-    },
-    {
-      "n": 52,
-      "file": "emails/052-delivery-refund.md",
-      "type": "delivery-refund",
-      "channel": "portal",
-      "title": "마켓컬리 오배송 환불",
-      "merchant": "마켓컬리",
-      "amount": 38000,
-      "situation": "신선식품이 상해서 왔어"
-    },
-    {
-      "n": 53,
-      "file": "emails/053-delivery-refund.md",
-      "type": "delivery-refund",
-      "channel": "portal",
-      "title": "네이버쇼핑몰 오배송 환불",
-      "merchant": "네이버쇼핑몰",
-      "amount": 56000,
-      "situation": "주문 수량의 절반만 옴"
-    },
-    {
-      "n": 54,
-      "file": "emails/054-delivery-refund.md",
-      "type": "delivery-refund",
-      "channel": "portal",
-      "title": "무신사 오배송 환불",
-      "merchant": "무신사",
-      "amount": 89000,
-      "situation": "사이즈 교환 요청이 무시됐어"
-    },
-    {
-      "n": 55,
-      "file": "emails/055-delivery-refund.md",
-      "type": "delivery-refund",
-      "channel": "portal",
-      "title": "오늘의집 오배송 환불",
-      "merchant": "오늘의집",
-      "amount": 120000,
-      "situation": "파손된 채 배송됨"
-    },
-    {
-      "n": 56,
-      "file": "emails/056-delivery-refund.md",
-      "type": "delivery-refund",
-      "channel": "portal",
-      "title": "쿠팡 오배송 환불",
-      "merchant": "쿠팡",
-      "amount": 27000,
-      "situation": "배송 완료라는데 못 받았어"
-    },
-    {
-      "n": 57,
-      "file": "emails/057-delivery-refund.md",
-      "type": "delivery-refund",
-      "channel": "portal",
-      "title": "11번가 오배송 환불",
-      "merchant": "11번가",
-      "amount": 33000,
-      "situation": "가품 의심 상품이 왔어"
-    },
-    {
-      "n": 58,
-      "file": "emails/058-delivery-refund.md",
-      "type": "delivery-refund",
-      "channel": "portal",
-      "title": "지마켓 오배송 환불",
-      "merchant": "지마켓",
-      "amount": 48000,
-      "situation": "2주째 배송이 안 와"
-    },
-    {
-      "n": 59,
-      "file": "emails/059-delivery-refund.md",
-      "type": "delivery-refund",
-      "channel": "portal",
-      "title": "티몬 오배송 환불",
-      "merchant": "티몬",
-      "amount": 61000,
-      "situation": "취소했는데 배송이 왔어"
-    },
-    {
-      "n": 60,
-      "file": "emails/060-delivery-refund.md",
-      "type": "delivery-refund",
-      "channel": "portal",
-      "title": "위메프 오배송 환불",
-      "merchant": "위메프",
-      "amount": 39000,
-      "situation": "구성품이 빠져 있어"
-    },
-    {
-      "n": 61,
-      "file": "emails/061-reservation-refund.md",
-      "type": "reservation-refund",
-      "channel": "email",
-      "title": "바다뷰펜션 예약 취소 수수료",
-      "merchant": "바다뷰펜션",
-      "amount": 240000,
-      "situation": "한 달 전 취소인데 50%를 떼겠대"
-    },
-    {
-      "n": 62,
-      "file": "emails/062-reservation-refund.md",
-      "type": "reservation-refund",
-      "channel": "email",
-      "title": "한옥스테이 예약 취소 수수료",
-      "merchant": "한옥스테이",
-      "amount": 180000,
-      "situation": "숙소 사정 취소인데 수수료 요구"
-    },
-    {
-      "n": 63,
-      "file": "emails/063-reservation-refund.md",
-      "type": "reservation-refund",
-      "channel": "email",
-      "title": "제주글램핑 예약 취소 수수료",
-      "merchant": "제주글램핑",
-      "amount": 320000,
-      "situation": "태풍 경보로 못 갔어"
-    },
-    {
-      "n": 64,
-      "file": "emails/064-reservation-refund.md",
-      "type": "reservation-refund",
-      "channel": "email",
-      "title": "시티호텔 예약 취소 수수료",
-      "merchant": "시티호텔",
-      "amount": 150000,
-      "situation": "더블부킹으로 방이 없었어"
-    },
-    {
-      "n": 65,
-      "file": "emails/065-reservation-refund.md",
-      "type": "reservation-refund",
-      "channel": "email",
-      "title": "스키리조트 예약 취소 수수료",
-      "merchant": "스키리조트",
-      "amount": 280000,
-      "situation": "리프트 운휴 보상을 거절당했어"
-    },
-    {
-      "n": 66,
-      "file": "emails/066-reservation-refund.md",
-      "type": "reservation-refund",
-      "channel": "email",
-      "title": "키즈풀빌라 예약 취소 수수료",
-      "merchant": "키즈풀빌라",
-      "amount": 350000,
-      "situation": "수영장 고장인 걸 현장에서 알았어"
-    },
-    {
-      "n": 67,
-      "file": "emails/067-reservation-refund.md",
-      "type": "reservation-refund",
-      "channel": "email",
-      "title": "캠핑장온 예약 취소 수수료",
-      "merchant": "캠핑장온",
-      "amount": 90000,
-      "situation": "7일 전 취소 규정과 다르게 전액 몰수"
-    },
-    {
-      "n": 68,
-      "file": "emails/068-reservation-refund.md",
-      "type": "reservation-refund",
-      "channel": "email",
-      "title": "골프텔 예약 취소 수수료",
-      "merchant": "골프텔",
-      "amount": 410000,
-      "situation": "우천 취소 보상 약속 미이행"
-    },
-    {
-      "n": 69,
-      "file": "emails/069-reservation-refund.md",
-      "type": "reservation-refund",
-      "channel": "email",
-      "title": "온천호텔 예약 취소 수수료",
-      "merchant": "온천호텔",
-      "amount": 220000,
-      "situation": "시설 공사 중인 걸 숨겼어"
-    },
-    {
-      "n": 70,
-      "file": "emails/070-reservation-refund.md",
-      "type": "reservation-refund",
-      "channel": "email",
-      "title": "게스트하우스별 예약 취소 수수료",
-      "merchant": "게스트하우스별",
-      "amount": 70000,
-      "situation": "노쇼 수수료가 잘못 청구됨"
-    },
-    {
-      "n": 71,
-      "file": "emails/071-warranty-claim.md",
-      "type": "warranty-claim",
-      "channel": "email",
-      "title": "해피가전서비스 무상수리 청구",
-      "merchant": "해피가전서비스",
-      "amount": 0,
-      "situation": "6개월 된 공기청정기 소음"
-    },
-    {
-      "n": 72,
-      "file": "emails/072-warranty-claim.md",
-      "type": "warranty-claim",
-      "channel": "email",
-      "title": "프리미엄오디오 무상수리 청구",
-      "merchant": "프리미엄오디오",
-      "amount": 0,
-      "situation": "헤드폰 단선, 보증 10개월 남음"
-    },
-    {
-      "n": 73,
-      "file": "emails/073-warranty-claim.md",
-      "type": "warranty-claim",
-      "channel": "email",
-      "title": "스마트워치코리아 무상수리 청구",
-      "merchant": "스마트워치코리아",
-      "amount": 0,
-      "situation": "배터리 부풀음"
-    },
-    {
-      "n": 74,
-      "file": "emails/074-warranty-claim.md",
-      "type": "warranty-claim",
-      "channel": "email",
-      "title": "키친메이트 무상수리 청구",
-      "merchant": "키친메이트",
-      "amount": 0,
-      "situation": "전기포트 누수"
-    },
-    {
-      "n": 75,
-      "file": "emails/075-warranty-claim.md",
-      "type": "warranty-claim",
-      "channel": "email",
-      "title": "클린로봇 무상수리 청구",
-      "merchant": "클린로봇",
-      "amount": 0,
-      "situation": "로봇청소기 센서 불량 재발"
-    },
-    {
-      "n": 76,
-      "file": "emails/076-warranty-claim.md",
-      "type": "warranty-claim",
-      "channel": "email",
-      "title": "홈카페머신 무상수리 청구",
-      "merchant": "홈카페머신",
-      "amount": 0,
-      "situation": "커피머신 히터 고장"
-    },
-    {
-      "n": 77,
-      "file": "emails/077-warranty-claim.md",
-      "type": "warranty-claim",
-      "channel": "email",
-      "title": "에어쿨텍 무상수리 청구",
-      "merchant": "에어쿨텍",
-      "amount": 0,
-      "situation": "설치 하자로 누수 발생"
-    },
-    {
-      "n": 78,
-      "file": "emails/078-warranty-claim.md",
-      "type": "warranty-claim",
-      "channel": "email",
-      "title": "사운드바랩 무상수리 청구",
-      "merchant": "사운드바랩",
-      "amount": 0,
-      "situation": "수리 2회에도 같은 고장"
-    },
-    {
-      "n": 79,
-      "file": "emails/079-warranty-claim.md",
-      "type": "warranty-claim",
-      "channel": "email",
-      "title": "게이밍기어 무상수리 청구",
-      "merchant": "게이밍기어",
-      "amount": 0,
-      "situation": "키보드 키 빠짐, 유상 전환 요구받음"
-    },
-    {
-      "n": 80,
-      "file": "emails/080-warranty-claim.md",
-      "type": "warranty-claim",
-      "channel": "email",
-      "title": "베이비모니터 무상수리 청구",
-      "merchant": "베이비모니터",
-      "amount": 0,
-      "situation": "카메라 화면 꺼짐 반복"
-    },
-    {
-      "n": 81,
-      "file": "emails/081-membership-cancel.md",
-      "type": "membership-cancel",
-      "channel": "portal",
-      "title": "파워짐 회원권 해지 환불",
-      "merchant": "파워짐",
-      "amount": 540000,
-      "situation": "12개월 중 2개월 쓰고 이사"
-    },
-    {
-      "n": 82,
-      "file": "emails/082-membership-cancel.md",
-      "type": "membership-cancel",
-      "channel": "portal",
-      "title": "요가스튜디오숨 회원권 해지 환불",
-      "merchant": "요가스튜디오숨",
-      "amount": 390000,
-      "situation": "강사 전원 교체로 그만두려고"
-    },
-    {
-      "n": 83,
-      "file": "emails/083-membership-cancel.md",
-      "type": "membership-cancel",
-      "channel": "portal",
-      "title": "필라테스코어 회원권 해지 환불",
-      "merchant": "필라테스코어",
-      "amount": 480000,
-      "situation": "부상 진단서 있어"
-    },
-    {
-      "n": 84,
-      "file": "emails/084-membership-cancel.md",
-      "type": "membership-cancel",
-      "channel": "portal",
-      "title": "수영클럽블루 회원권 해지 환불",
-      "merchant": "수영클럽블루",
-      "amount": 360000,
-      "situation": "레인 축소로 이용이 어려워"
-    },
-    {
-      "n": 85,
-      "file": "emails/085-membership-cancel.md",
-      "type": "membership-cancel",
-      "channel": "portal",
-      "title": "크로스핏박스 회원권 해지 환불",
-      "merchant": "크로스핏박스",
-      "amount": 420000,
-      "situation": "지점 폐업 예정이래"
-    },
-    {
-      "n": 86,
-      "file": "emails/086-membership-cancel.md",
-      "type": "membership-cancel",
-      "channel": "portal",
-      "title": "골프연습장그린 회원권 해지 환불",
-      "merchant": "골프연습장그린",
-      "amount": 600000,
-      "situation": "타석 예약이 항상 마감"
-    },
-    {
-      "n": 87,
-      "file": "emails/087-membership-cancel.md",
-      "type": "membership-cancel",
-      "channel": "portal",
-      "title": "복싱클럽펀치 회원권 해지 환불",
-      "merchant": "복싱클럽펀치",
-      "amount": 330000,
-      "situation": "위약금 계산이 규정과 달라"
-    },
-    {
-      "n": 88,
-      "file": "emails/088-membership-cancel.md",
-      "type": "membership-cancel",
-      "channel": "portal",
-      "title": "테니스아카데미 회원권 해지 환불",
-      "merchant": "테니스아카데미",
-      "amount": 450000,
-      "situation": "코트 공사로 3개월 휴장"
-    },
-    {
-      "n": 89,
-      "file": "emails/089-membership-cancel.md",
-      "type": "membership-cancel",
-      "channel": "portal",
-      "title": "클라이밍센터 회원권 해지 환불",
-      "merchant": "클라이밍센터",
-      "amount": 280000,
-      "situation": "야간 운영 중단으로 못 가"
-    },
-    {
-      "n": 90,
-      "file": "emails/090-membership-cancel.md",
-      "type": "membership-cancel",
-      "channel": "portal",
-      "title": "댄스스튜디오온 회원권 해지 환불",
-      "merchant": "댄스스튜디오온",
-      "amount": 310000,
-      "situation": "환불 신청서를 안 받아줘"
-    },
-    {
-      "n": 91,
-      "file": "emails/091-deposit-recovery.md",
-      "type": "deposit-recovery",
-      "channel": "hybrid",
-      "title": "스터디룸25 보증금 반환",
-      "merchant": "스터디룸25",
-      "amount": 100000,
-      "situation": "정기권 보증금을 두 달째 안 줘"
-    },
-    {
-      "n": 92,
-      "file": "emails/092-deposit-recovery.md",
-      "type": "deposit-recovery",
-      "channel": "hybrid",
-      "title": "공유오피스워크 보증금 반환",
-      "merchant": "공유오피스워크",
-      "amount": 300000,
-      "situation": "퇴실 정산이 끝났는데 미반환"
-    },
-    {
-      "n": 93,
-      "file": "emails/093-deposit-recovery.md",
-      "type": "deposit-recovery",
-      "channel": "hybrid",
-      "title": "정수기렌탈 보증금 반환",
-      "merchant": "정수기렌탈",
-      "amount": 50000,
-      "situation": "해지 후 설치 보증금 미반환"
-    },
-    {
-      "n": 94,
-      "file": "emails/094-deposit-recovery.md",
-      "type": "deposit-recovery",
-      "channel": "hybrid",
-      "title": "파티룸모임 보증금 반환",
-      "merchant": "파티룸모임",
-      "amount": 200000,
-      "situation": "청소비 명목 과다 공제"
-    },
-    {
-      "n": 95,
-      "file": "emails/095-deposit-recovery.md",
-      "type": "deposit-recovery",
-      "channel": "hybrid",
-      "title": "악기렌탈샵 보증금 반환",
-      "merchant": "악기렌탈샵",
-      "amount": 150000,
-      "situation": "반납 완료했는데 연락 두절"
-    },
-    {
-      "n": 96,
-      "file": "emails/096-deposit-recovery.md",
-      "type": "deposit-recovery",
-      "channel": "hybrid",
-      "title": "캠핑장비대여 보증금 반환",
-      "merchant": "캠핑장비대여",
-      "amount": 80000,
-      "situation": "파손 안 했는데 공제하겠대"
-    },
-    {
-      "n": 97,
-      "file": "emails/097-deposit-recovery.md",
-      "type": "deposit-recovery",
-      "channel": "hybrid",
-      "title": "정부24 미환급금 보증금 반환",
-      "merchant": "정부24 미환급금",
-      "amount": 0,
-      "situation": "미수령 환급금 있는지 조회하고 수령까지"
-    },
-    {
-      "n": 98,
-      "file": "emails/098-deposit-recovery.md",
-      "type": "deposit-recovery",
-      "channel": "hybrid",
-      "title": "보증금은행셰어 보증금 반환",
-      "merchant": "보증금은행셰어",
-      "amount": 30000,
-      "situation": "탈퇴했는데 보증금 미입금"
-    },
-    {
-      "n": 99,
-      "file": "emails/099-deposit-recovery.md",
-      "type": "deposit-recovery",
-      "channel": "hybrid",
-      "title": "키즈카페멤버십 보증금 반환",
-      "merchant": "키즈카페멤버십",
-      "amount": 60000,
-      "situation": "폐업 공지 후 보증금 안내 없음"
-    },
-    {
-      "n": 100,
-      "file": "emails/100-deposit-recovery.md",
-      "type": "deposit-recovery",
-      "channel": "hybrid",
-      "title": "코워킹락커 보증금 반환",
-      "merchant": "코워킹락커",
-      "amount": 40000,
-      "situation": "락커 보증금 반환 지연"
+      "customer": "doyun",
+      "name": "도윤",
+      "region": "판교",
+      "time_factor": 1.5,
+      "title": "도윤의 시간 배당 여정 (판교)",
+      "situation": "포워딩→팁 카드, 보고→적립, 임계치→무브먼트, 커뮤니티·Admin"
+    }
+  ],
+  "emails": [
+    {
+      "seq": 1,
+      "file": "emails/001-report-jisoo.md",
+      "kind": "report",
+      "customer": "jisoo",
+      "agent": "Muze",
+      "title": "생필품 정기 주문"
+    },
+    {
+      "seq": 2,
+      "file": "emails/002-report-jisoo.md",
+      "kind": "report",
+      "customer": "jisoo",
+      "agent": "Dots",
+      "title": "가족 식당 예약"
+    },
+    {
+      "seq": 3,
+      "file": "emails/003-report-jisoo.md",
+      "kind": "report",
+      "customer": "jisoo",
+      "agent": "ChatGPT",
+      "title": "통신 요금 이의신청"
+    },
+    {
+      "seq": 4,
+      "file": "emails/004-report-jisoo.md",
+      "kind": "report",
+      "customer": "jisoo",
+      "agent": "Claude",
+      "title": "구독 해지"
+    },
+    {
+      "seq": 5,
+      "file": "emails/005-report-jisoo.md",
+      "kind": "report",
+      "customer": "jisoo",
+      "agent": "Gemini",
+      "title": "주민등록 등본 발급"
+    },
+    {
+      "seq": 6,
+      "file": "emails/006-report-jisoo.md",
+      "kind": "report",
+      "customer": "jisoo",
+      "agent": "Muze",
+      "title": "가정통신문 요약"
+    },
+    {
+      "seq": 7,
+      "file": "emails/007-report-jisoo.md",
+      "kind": "report",
+      "customer": "jisoo",
+      "agent": "Dots",
+      "title": "정수기 AS 접수"
+    },
+    {
+      "seq": 8,
+      "file": "emails/008-report-jisoo.md",
+      "kind": "report",
+      "customer": "jisoo",
+      "agent": "ChatGPT",
+      "title": "건강검진 예약"
+    },
+    {
+      "seq": 9,
+      "file": "emails/009-report-jisoo.md",
+      "kind": "report",
+      "customer": "jisoo",
+      "agent": "Claude",
+      "title": "항공권 검색"
+    },
+    {
+      "seq": 10,
+      "file": "emails/010-report-jisoo.md",
+      "kind": "report",
+      "customer": "jisoo",
+      "agent": "Gemini",
+      "title": "환불 분쟁"
+    },
+    {
+      "seq": 11,
+      "file": "emails/011-report-jisoo.md",
+      "kind": "report",
+      "customer": "jisoo",
+      "agent": "Muze",
+      "title": "중고 판매"
+    },
+    {
+      "seq": 12,
+      "file": "emails/012-report-jisoo.md",
+      "kind": "report",
+      "customer": "jisoo",
+      "agent": "Dots",
+      "title": "보험 청구"
+    },
+    {
+      "seq": 13,
+      "file": "emails/013-report-minho.md",
+      "kind": "report",
+      "customer": "minho",
+      "agent": "Dots",
+      "title": "생필품 정기 주문"
+    },
+    {
+      "seq": 14,
+      "file": "emails/014-report-minho.md",
+      "kind": "report",
+      "customer": "minho",
+      "agent": "ChatGPT",
+      "title": "가족 식당 예약"
+    },
+    {
+      "seq": 15,
+      "file": "emails/015-report-minho.md",
+      "kind": "report",
+      "customer": "minho",
+      "agent": "Claude",
+      "title": "통신 요금 이의신청"
+    },
+    {
+      "seq": 16,
+      "file": "emails/016-report-minho.md",
+      "kind": "report",
+      "customer": "minho",
+      "agent": "Gemini",
+      "title": "구독 해지"
+    },
+    {
+      "seq": 17,
+      "file": "emails/017-report-minho.md",
+      "kind": "report",
+      "customer": "minho",
+      "agent": "Muze",
+      "title": "주민등록 등본 발급"
+    },
+    {
+      "seq": 18,
+      "file": "emails/018-report-minho.md",
+      "kind": "report",
+      "customer": "minho",
+      "agent": "Dots",
+      "title": "가정통신문 요약"
+    },
+    {
+      "seq": 19,
+      "file": "emails/019-report-minho.md",
+      "kind": "report",
+      "customer": "minho",
+      "agent": "ChatGPT",
+      "title": "정수기 AS 접수"
+    },
+    {
+      "seq": 20,
+      "file": "emails/020-report-minho.md",
+      "kind": "report",
+      "customer": "minho",
+      "agent": "Claude",
+      "title": "건강검진 예약"
+    },
+    {
+      "seq": 21,
+      "file": "emails/021-report-minho.md",
+      "kind": "report",
+      "customer": "minho",
+      "agent": "Gemini",
+      "title": "항공권 검색"
+    },
+    {
+      "seq": 22,
+      "file": "emails/022-report-minho.md",
+      "kind": "report",
+      "customer": "minho",
+      "agent": "Muze",
+      "title": "환불 분쟁"
+    },
+    {
+      "seq": 23,
+      "file": "emails/023-report-minho.md",
+      "kind": "report",
+      "customer": "minho",
+      "agent": "Dots",
+      "title": "중고 판매"
+    },
+    {
+      "seq": 24,
+      "file": "emails/024-report-minho.md",
+      "kind": "report",
+      "customer": "minho",
+      "agent": "ChatGPT",
+      "title": "보험 청구"
+    },
+    {
+      "seq": 25,
+      "file": "emails/025-report-sora.md",
+      "kind": "report",
+      "customer": "sora",
+      "agent": "ChatGPT",
+      "title": "생필품 정기 주문"
+    },
+    {
+      "seq": 26,
+      "file": "emails/026-report-sora.md",
+      "kind": "report",
+      "customer": "sora",
+      "agent": "Claude",
+      "title": "가족 식당 예약"
+    },
+    {
+      "seq": 27,
+      "file": "emails/027-report-sora.md",
+      "kind": "report",
+      "customer": "sora",
+      "agent": "Gemini",
+      "title": "통신 요금 이의신청"
+    },
+    {
+      "seq": 28,
+      "file": "emails/028-report-sora.md",
+      "kind": "report",
+      "customer": "sora",
+      "agent": "Muze",
+      "title": "구독 해지"
+    },
+    {
+      "seq": 29,
+      "file": "emails/029-report-sora.md",
+      "kind": "report",
+      "customer": "sora",
+      "agent": "Dots",
+      "title": "주민등록 등본 발급"
+    },
+    {
+      "seq": 30,
+      "file": "emails/030-report-sora.md",
+      "kind": "report",
+      "customer": "sora",
+      "agent": "ChatGPT",
+      "title": "가정통신문 요약"
+    },
+    {
+      "seq": 31,
+      "file": "emails/031-report-sora.md",
+      "kind": "report",
+      "customer": "sora",
+      "agent": "Claude",
+      "title": "정수기 AS 접수"
+    },
+    {
+      "seq": 32,
+      "file": "emails/032-report-sora.md",
+      "kind": "report",
+      "customer": "sora",
+      "agent": "Gemini",
+      "title": "건강검진 예약"
+    },
+    {
+      "seq": 33,
+      "file": "emails/033-report-sora.md",
+      "kind": "report",
+      "customer": "sora",
+      "agent": "Muze",
+      "title": "항공권 검색"
+    },
+    {
+      "seq": 34,
+      "file": "emails/034-report-sora.md",
+      "kind": "report",
+      "customer": "sora",
+      "agent": "Dots",
+      "title": "환불 분쟁"
+    },
+    {
+      "seq": 35,
+      "file": "emails/035-report-sora.md",
+      "kind": "report",
+      "customer": "sora",
+      "agent": "ChatGPT",
+      "title": "중고 판매"
+    },
+    {
+      "seq": 36,
+      "file": "emails/036-report-sora.md",
+      "kind": "report",
+      "customer": "sora",
+      "agent": "Claude",
+      "title": "보험 청구"
+    },
+    {
+      "seq": 37,
+      "file": "emails/037-report-yuna.md",
+      "kind": "report",
+      "customer": "yuna",
+      "agent": "Claude",
+      "title": "생필품 정기 주문"
+    },
+    {
+      "seq": 38,
+      "file": "emails/038-report-yuna.md",
+      "kind": "report",
+      "customer": "yuna",
+      "agent": "Gemini",
+      "title": "가족 식당 예약"
+    },
+    {
+      "seq": 39,
+      "file": "emails/039-report-yuna.md",
+      "kind": "report",
+      "customer": "yuna",
+      "agent": "Muze",
+      "title": "통신 요금 이의신청"
+    },
+    {
+      "seq": 40,
+      "file": "emails/040-report-yuna.md",
+      "kind": "report",
+      "customer": "yuna",
+      "agent": "Dots",
+      "title": "구독 해지"
+    },
+    {
+      "seq": 41,
+      "file": "emails/041-report-yuna.md",
+      "kind": "report",
+      "customer": "yuna",
+      "agent": "ChatGPT",
+      "title": "주민등록 등본 발급"
+    },
+    {
+      "seq": 42,
+      "file": "emails/042-report-yuna.md",
+      "kind": "report",
+      "customer": "yuna",
+      "agent": "Claude",
+      "title": "가정통신문 요약"
+    },
+    {
+      "seq": 43,
+      "file": "emails/043-report-yuna.md",
+      "kind": "report",
+      "customer": "yuna",
+      "agent": "Gemini",
+      "title": "정수기 AS 접수"
+    },
+    {
+      "seq": 44,
+      "file": "emails/044-report-yuna.md",
+      "kind": "report",
+      "customer": "yuna",
+      "agent": "Muze",
+      "title": "건강검진 예약"
+    },
+    {
+      "seq": 45,
+      "file": "emails/045-report-yuna.md",
+      "kind": "report",
+      "customer": "yuna",
+      "agent": "Dots",
+      "title": "항공권 검색"
+    },
+    {
+      "seq": 46,
+      "file": "emails/046-report-yuna.md",
+      "kind": "report",
+      "customer": "yuna",
+      "agent": "ChatGPT",
+      "title": "환불 분쟁"
+    },
+    {
+      "seq": 47,
+      "file": "emails/047-report-yuna.md",
+      "kind": "report",
+      "customer": "yuna",
+      "agent": "Claude",
+      "title": "중고 판매"
+    },
+    {
+      "seq": 48,
+      "file": "emails/048-report-yuna.md",
+      "kind": "report",
+      "customer": "yuna",
+      "agent": "Gemini",
+      "title": "보험 청구"
+    },
+    {
+      "seq": 49,
+      "file": "emails/049-report-doyun.md",
+      "kind": "report",
+      "customer": "doyun",
+      "agent": "Gemini",
+      "title": "생필품 정기 주문"
+    },
+    {
+      "seq": 50,
+      "file": "emails/050-report-doyun.md",
+      "kind": "report",
+      "customer": "doyun",
+      "agent": "Muze",
+      "title": "가족 식당 예약"
+    },
+    {
+      "seq": 51,
+      "file": "emails/051-report-doyun.md",
+      "kind": "report",
+      "customer": "doyun",
+      "agent": "Dots",
+      "title": "통신 요금 이의신청"
+    },
+    {
+      "seq": 52,
+      "file": "emails/052-report-doyun.md",
+      "kind": "report",
+      "customer": "doyun",
+      "agent": "ChatGPT",
+      "title": "구독 해지"
+    },
+    {
+      "seq": 53,
+      "file": "emails/053-report-doyun.md",
+      "kind": "report",
+      "customer": "doyun",
+      "agent": "Claude",
+      "title": "주민등록 등본 발급"
+    },
+    {
+      "seq": 54,
+      "file": "emails/054-report-doyun.md",
+      "kind": "report",
+      "customer": "doyun",
+      "agent": "Gemini",
+      "title": "가정통신문 요약"
+    },
+    {
+      "seq": 55,
+      "file": "emails/055-report-doyun.md",
+      "kind": "report",
+      "customer": "doyun",
+      "agent": "Muze",
+      "title": "정수기 AS 접수"
+    },
+    {
+      "seq": 56,
+      "file": "emails/056-report-doyun.md",
+      "kind": "report",
+      "customer": "doyun",
+      "agent": "Dots",
+      "title": "건강검진 예약"
+    },
+    {
+      "seq": 57,
+      "file": "emails/057-report-doyun.md",
+      "kind": "report",
+      "customer": "doyun",
+      "agent": "ChatGPT",
+      "title": "항공권 검색"
+    },
+    {
+      "seq": 58,
+      "file": "emails/058-report-doyun.md",
+      "kind": "report",
+      "customer": "doyun",
+      "agent": "Claude",
+      "title": "환불 분쟁"
+    },
+    {
+      "seq": 59,
+      "file": "emails/059-report-doyun.md",
+      "kind": "report",
+      "customer": "doyun",
+      "agent": "Gemini",
+      "title": "중고 판매"
+    },
+    {
+      "seq": 60,
+      "file": "emails/060-report-doyun.md",
+      "kind": "report",
+      "customer": "doyun",
+      "agent": "Muze",
+      "title": "보험 청구"
+    },
+    {
+      "seq": 61,
+      "file": "emails/061-forward-jisoo.md",
+      "kind": "forward",
+      "customer": "jisoo",
+      "agent": "",
+      "title": "장보기 좀 부탁해"
+    },
+    {
+      "seq": 62,
+      "file": "emails/062-forward-jisoo.md",
+      "kind": "forward",
+      "customer": "jisoo",
+      "agent": "",
+      "title": "식당 예약 요청"
+    },
+    {
+      "seq": 63,
+      "file": "emails/063-forward-jisoo.md",
+      "kind": "forward",
+      "customer": "jisoo",
+      "agent": "",
+      "title": "환불이 안 들어와요"
+    },
+    {
+      "seq": 64,
+      "file": "emails/064-forward-jisoo.md",
+      "kind": "forward",
+      "customer": "jisoo",
+      "agent": "",
+      "title": "구독 정리하고 싶어"
+    },
+    {
+      "seq": 65,
+      "file": "emails/065-forward-minho.md",
+      "kind": "forward",
+      "customer": "minho",
+      "agent": "",
+      "title": "식당 예약 요청"
+    },
+    {
+      "seq": 66,
+      "file": "emails/066-forward-minho.md",
+      "kind": "forward",
+      "customer": "minho",
+      "agent": "",
+      "title": "환불이 안 들어와요"
+    },
+    {
+      "seq": 67,
+      "file": "emails/067-forward-minho.md",
+      "kind": "forward",
+      "customer": "minho",
+      "agent": "",
+      "title": "구독 정리하고 싶어"
+    },
+    {
+      "seq": 68,
+      "file": "emails/068-forward-minho.md",
+      "kind": "forward",
+      "customer": "minho",
+      "agent": "",
+      "title": "가정통신문 처리"
+    },
+    {
+      "seq": 69,
+      "file": "emails/069-forward-sora.md",
+      "kind": "forward",
+      "customer": "sora",
+      "agent": "",
+      "title": "환불이 안 들어와요"
+    },
+    {
+      "seq": 70,
+      "file": "emails/070-forward-sora.md",
+      "kind": "forward",
+      "customer": "sora",
+      "agent": "",
+      "title": "구독 정리하고 싶어"
+    },
+    {
+      "seq": 71,
+      "file": "emails/071-forward-sora.md",
+      "kind": "forward",
+      "customer": "sora",
+      "agent": "",
+      "title": "가정통신문 처리"
+    },
+    {
+      "seq": 72,
+      "file": "emails/072-forward-sora.md",
+      "kind": "forward",
+      "customer": "sora",
+      "agent": "",
+      "title": "장보기 좀 부탁해"
+    },
+    {
+      "seq": 73,
+      "file": "emails/073-forward-yuna.md",
+      "kind": "forward",
+      "customer": "yuna",
+      "agent": "",
+      "title": "구독 정리하고 싶어"
+    },
+    {
+      "seq": 74,
+      "file": "emails/074-forward-yuna.md",
+      "kind": "forward",
+      "customer": "yuna",
+      "agent": "",
+      "title": "가정통신문 처리"
+    },
+    {
+      "seq": 75,
+      "file": "emails/075-forward-yuna.md",
+      "kind": "forward",
+      "customer": "yuna",
+      "agent": "",
+      "title": "장보기 좀 부탁해"
+    },
+    {
+      "seq": 76,
+      "file": "emails/076-forward-yuna.md",
+      "kind": "forward",
+      "customer": "yuna",
+      "agent": "",
+      "title": "식당 예약 요청"
+    },
+    {
+      "seq": 77,
+      "file": "emails/077-forward-doyun.md",
+      "kind": "forward",
+      "customer": "doyun",
+      "agent": "",
+      "title": "가정통신문 처리"
+    },
+    {
+      "seq": 78,
+      "file": "emails/078-forward-doyun.md",
+      "kind": "forward",
+      "customer": "doyun",
+      "agent": "",
+      "title": "장보기 좀 부탁해"
+    },
+    {
+      "seq": 79,
+      "file": "emails/079-forward-doyun.md",
+      "kind": "forward",
+      "customer": "doyun",
+      "agent": "",
+      "title": "식당 예약 요청"
+    },
+    {
+      "seq": 80,
+      "file": "emails/080-forward-doyun.md",
+      "kind": "forward",
+      "customer": "doyun",
+      "agent": "",
+      "title": "환불이 안 들어와요"
+    },
+    {
+      "seq": 81,
+      "file": "emails/081-unmatched-jisoo.md",
+      "kind": "unmatched",
+      "customer": "jisoo",
+      "agent": "Muze",
+      "title": "어항 물갈이"
+    },
+    {
+      "seq": 82,
+      "file": "emails/082-unmatched-minho.md",
+      "kind": "unmatched",
+      "customer": "minho",
+      "agent": "Dots",
+      "title": "화분 분갈이"
+    },
+    {
+      "seq": 83,
+      "file": "emails/083-unmatched-sora.md",
+      "kind": "unmatched",
+      "customer": "sora",
+      "agent": "ChatGPT",
+      "title": "사진 백업"
+    },
+    {
+      "seq": 84,
+      "file": "emails/084-unmatched-yuna.md",
+      "kind": "unmatched",
+      "customer": "yuna",
+      "agent": "Claude",
+      "title": "기타 줄 교체"
+    },
+    {
+      "seq": 85,
+      "file": "emails/085-unmatched-doyun.md",
+      "kind": "unmatched",
+      "customer": "doyun",
+      "agent": "Gemini",
+      "title": "자전거 체인 정비"
     }
   ]
 }

@@ -23,7 +23,8 @@
       "est_hours_per_week": 1.5,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#쇼핑 — S1 (B)"
     },
     {
       "id": "gift-shopping",
@@ -45,7 +46,8 @@
       "est_hours_per_week": 0.5,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#쇼핑 — S1 (B)"
     },
     {
       "id": "kids-supplies-reorder",
@@ -66,7 +68,8 @@
       "est_hours_per_week": 0.5,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#쇼핑 — S1 (B)"
     },
     {
       "id": "pet-supplies-reorder",
@@ -87,7 +90,8 @@
       "est_hours_per_week": 0.4,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#쇼핑 — S1 (B)"
     },
     {
       "id": "flower-cake-order",
@@ -108,7 +112,8 @@
       "est_hours_per_week": 0.2,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#쇼핑 — S1 (B)"
     },
     {
       "id": "return-exchange",
@@ -128,8 +133,9 @@
       "payment": false,
       "est_hours_per_week": 0.4,
       "status": "beta",
-      "baseline_minutes": 120,
-      "emotion_load": 5
+      "baseline_minutes": 60,
+      "emotion_load": 5,
+      "evidence": "ops/research-time-baselines.md#쇼핑 — S1 (B)"
     },
     {
       "id": "restock-watch",
@@ -150,7 +156,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#쇼핑 — S1 (B)"
     },
     {
       "id": "coupon-points-apply",
@@ -171,7 +178,8 @@
       "est_hours_per_week": 0.4,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#쇼핑 — S1 (B)"
     },
     {
       "id": "appliance-purchase",
@@ -192,7 +200,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#쇼핑 — S1 (B)"
     },
     {
       "id": "grocery-fresh-sub",
@@ -212,7 +221,8 @@
       "est_hours_per_week": 0.4,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#쇼핑 — S1 (B)"
     },
     {
       "id": "restaurant-booking",
@@ -235,7 +245,8 @@
       "est_hours_per_week": 0.5,
       "status": "beta",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#예약 — S9 (C+)"
     },
     {
       "id": "salon-booking",
@@ -256,7 +267,8 @@
       "est_hours_per_week": 0.2,
       "status": "beta",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#예약 — S9 (C+)"
     },
     {
       "id": "ticket-booking",
@@ -277,7 +289,8 @@
       "est_hours_per_week": 0.4,
       "status": "beta",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#예약 — S9 (C+)"
     },
     {
       "id": "activity-class-booking",
@@ -297,7 +310,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#예약 — S9 (C+)"
     },
     {
       "id": "camping-booking",
@@ -317,7 +331,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#예약 — S9 (C+)"
     },
     {
       "id": "sports-facility-booking",
@@ -338,7 +353,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#예약 — S9 (C+)"
     },
     {
       "id": "photo-studio-booking",
@@ -359,7 +375,8 @@
       "est_hours_per_week": 0.1,
       "status": "beta",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#예약 — S9 (C+)"
     },
     {
       "id": "pet-service-booking",
@@ -379,7 +396,8 @@
       "est_hours_per_week": 0.2,
       "status": "planned",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#예약 — S9 (C+)"
     },
     {
       "id": "waiting-queue",
@@ -399,7 +417,8 @@
       "est_hours_per_week": 0.2,
       "status": "beta",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#예약 — S9 (C+)"
     },
     {
       "id": "insurance-compare",
@@ -419,8 +438,9 @@
       "payment": true,
       "est_hours_per_week": 0.5,
       "status": "beta",
-      "baseline_minutes": 90,
-      "emotion_load": 4
+      "baseline_minutes": 75,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#금융·청구 — S9·S7·S4 (B)"
     },
     {
       "id": "telecom-dispute",
@@ -440,8 +460,9 @@
       "payment": false,
       "est_hours_per_week": 0.3,
       "status": "beta",
-      "baseline_minutes": 120,
-      "emotion_load": 5
+      "baseline_minutes": 75,
+      "emotion_load": 5,
+      "evidence": "ops/research-time-baselines.md#금융·청구 — S9·S7·S4 (B)"
     },
     {
       "id": "bill-watch",
@@ -461,8 +482,9 @@
       "payment": false,
       "est_hours_per_week": 0.3,
       "status": "available",
-      "baseline_minutes": 90,
-      "emotion_load": 4
+      "baseline_minutes": 75,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#금융·청구 — S9·S7·S4 (B)"
     },
     {
       "id": "telecom-plan-optimize",
@@ -482,8 +504,9 @@
       "payment": false,
       "est_hours_per_week": 0.2,
       "status": "beta",
-      "baseline_minutes": 90,
-      "emotion_load": 4
+      "baseline_minutes": 75,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#금융·청구 — S9·S7·S4 (B)"
     },
     {
       "id": "insurance-claim",
@@ -503,8 +526,9 @@
       "payment": false,
       "est_hours_per_week": 0.3,
       "status": "beta",
-      "baseline_minutes": 90,
-      "emotion_load": 4
+      "baseline_minutes": 75,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#금융·청구 — S9·S7·S4 (B)"
     },
     {
       "id": "card-benefit-optimize",
@@ -524,8 +548,9 @@
       "payment": false,
       "est_hours_per_week": 0.2,
       "status": "beta",
-      "baseline_minutes": 120,
-      "emotion_load": 4
+      "baseline_minutes": 75,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#금융·청구 — S9·S7·S4 (B)"
     },
     {
       "id": "tax-filing-support",
@@ -545,8 +570,9 @@
       "payment": false,
       "est_hours_per_week": 0.2,
       "status": "planned",
-      "baseline_minutes": 90,
-      "emotion_load": 4
+      "baseline_minutes": 75,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#금융·청구 — S9·S7·S4 (B)"
     },
     {
       "id": "hidden-refund-recovery",
@@ -566,8 +592,9 @@
       "payment": false,
       "est_hours_per_week": 0.1,
       "status": "beta",
-      "baseline_minutes": 120,
-      "emotion_load": 5
+      "baseline_minutes": 75,
+      "emotion_load": 5,
+      "evidence": "ops/research-time-baselines.md#금융·청구 — S9·S7·S4 (B)"
     },
     {
       "id": "auto-transfer-setup",
@@ -586,8 +613,9 @@
       "payment": false,
       "est_hours_per_week": 0.1,
       "status": "planned",
-      "baseline_minutes": 90,
-      "emotion_load": 4
+      "baseline_minutes": 75,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#금융·청구 — S9·S7·S4 (B)"
     },
     {
       "id": "inbox-cleanup",
@@ -608,8 +636,9 @@
       "payment": false,
       "est_hours_per_week": 0.5,
       "status": "available",
-      "baseline_minutes": 120,
-      "emotion_load": 4
+      "baseline_minutes": 45,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#구독·계정 — S3 (C+)"
     },
     {
       "id": "subscription-audit",
@@ -630,7 +659,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 45,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#구독·계정 — S3 (C+)"
     },
     {
       "id": "membership-cancel",
@@ -649,8 +679,9 @@
       "payment": false,
       "est_hours_per_week": 0.3,
       "status": "beta",
-      "baseline_minutes": 120,
-      "emotion_load": 4
+      "baseline_minutes": 45,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#구독·계정 — S3 (C+)"
     },
     {
       "id": "free-trial-watch",
@@ -669,8 +700,9 @@
       "payment": false,
       "est_hours_per_week": 0.2,
       "status": "available",
-      "baseline_minutes": 120,
-      "emotion_load": 4
+      "baseline_minutes": 45,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#구독·계정 — S3 (C+)"
     },
     {
       "id": "points-expiry-watch",
@@ -690,7 +722,8 @@
       "est_hours_per_week": 0.2,
       "status": "available",
       "baseline_minutes": 45,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#구독·계정 — S3 (C+)"
     },
     {
       "id": "dormant-account-cleanup",
@@ -710,7 +743,8 @@
       "est_hours_per_week": 0.2,
       "status": "beta",
       "baseline_minutes": 45,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#구독·계정 — S3 (C+)"
     },
     {
       "id": "app-refund-request",
@@ -729,8 +763,9 @@
       "payment": false,
       "est_hours_per_week": 0.1,
       "status": "beta",
-      "baseline_minutes": 120,
-      "emotion_load": 5
+      "baseline_minutes": 45,
+      "emotion_load": 5,
+      "evidence": "ops/research-time-baselines.md#구독·계정 — S3 (C+)"
     },
     {
       "id": "account-security-check",
@@ -750,7 +785,8 @@
       "est_hours_per_week": 0.1,
       "status": "planned",
       "baseline_minutes": 45,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#구독·계정 — S3 (C+)"
     },
     {
       "id": "utility-pay",
@@ -773,7 +809,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 90,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#행정·민원 — S1·S4 (B)"
     },
     {
       "id": "gov24-certificates",
@@ -794,7 +831,8 @@
       "est_hours_per_week": 0.2,
       "status": "planned",
       "baseline_minutes": 90,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#행정·민원 — S1·S4 (B)"
     },
     {
       "id": "civil-complaint-file",
@@ -814,8 +852,9 @@
       "payment": false,
       "est_hours_per_week": 0.2,
       "status": "beta",
-      "baseline_minutes": 120,
-      "emotion_load": 5
+      "baseline_minutes": 90,
+      "emotion_load": 5,
+      "evidence": "ops/research-time-baselines.md#행정·민원 — S1·S4 (B)"
     },
     {
       "id": "fine-payment",
@@ -836,7 +875,8 @@
       "est_hours_per_week": 0.1,
       "status": "beta",
       "baseline_minutes": 90,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#행정·민원 — S1·S4 (B)"
     },
     {
       "id": "move-in-admin",
@@ -856,7 +896,8 @@
       "est_hours_per_week": 0.1,
       "status": "planned",
       "baseline_minutes": 90,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#행정·민원 — S1·S4 (B)"
     },
     {
       "id": "passport-id-renewal",
@@ -876,7 +917,8 @@
       "est_hours_per_week": 0.1,
       "status": "planned",
       "baseline_minutes": 90,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#행정·민원 — S1·S4 (B)"
     },
     {
       "id": "welfare-apply",
@@ -897,7 +939,8 @@
       "est_hours_per_week": 0.2,
       "status": "beta",
       "baseline_minutes": 90,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#행정·민원 — S1·S4 (B)"
     },
     {
       "id": "resident-parking",
@@ -917,7 +960,8 @@
       "est_hours_per_week": 0.1,
       "status": "beta",
       "baseline_minutes": 90,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#행정·민원 — S1·S4 (B)"
     },
     {
       "id": "local-tax-pay",
@@ -938,7 +982,8 @@
       "est_hours_per_week": 0.1,
       "status": "planned",
       "baseline_minutes": 90,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#행정·민원 — S1·S4 (B)"
     },
     {
       "id": "school-digest",
@@ -959,7 +1004,8 @@
       "est_hours_per_week": 0.5,
       "status": "available",
       "baseline_minutes": 45,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#교육·육아 — S6 (C+)"
     },
     {
       "id": "school-form-submit",
@@ -979,7 +1025,8 @@
       "est_hours_per_week": 0.2,
       "status": "beta",
       "baseline_minutes": 45,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#교육·육아 — S6 (C+)"
     },
     {
       "id": "school-lunch-watch",
@@ -999,7 +1046,8 @@
       "est_hours_per_week": 0.1,
       "status": "available",
       "baseline_minutes": 45,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#교육·육아 — S6 (C+)"
     },
     {
       "id": "after-school-apply",
@@ -1019,7 +1067,8 @@
       "est_hours_per_week": 0.2,
       "status": "beta",
       "baseline_minutes": 45,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#교육·육아 — S6 (C+)"
     },
     {
       "id": "academy-research",
@@ -1040,7 +1089,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 45,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#교육·육아 — S6 (C+)"
     },
     {
       "id": "kids-camp-booking",
@@ -1060,7 +1110,8 @@
       "est_hours_per_week": 0.2,
       "status": "beta",
       "baseline_minutes": 45,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#교육·육아 — S6 (C+)"
     },
     {
       "id": "daycare-waitlist",
@@ -1081,7 +1132,8 @@
       "est_hours_per_week": 0.2,
       "status": "planned",
       "baseline_minutes": 45,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#교육·육아 — S6 (C+)"
     },
     {
       "id": "edu-content-manage",
@@ -1101,8 +1153,9 @@
       "payment": false,
       "est_hours_per_week": 0.2,
       "status": "beta",
-      "baseline_minutes": 120,
-      "emotion_load": 5
+      "baseline_minutes": 60,
+      "emotion_load": 5,
+      "evidence": "ops/research-time-baselines.md#교육·육아 — S6 (C+)"
     },
     {
       "id": "exam-schedule-track",
@@ -1123,7 +1176,8 @@
       "est_hours_per_week": 0.1,
       "status": "available",
       "baseline_minutes": 45,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#교육·육아 — S6 (C+)"
     },
     {
       "id": "apt-notice-digest",
@@ -1144,7 +1198,8 @@
       "est_hours_per_week": 0.3,
       "status": "available",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#주거·생활 — S1 (B)"
     },
     {
       "id": "home-repair-arrange",
@@ -1164,8 +1219,9 @@
       "payment": false,
       "est_hours_per_week": 0.2,
       "status": "planned",
-      "baseline_minutes": 120,
-      "emotion_load": 4
+      "baseline_minutes": 60,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#주거·생활 — S1 (B)"
     },
     {
       "id": "cleaning-service-booking",
@@ -1185,7 +1241,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#주거·생활 — S1 (B)"
     },
     {
       "id": "laundry-pickup",
@@ -1205,7 +1262,8 @@
       "est_hours_per_week": 0.2,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#주거·생활 — S1 (B)"
     },
     {
       "id": "appliance-as-booking",
@@ -1224,8 +1282,9 @@
       "payment": false,
       "est_hours_per_week": 0.2,
       "status": "beta",
-      "baseline_minutes": 120,
-      "emotion_load": 4
+      "baseline_minutes": 60,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#주거·생활 — S1 (B)"
     },
     {
       "id": "internet-move-install",
@@ -1245,7 +1304,8 @@
       "est_hours_per_week": 0.1,
       "status": "planned",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#주거·생활 — S1 (B)"
     },
     {
       "id": "moving-quotes",
@@ -1265,7 +1325,8 @@
       "est_hours_per_week": 0.1,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#주거·생활 — S1 (B)"
     },
     {
       "id": "bulky-waste-disposal",
@@ -1285,7 +1346,8 @@
       "est_hours_per_week": 0.1,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#주거·생활 — S1 (B)"
     },
     {
       "id": "interior-quotes",
@@ -1305,7 +1367,8 @@
       "est_hours_per_week": 0.1,
       "status": "planned",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#주거·생활 — S1 (B)"
     },
     {
       "id": "rental-device-manage",
@@ -1325,8 +1388,9 @@
       "payment": false,
       "est_hours_per_week": 0.1,
       "status": "planned",
-      "baseline_minutes": 120,
-      "emotion_load": 4
+      "baseline_minutes": 60,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#주거·생활 — S1 (B)"
     },
     {
       "id": "hospital-booking",
@@ -1348,7 +1412,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#건강 — S9 (C)"
     },
     {
       "id": "health-checkup-booking",
@@ -1368,7 +1433,8 @@
       "est_hours_per_week": 0.1,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#건강 — S9 (C)"
     },
     {
       "id": "vaccination-booking",
@@ -1388,7 +1454,8 @@
       "est_hours_per_week": 0.1,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#건강 — S9 (C)"
     },
     {
       "id": "supplement-reorder",
@@ -1408,7 +1475,8 @@
       "est_hours_per_week": 0.2,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#건강 — S9 (C)"
     },
     {
       "id": "telemedicine-arrange",
@@ -1428,7 +1496,8 @@
       "est_hours_per_week": 0.1,
       "status": "planned",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#건강 — S9 (C)"
     },
     {
       "id": "fitness-enroll",
@@ -1449,7 +1518,8 @@
       "est_hours_per_week": 0.2,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#건강 — S9 (C)"
     },
     {
       "id": "health-record-organize",
@@ -1469,7 +1539,8 @@
       "est_hours_per_week": 0.1,
       "status": "available",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#건강 — S9 (C)"
     },
     {
       "id": "parent-care-arrange",
@@ -1489,7 +1560,8 @@
       "est_hours_per_week": 0.2,
       "status": "planned",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#건강 — S9 (C)"
     },
     {
       "id": "flight-booking",
@@ -1509,7 +1581,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#이동·여행 — S8 (B)"
     },
     {
       "id": "hotel-booking",
@@ -1530,7 +1603,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#이동·여행 — S8 (B)"
     },
     {
       "id": "train-bus-booking",
@@ -1553,7 +1627,8 @@
       "est_hours_per_week": 0.2,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#이동·여행 — S8 (B)"
     },
     {
       "id": "travel-itinerary-plan",
@@ -1573,7 +1648,8 @@
       "est_hours_per_week": 0.3,
       "status": "available",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#이동·여행 — S8 (B)"
     },
     {
       "id": "rental-car-booking",
@@ -1593,7 +1669,8 @@
       "est_hours_per_week": 0.1,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#이동·여행 — S8 (B)"
     },
     {
       "id": "car-maintenance-booking",
@@ -1613,7 +1690,8 @@
       "est_hours_per_week": 0.2,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#이동·여행 — S8 (B)"
     },
     {
       "id": "visa-travel-docs",
@@ -1633,7 +1711,8 @@
       "est_hours_per_week": 0.1,
       "status": "planned",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#이동·여행 — S8 (B)"
     },
     {
       "id": "travel-addons",
@@ -1654,7 +1733,8 @@
       "est_hours_per_week": 0.1,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#이동·여행 — S8 (B)"
     },
     {
       "id": "airport-services",
@@ -1674,7 +1754,8 @@
       "est_hours_per_week": 0.1,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#이동·여행 — S8 (B)"
     },
     {
       "id": "price-compare",
@@ -1696,7 +1777,8 @@
       "est_hours_per_week": 1.0,
       "status": "beta",
       "baseline_minutes": 50,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#정보·비교 — S2 (C+)"
     },
     {
       "id": "product-research",
@@ -1717,7 +1799,8 @@
       "est_hours_per_week": 0.8,
       "status": "beta",
       "baseline_minutes": 50,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#정보·비교 — S2 (C+)"
     },
     {
       "id": "deal-watch",
@@ -1737,7 +1820,8 @@
       "est_hours_per_week": 0.5,
       "status": "beta",
       "baseline_minutes": 50,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#정보·비교 — S2 (C+)"
     },
     {
       "id": "real-estate-scan",
@@ -1758,7 +1842,8 @@
       "est_hours_per_week": 0.4,
       "status": "beta",
       "baseline_minutes": 50,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#정보·비교 — S2 (C+)"
     },
     {
       "id": "news-brief",
@@ -1778,7 +1863,8 @@
       "est_hours_per_week": 0.5,
       "status": "available",
       "baseline_minutes": 50,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#정보·비교 — S2 (C+)"
     },
     {
       "id": "local-research",
@@ -1798,7 +1884,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 50,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#정보·비교 — S2 (C+)"
     },
     {
       "id": "weekend-outing-research",
@@ -1819,7 +1906,8 @@
       "est_hours_per_week": 0.4,
       "status": "beta",
       "baseline_minutes": 50,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#정보·비교 — S2 (C+)"
     },
     {
       "id": "warranty-manual-lookup",
@@ -1839,7 +1927,8 @@
       "est_hours_per_week": 0.1,
       "status": "available",
       "baseline_minutes": 50,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#정보·비교 — S2 (C+)"
     },
     {
       "id": "mail-brief",
@@ -1859,7 +1948,8 @@
       "est_hours_per_week": 0.5,
       "status": "available",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#커뮤니케이션 — S2·S1 (B)"
     },
     {
       "id": "email-draft",
@@ -1879,7 +1969,8 @@
       "est_hours_per_week": 0.3,
       "status": "available",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#커뮤니케이션 — S2·S1 (B)"
     },
     {
       "id": "schedule-coordination",
@@ -1899,7 +1990,8 @@
       "est_hours_per_week": 0.3,
       "status": "available",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#커뮤니케이션 — S2·S1 (B)"
     },
     {
       "id": "cs-contact",
@@ -1919,7 +2011,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#커뮤니케이션 — S2·S1 (B)"
     },
     {
       "id": "congrats-condolence",
@@ -1940,7 +2033,8 @@
       "est_hours_per_week": 0.1,
       "status": "available",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#커뮤니케이션 — S2·S1 (B)"
     },
     {
       "id": "form-filling",
@@ -1960,7 +2054,8 @@
       "est_hours_per_week": 0.2,
       "status": "beta",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#커뮤니케이션 — S2·S1 (B)"
     },
     {
       "id": "translation-summary",
@@ -1980,7 +2075,8 @@
       "est_hours_per_week": 0.2,
       "status": "available",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#커뮤니케이션 — S2·S1 (B)"
     },
     {
       "id": "rsvp-manage",
@@ -2000,7 +2096,8 @@
       "est_hours_per_week": 0.1,
       "status": "available",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#커뮤니케이션 — S2·S1 (B)"
     },
     {
       "id": "used-sell-listing",
@@ -2021,7 +2118,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#중고·거래 — 내부 추정 (C)"
     },
     {
       "id": "used-buy-search",
@@ -2041,7 +2139,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#중고·거래 — 내부 추정 (C)"
     },
     {
       "id": "trade-coordination",
@@ -2061,7 +2160,8 @@
       "est_hours_per_week": 0.2,
       "status": "planned",
       "baseline_minutes": 60,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#중고·거래 — 내부 추정 (C)"
     },
     {
       "id": "book-media-tradein",
@@ -2081,7 +2181,8 @@
       "est_hours_per_week": 0.1,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#중고·거래 — 내부 추정 (C)"
     },
     {
       "id": "resell-market",
@@ -2101,7 +2202,8 @@
       "est_hours_per_week": 0.1,
       "status": "planned",
       "baseline_minutes": 60,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#중고·거래 — 내부 추정 (C)"
     },
     {
       "id": "donate-dispose",
@@ -2121,7 +2223,8 @@
       "est_hours_per_week": 0.1,
       "status": "beta",
       "baseline_minutes": 60,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#중고·거래 — 내부 추정 (C)"
     }
   ]
 }

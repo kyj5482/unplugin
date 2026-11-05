@@ -1,0 +1,21 @@
+{
+  "id": "yuna",
+  "name": "유나",
+  "address": "yuna.d3m0@unplugin.me",
+  "contact": "yuna@example.com",
+  "type": "SFRA",
+  "tier": "one",
+  "approval_limit": 30000,
+  "deny_list": [],
+  "onboarded": true,
+  "region": "망원동",
+  "time_factor": 1.0,
+  "movement_threshold_minutes": 180,
+  "trusted_senders": [
+    "muze@agentmail.example",
+    "dots@agentmail.example",
+    "chatgpt@agentmail.example",
+    "claude@agentmail.example",
+    "gemini@agentmail.example"
+  ]
+}

@@ -22,7 +22,8 @@
       "est_hours_per_week": 1.5,
       "status": "beta",
       "baseline_minutes": 40,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#쇼핑 — S1 (B)"
     },
     {
       "id": "insurance-compare",
@@ -40,8 +41,9 @@
       "payment": true,
       "est_hours_per_week": 0.5,
       "status": "beta",
-      "baseline_minutes": 90,
-      "emotion_load": 4
+      "baseline_minutes": 75,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#금융·청구 — S9·S7·S4 (B)"
     },
     {
       "id": "telecom-dispute",
@@ -60,8 +62,9 @@
       "payment": false,
       "est_hours_per_week": 0.3,
       "status": "beta",
-      "baseline_minutes": 120,
-      "emotion_load": 5
+      "baseline_minutes": 75,
+      "emotion_load": 5,
+      "evidence": "ops/research-time-baselines.md#금융·청구 — S9·S7·S4 (B)"
     },
     {
       "id": "restaurant-booking",
@@ -81,7 +84,8 @@
       "est_hours_per_week": 0.5,
       "status": "beta",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#예약 — S9 (C+)"
     },
     {
       "id": "hospital-booking",
@@ -101,7 +105,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 30,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#예약 — S9 (C+)"
     },
     {
       "id": "price-compare",
@@ -121,7 +126,8 @@
       "est_hours_per_week": 1.0,
       "status": "beta",
       "baseline_minutes": 50,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#정보·비교 — S2 (C+)"
     },
     {
       "id": "inbox-cleanup",
@@ -140,8 +146,9 @@
       "payment": false,
       "est_hours_per_week": 0.5,
       "status": "available",
-      "baseline_minutes": 120,
-      "emotion_load": 4
+      "baseline_minutes": 45,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#구독·계정 — S3 (C+)"
     },
     {
       "id": "school-digest",
@@ -161,7 +168,8 @@
       "est_hours_per_week": 0.5,
       "status": "available",
       "baseline_minutes": 45,
-      "emotion_load": 2
+      "emotion_load": 2,
+      "evidence": "ops/research-time-baselines.md#교육·육아 — S6 (C+)"
     },
     {
       "id": "utility-pay",
@@ -182,7 +190,8 @@
       "est_hours_per_week": 0.3,
       "status": "beta",
       "baseline_minutes": 90,
-      "emotion_load": 3
+      "emotion_load": 3,
+      "evidence": "ops/research-time-baselines.md#행정·민원 — S1·S4 (B)"
     },
     {
       "id": "bill-watch",
@@ -201,8 +210,9 @@
       "payment": false,
       "est_hours_per_week": 0.3,
       "status": "available",
-      "baseline_minutes": 90,
-      "emotion_load": 4
+      "baseline_minutes": 75,
+      "emotion_load": 4,
+      "evidence": "ops/research-time-baselines.md#금융·청구 — S9·S7·S4 (B)"
     }
   ]
 }

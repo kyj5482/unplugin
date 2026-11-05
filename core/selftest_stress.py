@@ -191,14 +191,14 @@ def main() -> int:
     a1 = agents.assign("resolver")
     check("STR-007 배정 — 부하 최소 resolver 선택", a1["role"] == "resolver", str(a1))
 
-    # ── TC-STR-008: 데모 100통 무결성 ──
-    idx = json.loads((ROOT / "demo/index.json").read_text(encoding="utf-8"))
+    # ── TC-STR-008: 레거시 데모 100통 무결성 (피벗 후 demo/legacy/ 보존분) ──
+    idx = json.loads((ROOT / "demo/legacy/index.json").read_text(encoding="utf-8"))
     emails = idx["emails"]
     by_type: dict[str, int] = {}
     all_parse = all_detect = True
     for e in emails:
         by_type[e["type"]] = by_type.get(e["type"], 0) + 1
-        mail = common.parse_mail(ROOT / "demo" / e["file"])
+        mail = common.parse_mail(ROOT / "demo/legacy" / e["file"])
         if mail["to"] != prof["address"]:
             all_parse = False
         pb_hit = stress.detect(f"{mail['subject']} {mail['body']}")

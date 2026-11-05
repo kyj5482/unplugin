@@ -1,0 +1,21 @@
+{
+  "id": "jisoo",
+  "name": "지수",
+  "address": "jisoo.d3m0@unplugin.me",
+  "contact": "jisoo@example.com",
+  "type": "SFRA",
+  "tier": "one",
+  "approval_limit": 30000,
+  "deny_list": [],
+  "onboarded": true,
+  "region": "성수동",
+  "time_factor": 1.0,
+  "movement_threshold_minutes": 180,
+  "trusted_senders": [
+    "muze@agentmail.example",
+    "dots@agentmail.example",
+    "chatgpt@agentmail.example",
+    "claude@agentmail.example",
+    "gemini@agentmail.example"
+  ]
+}

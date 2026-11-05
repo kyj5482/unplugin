@@ -78,8 +78,19 @@ def emotion_dots(load: int) -> str:
     return "●" * load + "○" * (5 - load)
 
 
+DEFAULT_EVIDENCE = "ops/research-time-baselines.md#기본값"
+
+
+def clamp_factor(f) -> float:
+    """개인 보정 계수 — 사람마다 같은 일에 걸리는 시간이 다르다 (0.5~2.0)."""
+    try:
+        return min(2.0, max(0.5, float(f)))
+    except (TypeError, ValueError):
+        return 1.0
+
+
 def _match_task(text: str) -> dict:
-    """보고 본문 → 업무 유형·기준치. 스트레스 유형은 감정 가중."""
+    """보고 본문 → 업무 유형·기준치·근거. 스트레스 유형은 감정 가중."""
     hit = classify.match(text)
     pb = stress.detect(text)
     if hit:
@@ -87,16 +98,19 @@ def _match_task(text: str) -> dict:
         task, plugin_id, matched = pl["name"], pl["id"], True
         minutes = int(pl.get("baseline_minutes", DEFAULT_BASELINE))
         emotion = int(pl.get("emotion_load", DEFAULT_EMOTION))
+        evidence = pl.get("evidence", DEFAULT_EVIDENCE)
     else:
         task, plugin_id, matched = "", None, False
         minutes, emotion = DEFAULT_BASELINE, DEFAULT_EMOTION
-    if pb:  # 환불·분쟁류 — 시간보다 감정을 아낀 일
+        evidence = DEFAULT_EVIDENCE
+    if pb:  # 환불·분쟁류 — 시간보다 감정을 아낀 일. 유형별 조사 권장값 적용
         task = task or pb["name"]
         plugin_id = plugin_id or f"stress:{pb['id']}"
-        minutes = max(minutes, 90)
-        emotion = max(emotion, 4)
+        minutes = max(minutes, int(pb.get("baseline_minutes", 90)))
+        emotion = max(emotion, int(pb.get("emotion_load", 4)))
+        evidence = pb.get("evidence", evidence)
     return {"task": task, "plugin_id": plugin_id, "matched": matched,
-            "saved_minutes": minutes, "emotion_load": emotion}
+            "saved_minutes": minutes, "emotion_load": emotion, "evidence": evidence}
 
 
 def accrue(customer_id: str, mail: dict) -> dict:
@@ -109,6 +123,11 @@ def accrue(customer_id: str, mail: dict) -> dict:
     m = _match_task(text)
     task = m["task"] or (subject[:40] or "이름 없는 일")
 
+    # 개인 보정 — 같은 일도 사람마다 걸리는 시간이 다르다 (Admin이 calibrate로 조정)
+    prof = common.load_profiles().get(customer_id, {})
+    factor = clamp_factor(prof.get("time_factor", 1.0))
+    saved = max(1, round(m["saved_minutes"] * factor))
+
     ledger = load_ledger(customer_id)
     event = {
         "id": f"{common.ts()}-{common.slug(task)}",
@@ -116,32 +135,37 @@ def accrue(customer_id: str, mail: dict) -> dict:
         "task": task,
         "plugin": m["plugin_id"],
         "matched": m["matched"],
-        "saved_minutes": m["saved_minutes"],
+        "saved_minutes": saved,
         "emotion_load": m["emotion_load"],
+        "basis": {"baseline": m["saved_minutes"], "factor": factor,
+                  "evidence": m["evidence"]},
         "subject": common.mask_sensitive(subject),
         "from": mail.get("from", ""),
     }
     ledger["events"].append(event)
     t = ledger["totals"]
-    t["saved_minutes"] += m["saved_minutes"]
+    t["saved_minutes"] += saved
     t["emotion_saved"] += m["emotion_load"]
     t["events_count"] += 1
 
     # 적립 확인 메일 — 고객은 아무것도 기록하지 않았는데 숫자가 쌓인다
     h, mm = divmod(t["saved_minutes"], 60)
+    factor_txt = "" if factor == 1.0 else f" × 개인 보정 ×{factor:g}"
     notify.send(
         customer_id,
-        f"시간 배당 적립: {task} · +{m['saved_minutes']}분",
-        (f"{task} · +{m['saved_minutes']}분 · 감정 {emotion_dots(m['emotion_load'])}\n"
+        f"시간 배당 적립: {task} · +{saved}분",
+        (f"{task} · +{saved}분 · 감정 {emotion_dots(m['emotion_load'])}\n"
          f"누적 잔고: {h}시간 {mm}분 (아낀 감정 {t['emotion_saved']})\n\n"
          "이 적립은 에이전트의 완료 보고 메일에서 자동 계산됐어요 — "
-         "직접 기록하실 건 없어요."),
+         "직접 기록하실 건 없어요.\n"
+         f"산정 근거: 업무 유형 기준치 {m['saved_minutes']}분{factor_txt} — "
+         f"출처 {m['evidence']}"),
         thread=f"dividend-{customer_id}")
 
     # 임계치 — 같은 구간 중복 제안 금지
     suggested = _maybe_suggest(customer_id, ledger)
     common.write_json(ledger_path(customer_id), ledger)
-    return {"saved_minutes": m["saved_minutes"], "emotion_load": m["emotion_load"],
+    return {"saved_minutes": saved, "emotion_load": m["emotion_load"],
             "matched": m["matched"], "total_saved_minutes": t["saved_minutes"],
             "suggested": suggested}
 
@@ -157,6 +181,12 @@ def _maybe_suggest(customer_id: str, ledger: dict) -> bool:
     lines = [f"쌓인 시간 배당이 {h}시간 {mm}분이 됐어요. "
              "잔고에 잠들게 두지 말고, 다음 무브먼트에 투자해 보세요:\n"]
     lines += [f"- **{axis}** — {desc}" for axis, desc in _MOVEMENTS]
+    # 커뮤니티 연계 — 같은 일을 위임하는 동네 이웃이 있으면 함께 움직이자고 제안
+    from . import community
+    meetup = community.meetup_section(customer_id, ledger)
+    if meetup:
+        lines.append("")
+        lines.append(meetup)
     lines.append("\n하나를 고르셨다면 이 메일에 회신으로 알려주세요 — "
                  "다녀온 이야기가 다음 추천을 더 좋게 만들어요.")
     notify.send(customer_id,

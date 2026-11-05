@@ -1,0 +1,21 @@
+{
+  "id": "doyun",
+  "name": "도윤",
+  "address": "doyun.d3m0@unplugin.me",
+  "contact": "doyun@example.com",
+  "type": "SFRA",
+  "tier": "one",
+  "approval_limit": 30000,
+  "deny_list": [],
+  "onboarded": true,
+  "region": "판교",
+  "time_factor": 1.5,
+  "movement_threshold_minutes": 180,
+  "trusted_senders": [
+    "muze@agentmail.example",
+    "dots@agentmail.example",
+    "chatgpt@agentmail.example",
+    "claude@agentmail.example",
+    "gemini@agentmail.example"
+  ]
+}

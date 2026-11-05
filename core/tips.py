@@ -35,9 +35,11 @@ def make_tip(text: str, customer: dict | None = None) -> dict:
     pb = stress.detect(text)
     pl = hit["plugin"] if hit else None
 
-    if pb:  # 고급 팁 — 끝까지(입금 확인까지) 시키는 법
-        minutes = max(int((pl or {}).get("baseline_minutes", 120)), 120)
-        emotion = max(int((pl or {}).get("emotion_load", 4)), 4)
+    if pb:  # 고급 팁 — 끝까지(입금 확인까지) 시키는 법. 유형별 조사 권장값 사용
+        minutes = max(int((pl or {}).get("baseline_minutes", 0)),
+                      int(pb.get("baseline_minutes", 120)))
+        emotion = max(int((pl or {}).get("emotion_load", 0)),
+                      int(pb.get("emotion_load", 4)))
         prompt = (f"{gist} — {pb['opener']}. "
                   "접수만 하고 끝내지 말고 실제 입금(결과) 확인까지 진행해줘. "
                   "상대가 회신하지 않으면 2회까지 재촉하고, 그래도 안 되면 "

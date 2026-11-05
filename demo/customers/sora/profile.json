@@ -1,0 +1,21 @@
+{
+  "id": "sora",
+  "name": "소라",
+  "address": "sora.d3m0@unplugin.me",
+  "contact": "sora@example.com",
+  "type": "SFRA",
+  "tier": "one",
+  "approval_limit": 30000,
+  "deny_list": [],
+  "onboarded": true,
+  "region": "망원동",
+  "time_factor": 0.8,
+  "movement_threshold_minutes": 180,
+  "trusted_senders": [
+    "muze@agentmail.example",
+    "dots@agentmail.example",
+    "chatgpt@agentmail.example",
+    "claude@agentmail.example",
+    "gemini@agentmail.example"
+  ]
+}
